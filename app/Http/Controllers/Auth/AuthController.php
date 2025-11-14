@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Session;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Rate;
@@ -32,7 +31,7 @@ class AuthController extends Controller
             return redirect()->intended('/')
                 ->withSuccess('Login successful!');
         }
-        return redirect()->back()
+        return redirect()->route('login')
             ->withError('Invalid credentials!')
             ->withInput();
     }
@@ -56,10 +55,12 @@ class AuthController extends Controller
         return redirect('login')->withError('You must login first!');
     }
 
-    public function logout(): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
-        Session::flush();
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
         return redirect('login')->withSuccess('Logout successful!');
     }
 }

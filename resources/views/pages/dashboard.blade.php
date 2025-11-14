@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Dashboard | Admin Infinity Logistics Indonesi
+Dashboard | Admin Infinity Logistics Indonesia
 @endsection('title')
 @section('content')
 <div class="container">

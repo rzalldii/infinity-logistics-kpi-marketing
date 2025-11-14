@@ -9,6 +9,9 @@
     <link rel="apple-touch-icon" href="<?php echo url('/'); ?>/img/favicon.ico">
     <link rel="manifest" href="<?php echo url('/'); ?>/manifest.json">
 
+    <!-- Favicons -->
+    <link href="<?php echo url('/'); ?>/img/favicon.ico" rel="icon" alt="Icon Infinity">
+
     <!-- Fonts and icons -->
     <script src="<?php echo url('/'); ?>/js/plugin/webfont/webfont.min.js"></script>
     <script>

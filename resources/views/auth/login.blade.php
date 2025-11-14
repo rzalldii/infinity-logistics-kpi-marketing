@@ -1,8 +1,49 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Sign In | Admin Infinity Logistics Indonesia</title>
 
-@include('layouts.partials.header')
+    <meta name="theme-color" content="#6777ef">
+    <link rel="apple-touch-icon" href="<?php echo url('/'); ?>/img/favicon.ico">
+    <link rel="manifest" href="<?php echo url('/'); ?>/manifest.json">
 
+    <!-- Favicons -->
+    <link href="<?php echo url('/'); ?>/img/favicon.ico" rel="icon" alt="Icon Infinity">
+
+    <!-- Fonts and icons -->
+    <script src="<?php echo url('/'); ?>/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+        google: { families: ["Public Sans:300,400,500,600,700"] },
+        custom: {
+        families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+            ],
+            urls: ["<?php echo url('/'); ?>/css/fonts.min.css"],
+            },
+            active: function () {
+            sessionStorage.fonts = true;
+            },
+        });
+    </script>
+
+    <!-- Preload CSS Files -->
+    <link href="<?php echo url('/'); ?>/css/bootstrap.min.css" rel="preload" as="style">
+    <link href="<?php echo url('/'); ?>/css/plugins.min.css" rel="preload" as="style">
+    <link href="<?php echo url('/'); ?>/css/kaiadmin.min.css" rel="preload" as="style">
+
+    <!-- Stylesheet CSS Files -->
+    <link href="<?php echo url('/'); ?>/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo url('/'); ?>/css/plugins.min.css" rel="stylesheet">
+    <link href="<?php echo url('/'); ?>/css/kaiadmin.min.css" rel="stylesheet">
+</head>
 <body>
     <div class="container d-flex flex-column">
         <div class="row align-items-center justify-content-center g-0 min-vh-100">
@@ -52,7 +93,28 @@
         </div>
     </div>
 
-    @include('layouts.partials.script')
+    <!--   Core JS Files   -->
+    <script src="<?php echo url('/'); ?>/js/core/jquery.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/core/popper.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/core/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/chart.js/chart.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/chart-circle/circles.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/datatables/datatables.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/jsvectormap/world.js"></script>
+    <script src="<?php echo url('/'); ?>/js/plugin/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="<?php echo url('/'); ?>/js/kaiadmin.min.js"></script>
+    <script src="<?php echo url('/'); ?>/sw.js'"></script>
+    <script>
+    if (!navigator.serviceWorker.controller) {
+        navigator.serviceWorker.register("/sw.js").then(function (reg) {
+            console.log("Service worker registered: " + reg.scope);
+        });
+    }
+    </script>
     <script>
     $(document).ready(function() {
         $('#togglePassword').on('click', function() {
