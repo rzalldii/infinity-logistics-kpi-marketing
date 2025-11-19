@@ -37,7 +37,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                                     </small>
                                     @else
                                     <h4 class="card-title text-muted">No Data Available</h4>
-                                    <small class="text-muted">Begin by adding your first rate entry</small>
+                                    <small class="text-muted">Begin by adding your rate entry today</small>
                                     @endif
                                 </div>
                             </div>
@@ -73,7 +73,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                                     </small>
                                     @else
                                     <h4 class="card-title text-muted">No Data Available</h4>
-                                    <small class="text-muted">Begin by adding your first shipper entry</small>
+                                    <small class="text-muted">Begin by adding your shipper entry today</small>
                                     @endif
                                 </div>
                             </div>
@@ -86,9 +86,45 @@ Dashboard | Admin Infinity Logistics Indonesia
                     </div>
                 </div>
             </div>
+            <!-- <div class="col-sm-12 col-md-12">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-success bubble-shadow-small">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-6 ms-sm-3">
+                                <div class="numbers">
+                                    <p class="card-category">Last Submission - Report Marketing</p>
+                                    @if($lastShipper)
+                                    <h4 class="card-title">{{ Str::upper($lastShipper->shipper_name) }}</h4>
+                                    <small class="text-muted">
+                                        <i class="far fa-clock"></i> {{ $lastShipper->created_at->diffForHumans() }}
+                                        @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin())
+                                        <br>
+                                        <i class="far fa-user"></i> Submitted by {{ $lastShipper->user->name }}
+                                        @endif
+                                    </small>
+                                    @else
+                                    <h4 class="card-title text-muted">No Data Available</h4>
+                                    <small class="text-muted">Begin by adding your first shipper entry</small>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-auto ms-auto">
+                                <a href="{{ route('shippers.index') }}" class="btn btn-link btn-lg text-success">
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
         </div>
         @endif
-        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
+        <!-- @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-round">
@@ -98,13 +134,13 @@ Dashboard | Admin Infinity Logistics Indonesia
                             <div class="card-tools">
                                 <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
                                     <span class="btn-label">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="fas fa-pencil"></i>
                                     </span>
                                     Export
                                 </a>
                                 <a href="#" class="btn btn-label-info btn-round btn-sm">
                                     <span class="btn-label">
-                                        <i class="fa fa-print"></i>
+                                        <i class="fas fa-print"></i>
                                     </span>
                                     Print
                                 </a>
@@ -120,12 +156,12 @@ Dashboard | Admin Infinity Logistics Indonesia
                 </div>
             </div>
         </div>
-        @endif
+        @endif -->
         @if(Auth::user()->isGuest())
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-round">
-                    <div class="card-body text-center py-5">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center" style="min-height: 50vh;">
                         <h3 class="mb-3">Welcome to Admin Infinity Logistics Indonesia</h3>
                         <p class="text-muted">You have view-only access to rates and shippers data.</p>
                         <div class="mt-4">

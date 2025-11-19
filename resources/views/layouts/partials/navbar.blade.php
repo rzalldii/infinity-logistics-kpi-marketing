@@ -2,9 +2,9 @@
     <div class="sidebar" data-background-color="dark">
         <div class="sidebar-logo">
             <div class="logo-header" data-background-color="dark">
-                <div class="logo">
+                <!-- <div class="logo">
                     <img src="<?php echo url('/'); ?>/img/logo.png" class="navbar-brand" height="20" alt=""/>
-                </div>
+                </div> -->
                 <div class="nav-toggle">
                     <button class="btn btn-toggle toggle-sidebar">
                         <i class="gg-menu-right"></i>
@@ -69,9 +69,9 @@
         <div class="main-header">
             <div class="main-header-logo">
                 <div class="logo-header" data-background-color="dark">
-                    <div class="logo">
+                    <!-- <div class="logo">
                         <img src="<?php echo url('/'); ?>/img/logo.png" class="navbar-brand" height="20" alt=""/>
-                    </div>
+                    </div> -->
                     <div class="nav-toggle">
                         <button class="btn btn-toggle toggle-sidebar">
                             <i class="gg-menu-right"></i>

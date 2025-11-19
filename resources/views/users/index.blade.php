@@ -11,8 +11,8 @@ User Management | Admin Infinity Logistics Indonesia
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">User Management</h1>
-                            <button class="btn btn-primary btn-round ms-auto" id="createNewUser">
-                                <i class="fa fa-plus"></i>
+                            <button class="btn btn-primary btn-round ms-auto" id="createNewUser" data-bs-toggle="tooltip" title="Add">
+                                <i class="fas fa-plus"></i>
                             </button>
                         </div>
                     </div>
@@ -25,7 +25,7 @@ User Management | Admin Infinity Logistics Indonesia
                                             <span class="fw-mediumbold">New</span>
                                             <span class="fw-light">Users</span>
                                         </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                                     </div>
                                     <div class="modal-body">
                                         <form id="userForm">
@@ -73,10 +73,10 @@ User Management | Admin Infinity Logistics Indonesia
                                     </div>
                                     <div class="modal-footer border-0">
                                         <button type="button" id="saveBtn" class="btn btn-primary">
-                                            <i class="fa fa-save"></i> Save
+                                            <i class="fas fa-save"></i> Save
                                         </button>
                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                                            Close
+                                            <i class="fas fa-window-close"></i> Close
                                         </button>
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@ User Management | Admin Infinity Logistics Indonesia
                                     <td>
                                     @if($user->id !== Auth::id())
                                     @if(!$user->is_primary || $user->id === Auth::id())
-                                        <button type="button" class="btn btn-sm btn-primary editUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
+                                        <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     @endif
@@ -119,12 +119,12 @@ User Management | Admin Infinity Logistics Indonesia
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     @else
-                                        <span class="badge bg-warning text-dark">
-                                            <i class="fas fa-shield-alt"></i> Protected
+                                        <span class="btn btn-sm btn-success" style="cursor: default;" data-bs-toggle="tooltip" title="Protected">
+                                            <i class="fas fa-shield-alt"></i>
                                         </span>
                                     @endif
                                     @else
-                                        <button type="button" class="btn btn-sm btn-primary editUser" data-id="{{ $user->id }}" data-primary="{{ $user->is_primary ? 'true' : 'false' }}" data-bs-toggle="tooltip" title="Edit">
+                                        <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-primary="{{ $user->is_primary ? 'true' : 'false' }}" data-bs-toggle="tooltip" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     @endif
@@ -273,7 +273,7 @@ $(document).ready(function () {
         if (user_id) {
             formData.append('_method', 'PUT');
         }
-        $('#saveBtn').html('<i class="fa fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
+        $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
         $.ajax({
             type: 'POST',
             url: url,
@@ -281,7 +281,7 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function(response) {
-                $('#saveBtn').html('<i class="fa fa-save"></i> Save').prop('disabled', false);
+                $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                 $('#userForm').trigger("reset");
                 $('#userModal').modal('hide');
                 Swal.fire({
@@ -295,7 +295,7 @@ $(document).ready(function () {
                 });
             },
             error: function(response) {
-                $('#saveBtn').html('<i class="fa fa-save"></i> Save').prop('disabled', false);
+                $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                 if (response.status === 422) {
                     var errors = response.responseJSON.errors;
                     var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';    

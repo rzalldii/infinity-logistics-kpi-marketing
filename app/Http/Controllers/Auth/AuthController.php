@@ -46,6 +46,12 @@ class AuthController extends Controller
             } elseif ($user->isMarketing()) {
                 $lastRate = Rate::where('user_id', $user->id)->latest()->first();
                 $lastShipper = Shipper::where('user_id', $user->id)->latest()->first();
+                if ($lastRate && $lastRate->created_at->diffInDays(now()) >= 1) {
+                    $lastRate = null;
+                }
+                if ($lastShipper && $lastShipper->created_at->diffInDays(now()) >= 1) {
+                    $lastShipper = null;
+                }
             } else {
                 $lastRate = null;
                 $lastShipper = null;

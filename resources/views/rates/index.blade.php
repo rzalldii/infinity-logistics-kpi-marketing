@@ -12,8 +12,8 @@ Checking Rates | Admin Infinity Logistics Indonesia
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Checking Rates</h1>
                             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                            <button class="btn btn-primary btn-round ms-auto" id="createNewRate">
-                                <i class="fa fa-plus"></i>
+                            <button class="btn btn-primary btn-round ms-auto" id="createNewRate" data-bs-toggle="tooltip" title="Add">
+                                <i class="fas fa-plus"></i>
                             </button>
                             @endif
                         </div>
@@ -27,7 +27,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                             <span class="fw-mediumbold">New</span>
                                             <span class="fw-light">Rates</span>
                                         </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                                     </div>
                                     <div class="modal-body">
                                         <form id="rateForm">
@@ -91,10 +91,10 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                     </div>
                                     <div class="modal-footer border-0">
                                         <button type="button" id="saveBtn" class="btn btn-primary">
-                                            <i class="fa fa-save"></i> Save
+                                            <i class="fas fa-save"></i> Save
                                         </button>
                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                                            Close
+                                            <i class="fas fa-window-close"></i> Close
                                         </button>
                                     </div>
                                 </div>
@@ -113,7 +113,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                     <th>LINER</th>
                                     <th>VALID</th>
                                     <th>NOTES</th>
-                                    @if(Auth::user()->isSuperAdmin())
+                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <th>CREATED</th>
                                     @endif
                                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
@@ -131,7 +131,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                     <th>LINER</th>
                                     <th>VALID</th>
                                     <th>NOTES</th>
-                                    @if(Auth::user()->isSuperAdmin())
+                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                     <th>CREATED</th>
                                     @endif
                                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
@@ -145,40 +145,60 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                     <td>{{ Str::upper($rate->pol) }}</td>
                                     <td>{{ Str::upper($rate->pod) }}</td>
                                     <td>{{ $rate->container }}</td>
-                                    <td>{{ $rate->container_20 ? number_format($rate->container_20) : '-' }}</td>
-                                    <td>{{ $rate->container_40 ? number_format($rate->container_40) : '-' }}</td>
+                                    <td>
+                                        @if($rate->container_20)
+                                        {{ number_format($rate->container_20) }}
+                                        @else
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($rate->container_40)
+                                        {{ number_format($rate->container_40) }}
+                                        @else
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
+                                        @endif
+                                    </td>
                                     <td>{{ Str::upper($rate->liner) }}</td>
                                     <td>{{ Str::upper(\Carbon\Carbon::parse($rate->valid)->format("M'y")) }}</td>
                                     <td>
                                         @if($rate->notes)
                                         <button type="button" class="btn btn-sm btn-info viewNotes" data-notes="{{ $rate->notes }}" data-bs-toggle="tooltip" title="View">
-                                            <i class="fa fa-eye"></i>
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                         @else
-                                        <span class="text-muted">-</span>
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
                                         @endif
                                     </td>
-                                    @if(Auth::user()->isSuperAdmin())
+                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                     <td>{{ Str::upper($rate->user->name) }}</td>
                                     @endif
                                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                                     <td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $rate->user_id == Auth::id()))
-                                        <button type="button" class="btn btn-sm btn-primary editRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
+                                        <button type="button" class="btn btn-sm btn-warning text-white editRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-danger deleteRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         @else
-                                        <span class="text-muted">-</span>
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
                                         @endif
                                     </td>
                                     @endif
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="@if(Auth::user()->isSuperAdmin()) 10 @elseif(Auth::user()->isAdmin() || Auth::user()->isMarketing()) 9 @else 8 @endif" class="text-center">
+                                    <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 10 @elseif(Auth::user()->isMarketing()) 9 @else 8 @endif" class="text-center">
                                         No Data Available
                                     </td>
                                 </tr>
@@ -201,16 +221,24 @@ $(document).ready(function () {
         }
     });
     var userRole = "{{ Auth::user()->role }}";
-    var isSuperAdmin = (userRole === 'super_admin');
+    var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
     try {
         var notOrderableColumns;
-        if (isSuperAdmin) {
-            notOrderableColumns = [7, 8, 9];
+        if (isAdmin) {
+            notOrderableColumns = [7, 9];
         } else if (hasActionColumn) {
             notOrderableColumns = [7, 8];
         } else {
             notOrderableColumns = [7];
+        }
+        var skipColumns;
+        if (isAdmin) {
+            skipColumns = [2, 3, 4, 7, 9];
+        } else if (hasActionColumn) {
+            skipColumns = [2, 3, 4, 7, 8];
+        } else {
+            skipColumns = [2, 3, 4, 7];
         }
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
@@ -234,14 +262,7 @@ $(document).ready(function () {
                 this.api().columns().every(function () {
                     var column = this;
                     var columnIndex = column.index();
-                    var skipColumns;
-                    if (isSuperAdmin) {
-                        skipColumns = [3, 4, 7, 8, 9];
-                    } else if (hasActionColumn) {
-                        skipColumns = [3, 4, 7, 8];
-                    } else {
-                        skipColumns = [3, 4, 7];
-                    }
+                    
                     if (skipColumns.includes(columnIndex)) {
                         $(column.footer()).empty();
                         return;
@@ -344,7 +365,7 @@ $(document).ready(function () {
             if (rate_id) {
                 formData.append('_method', 'PUT');
             }
-            $('#saveBtn').html('<i class="fa fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
+            $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
             $.ajax({
                 type: 'POST',
                 url: url,
@@ -352,7 +373,7 @@ $(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    $('#saveBtn').html('<i class="fa fa-save"></i> Save').prop('disabled', false);
+                    $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                     $('#rateForm').trigger("reset");
                     $('#rateModal').modal('hide');
                     Swal.fire({
@@ -366,7 +387,7 @@ $(document).ready(function () {
                     });
                 },
                 error: function(response) {
-                    $('#saveBtn').html('<i class="fa fa-save"></i> Save').prop('disabled', false);
+                    $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                     if (response.status === 422) {
                         var errors = response.responseJSON.errors;
                         var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';

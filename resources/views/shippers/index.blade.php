@@ -12,8 +12,8 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Touch Shippers</h1>
                             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                            <button class="btn btn-primary btn-round ms-auto" id="createNewShipper">
-                                <i class="fa fa-plus"></i>
+                            <button class="btn btn-primary btn-round ms-auto" id="createNewShipper" data-bs-toggle="tooltip" title="Add">
+                                <i class="fas fa-plus"></i>
                             </button>
                             @endif
                         </div>
@@ -27,7 +27,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                             <span class="fw-mediumbold">New</span>
                                             <span class="fw-light">Shippers</span>
                                         </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                                     </div>
                                     <div class="modal-body">
                                         <form id="shipperForm">
@@ -81,10 +81,10 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                     </div>
                                     <div class="modal-footer border-0">
                                         <button type="button" id="saveBtn" class="btn btn-primary">
-                                            <i class="fa fa-save"></i> Save
+                                            <i class="fas fa-save"></i> Save
                                         </button>
                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                                            Close
+                                            <i class="fas fa-window-close"></i> Close
                                         </button>
                                     </div>
                                 </div>
@@ -92,7 +92,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="basic-datatables" class="display table table-striped table-hover">
+                        <table id="multi-filter-select" class="display table table-striped table-hover">
                             <thead class="text-center">
                                 <tr>
                                     <th>SHIPPER</th>
@@ -102,7 +102,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                     <th>EMAIL</th>
                                     <th>INPUT</th>
                                     <th>REMARKS</th>
-                                    @if(Auth::user()->isSuperAdmin())
+                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                     <th>CREATED</th>
                                     @endif
                                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
@@ -119,7 +119,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                     <th>EMAIL</th>
                                     <th>INPUT</th>
                                     <th>REMARKS</th>
-                                    @if(Auth::user()->isSuperAdmin())
+                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                     <th>CREATED</th>
                                     @endif
                                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
@@ -132,40 +132,68 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                 <tr id="row-{{ $shipper->id }}">
                                     <td>{{ Str::upper($shipper->shipper_name) }}</td>
                                     <td>{{ Str::upper($shipper->city_name) }}</td>
-                                    <td>{{ Str::upper($shipper->contact_person) ? Str::upper($shipper->contact_person) : '-' }}</td>
-                                    <td>{{ $shipper->phone_number ?? '-' }}</td>
-                                    <td>{{ $shipper->email_address ?? '-' }}</td>
+                                    <td>
+                                        @if($shipper->contact_person)
+                                        {{ Str::upper($shipper->contact_person) }}
+                                        @else
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($shipper->phone_number)
+                                        {{ $shipper->phone_number }}
+                                        @else
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($shipper->email_address)
+                                        {{ $shipper->email_address }}
+                                        @else
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
+                                        @endif
+                                    </td>
                                     <td>{{ \Carbon\Carbon::parse($shipper->input)->format('d/m/y') }}</td>
                                     <td>
                                         @if($shipper->remarks)
                                         <button type="button" class="btn btn-sm btn-info viewRemarks" data-remarks="{{ $shipper->remarks }}" data-bs-toggle="tooltip" title="View">
-                                            <i class="fa fa-eye"></i>
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                         @else
-                                        <span class="text-muted">-</span>
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
                                         @endif
                                     </td>
-                                    @if(Auth::user()->isSuperAdmin())
+                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                     <td>{{ Str::upper($shipper->user->name) }}</td>
                                     @endif
                                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                                     <td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $shipper->user_id == Auth::id()))
-                                        <button type="button" class="btn btn-sm btn-primary editShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
+                                        <button type="button" class="btn btn-sm btn-warning text-white editShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-danger deleteShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         @else
-                                        <span class="text-muted">-</span>
+                                        <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
+                                            <i class="fas fa-minus"></i>
+                                        </span>
                                         @endif
                                     </td>
                                     @endif
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="@if(Auth::user()->isSuperAdmin()) 9 @elseif(Auth::user()->isAdmin() || Auth::user()->isMarketing()) 8 @else 7 @endif" class="text-center">
+                                    <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 9 @elseif(Auth::user()->isMarketing()) 8 @else 7 @endif" class="text-center">
                                         No Data Available
                                     </td>
                                 </tr>
@@ -188,18 +216,26 @@ $(document).ready(function () {
         }
     });
     var userRole = "{{ Auth::user()->role }}";
-    var isSuperAdmin = (userRole === 'super_admin');
+    var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
     try {
         var notOrderableColumns;
-        if (isSuperAdmin) {
-            notOrderableColumns = [2, 3, 4, 6, 7, 8];
+        if (isAdmin) {
+            notOrderableColumns = [3, 4, 6, 8];
         } else if (hasActionColumn) {
-            notOrderableColumns = [2, 3, 4, 6, 7];
+            notOrderableColumns = [3, 4, 6, 7];
         } else {
-            notOrderableColumns = [2, 3, 4, 6];
+            notOrderableColumns = [3, 4, 6];
         }
-        var table = $("#basic-datatables").DataTable({
+        var skipColumns;
+        if (isAdmin) {
+            skipColumns = [0, 2, 3, 4, 5, 6, 8];
+        } else if (hasActionColumn) {
+            skipColumns = [0, 2, 3, 4, 5, 6, 7];
+        } else {
+            skipColumns = [0, 2, 3, 4, 5, 6];
+        }
+        var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
             order: [[5, 'desc']],
             columnDefs: [
@@ -216,6 +252,31 @@ $(document).ready(function () {
                     next: "Next",
                     previous: "Previous"
                 }
+            },
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    var column = this;
+                    var columnIndex = column.index();
+                    if (skipColumns.includes(columnIndex)) {
+                        $(column.footer()).empty();
+                        return;
+                    }
+                    var select = $(
+                        '<select class="form-select"><option value=""></option></select>'
+                    )
+                    .appendTo($(column.footer()).empty())
+                    .on("change", function () {
+                        var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                        column
+                        .search(val ? "^" + val + "$" : "", true, false)
+                        .draw();
+                    });
+                    column.data().unique().sort().each(function (d, j) {
+                        select.append(
+                            '<option value="' + d + '">' + d + "</option>"
+                        );
+                    });
+                });
             },
         });
         table.on('draw', function () {
@@ -297,7 +358,7 @@ $(document).ready(function () {
             if (shipper_id) {
                 formData.append('_method', 'PUT');
             }
-            $('#saveBtn').html('<i class="fa fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
+            $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
             $.ajax({
                 type: 'POST',
                 url: url,
@@ -305,7 +366,7 @@ $(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    $('#saveBtn').html('<i class="fa fa-save"></i> Save').prop('disabled', false);
+                    $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                     $('#shipperForm').trigger("reset");
                     $('#shipperModal').modal('hide');
                     Swal.fire({
@@ -319,7 +380,7 @@ $(document).ready(function () {
                     });
                 },
                 error: function(response) {
-                    $('#saveBtn').html('<i class="fa fa-save"></i> Save').prop('disabled', false);
+                    $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                     if (response.status === 422) {
                         var errors = response.responseJSON.errors;
                         var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
