@@ -17,7 +17,7 @@ User Management | Admin Infinity Logistics Indonesia
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
@@ -75,6 +75,9 @@ User Management | Admin Infinity Logistics Indonesia
                                         <button type="button" id="saveBtn" class="btn btn-primary">
                                             <i class="fas fa-save"></i> Save
                                         </button>
+                                        <button type="button" id="clearBtn" class="btn btn-warning text-white">
+                                            <i class="fas fa-eraser"></i> Clear
+                                        </button>
                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                                             <i class="fas fa-window-close"></i> Close
                                         </button>
@@ -82,64 +85,64 @@ User Management | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
+                        <div class="table-responsive">
+                            <table id="multi-filter-select" class="display table table-striped table-hover">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th>NAME</th>
+                                        <th>EMAIL</th>
+                                        <th>ROLE</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tfoot class="text-center">
+                                    <tr>
+                                        <th>NAME</th>
+                                        <th>EMAIL</th>
+                                        <th>ROLE</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody class="text-center">
+                                    @forelse($users as $user)
+                                    <tr id="row-{{ $user->id }}">
+                                        <td>{{ Str::upper($user->name) }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ Str::upper(str_replace('_', ' ',$user->role)) }}</td>
+                                        <td>
+                                        @if($user->id !== Auth::id())
+                                        @if(!$user->is_primary || $user->id === Auth::id())
+                                            <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        @endif
+                                        @if(!$user->is_primary)
+                                            <button type="button" class="btn btn-sm btn-danger deleteUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        @else
+                                            <span class="btn btn-sm btn-success" style="cursor: default;" data-bs-toggle="tooltip" title="Protected">
+                                                <i class="fas fa-shield-alt"></i>
+                                            </span>
+                                        @endif
+                                        @else
+                                            <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-primary="{{ $user->is_primary ? 'true' : 'false' }}" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            No Data Available
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="table-responsive">
-                        <table id="multi-filter-select" class="display table table-striped table-hover">
-                            <thead class="text-center">
-                                <tr>
-                                    <th>NAME</th>
-                                    <th>EMAIL</th>
-                                    <th>ROLE</th>
-                                    <th>ACTION</th>
-                                </tr>
-                            </thead>
-                            <tfoot class="text-center">
-                                <tr>
-                                    <th>NAME</th>
-                                    <th>EMAIL</th>
-                                    <th>ROLE</th>
-                                    <th>ACTION</th>
-                                </tr>
-                            </tfoot>
-                            <tbody class="text-center">
-                                @forelse($users as $user)
-                                <tr id="row-{{ $user->id }}">
-                                    <td>{{ Str::upper($user->name) }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>{{ Str::upper(str_replace('_', ' ',$user->role)) }}</td>
-                                    <td>
-                                    @if($user->id !== Auth::id())
-                                    @if(!$user->is_primary || $user->id === Auth::id())
-                                        <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    @endif
-                                    @if(!$user->is_primary)
-                                        <button type="button" class="btn btn-sm btn-danger deleteUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    @else
-                                        <span class="btn btn-sm btn-success" style="cursor: default;" data-bs-toggle="tooltip" title="Protected">
-                                            <i class="fas fa-shield-alt"></i>
-                                        </span>
-                                    @endif
-                                    @else
-                                        <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-primary="{{ $user->is_primary ? 'true' : 'false' }}" data-bs-toggle="tooltip" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">
-                                        No Data Available
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>    
                 </div>
             </div>
         </div>
@@ -154,9 +157,11 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     try {
         var notOrderableColumns = [1, 3];
         var skipColumns = [0, 1, 3];
+
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
             order: [[0, 'asc']],
@@ -179,13 +184,13 @@ $(document).ready(function () {
                 this.api().columns().every(function () {
                     var column = this;
                     var columnIndex = column.index();
+
                     if (skipColumns.includes(columnIndex)) {
                         $(column.footer()).empty();
                         return;
                     }
-                    var select = $(
-                        '<select class="form-select"><option value=""></option></select>'
-                    )
+
+                    var select = $('<select class="form-select"><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
                     .on("change", function () {
                         var val = $.fn.dataTable.util.escapeRegex($(this).val());
@@ -193,6 +198,7 @@ $(document).ready(function () {
                         .search(val ? "^" + val + "$" : "", true, false)
                         .draw();
                     });
+
                     column.data().unique().sort().each(function (d, j) {
                         select.append(
                             '<option value="' + d + '">' + d + "</option>"
@@ -201,12 +207,15 @@ $(document).ready(function () {
                 });
             },
         });
+
         table.on('draw', function () {
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
+
     } catch (error) {
         console.error('DataTables initialization error:', error);
     }
+
     $('#togglePassword').click(function() {
         const passwordField = $('#password');
         const toggleIcon = $('#toggleIcon');
@@ -218,6 +227,7 @@ $(document).ready(function () {
             toggleIcon.removeClass('fa-eye-slash').addClass('fa-eye');
         }
     });
+
     $('#createNewUser').click(function () {
         $('#saveBtn').val("create-user");
         $('#user_id').val('');
@@ -230,50 +240,21 @@ $(document).ready(function () {
         $('#toggleIcon').removeClass('fa-eye-slash').addClass('fa-eye');
         $('#userModal').modal('show');
     });
-    $('body').on('click', '.editUser', function () {
-        var user_id = $(this).data('id');
-        Swal.fire({
-            title: 'Loading Data...',
-            text: 'Please wait a moment',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        $.get("{{ route('users.index') }}" + '/' + user_id + '/edit', function (data) {
-            Swal.close();
-            $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">User</span>');
-            $('#saveBtn').val("edit-user");
-            $('#userModal').modal('show');
-            $('#user_id').val(data.id);
-            $('#name').val(data.name);
-            $('#email').val(data.email);
-            $('#password').val('').attr('type', 'password');
-            $('#password').prop('required', false);
-            $('#passwordRequired').hide();
-            $('#passwordHelp').show();
-            $('#togglePassword').show();
-            $('#toggleIcon').removeClass('fa-eye-slash').addClass('fa-eye');
-            $('#role').val(data.role);
-        }).fail(function(xhr) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Failed to Load Data',
-                text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve user information. Please try again.',
-                confirmButtonColor: '#d33'
-            });
-        });
-    });
+
     $('#saveBtn').click(function (e) {
         e.preventDefault();
+
         var formData = new FormData($('#userForm')[0]);
         var user_id = $('#user_id').val();
         var url = user_id ? "{{ route('users.index') }}" + '/' + user_id : "{{ route('users.store') }}";
         var actionText = user_id ? 'updated' : 'added';
+
         if (user_id) {
             formData.append('_method', 'PUT');
         }
+
         $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
+
         $.ajax({
             type: 'POST',
             url: url,
@@ -284,6 +265,7 @@ $(document).ready(function () {
                 $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                 $('#userForm').trigger("reset");
                 $('#userModal').modal('hide');
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Success!',
@@ -296,19 +278,23 @@ $(document).ready(function () {
             },
             error: function(response) {
                 $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
+
                 if (response.status === 422) {
                     var errors = response.responseJSON.errors;
                     var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';    
+
                     $.each(errors, function(key, value) {
                         errorList += '<li>' + value[0] + '</li>';
                     });
                     errorList += '</ul>';
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Validation Error',
                         html: errorList,
                         confirmButtonColor: '#d33'
                     });
+
                 } else if (response.status === 403) {
                     Swal.fire({
                         icon: 'error',
@@ -316,6 +302,7 @@ $(document).ready(function () {
                         text: response.responseJSON?.error || 'You do not have permission to perform this action.',
                         confirmButtonColor: '#d33'
                     });
+
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -327,9 +314,81 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#clearBtn').click(function(e) {
+        e.preventDefault();
+
+        Swal.fire({
+            title: 'Clear Form?',
+            text: "All unsaved data will be lost!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Clear',
+            cancelButtonText: 'Cancel',
+            reverseButtons: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#userForm').trigger("reset");
+                $('#container').val('');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cleared!',
+                    text: 'Form has been cleared.',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
+        });
+    });
+
+    $('body').on('click', '.editUser', function () {
+        var user_id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Loading Data...',
+            text: 'Please wait a moment',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.get("{{ route('users.index') }}" + '/' + user_id + '/edit', function (data) {
+            Swal.close();
+
+            $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">User</span>');
+            $('#saveBtn').val("edit-user");
+
+            $('#userModal').modal('show');
+
+            $('#user_id').val(data.id);
+            $('#name').val(data.name);
+            $('#email').val(data.email);
+            $('#password').val('').attr('type', 'password');
+            $('#password').prop('required', false);
+            $('#passwordRequired').hide();
+            $('#passwordHelp').show();
+            $('#togglePassword').show();
+            $('#toggleIcon').removeClass('fa-eye-slash').addClass('fa-eye');
+            $('#role').val(data.role);
+
+        }).fail(function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Load Data',
+                text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve user information. Please try again.',
+                confirmButtonColor: '#d33'
+            });
+        });
+    });
+
     $('body').on('click', '.deleteUser', function () {
         var user_id = $(this).data("id");
         var row = $('#row-' + user_id);        
+
         Swal.fire({
             title: 'Are you sure?',
             text: "This action cannot be undone!",
@@ -339,9 +398,10 @@ $(document).ready(function () {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, Delete',
             cancelButtonText: 'Cancel',
-            reverseButtons: true
+            reverseButtons: false
         }).then((result) => {
             if (result.isConfirmed) {
+
                 Swal.fire({
                     title: 'Deleting Data...',
                     text: 'Please wait a moment',
@@ -351,6 +411,7 @@ $(document).ready(function () {
                         Swal.showLoading();
                     }
                 });
+
                 $.ajax({
                     type: "DELETE",
                     url: "{{ route('users.index') }}" + '/' + user_id,
@@ -358,6 +419,7 @@ $(document).ready(function () {
                         row.fadeOut(300, function() {
                             table.row($(this)).remove().draw(false);
                         });
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Deleted!',

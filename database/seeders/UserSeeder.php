@@ -17,5 +17,37 @@ class UserSeeder extends Seeder
             'role' => 'super_admin',
             'is_primary' => true,
         ]);
+
+        User::create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@infinity-sby.com',
+            'password' => Hash::make('admin'),
+            'role' => 'super_admin',
+            'is_primary' => false,
+        ]);
+
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@infinity-sby.com',
+            'password' => Hash::make('admin'),
+            'role' => 'admin',
+            'is_primary' => false,
+        ]);
+
+        User::create([
+            'name' => 'Guest Marketing',
+            'email' => 'guestmarketing@infinity-sby.com',
+            'password' => Hash::make('guest'),
+            'role' => 'marketing',
+            'is_primary' => false,
+        ]);
+
+        User::create([
+            'name' => 'Guest',
+            'email' => 'guest@infinity-sby.com',
+            'password' => Hash::make('guest'),
+            'role' => 'guest',
+            'is_primary' => false,
+        ]);
     }
 }
