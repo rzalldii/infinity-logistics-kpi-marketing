@@ -38,9 +38,6 @@ class ShipperController extends Controller
     public function edit($id): JsonResponse
     {
         $shipper = Shipper::findOrFail($id);
-        if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized!'], 403);
-        }
         return response()->json($shipper);
     }
 

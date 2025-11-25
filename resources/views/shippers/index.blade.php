@@ -25,9 +25,8 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
                                             <span class="fw-mediumbold">New</span>
-                                            <span class="fw-light">Shippers</span>
+                                            <span class="fw-light">Shipper</span>
                                         </h5>
-                                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                                     </div>
                                     <div class="modal-body">
                                         <form id="shipperForm">
@@ -36,44 +35,69 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label>Shipper Name <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="shipper_name">Shipper Name <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="shipper_name" id="shipper_name" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label>City Name <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="city_name">City Name <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="city_name" id="city_name" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Contact Person</label>
+                                                        <label class="form-label" for="contact_person">Contact Person</label>
                                                         <input type="text" class="form-control" name="contact_person" id="contact_person"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Phone Number</label>
+                                                        <label class="form-label" for="phone_number">Phone Number</label>
                                                         <input type="text" class="form-control" name="phone_number" id="phone_number"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Email Address</label>
+                                                        <label class="form-label" for="email_address">Email Address</label>
                                                         <input type="email" class="form-control" name="email_address" id="email_address"/>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
+                                                <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Input Date <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="export">Export</label>
+                                                        <input type="text" class="form-control" id="export"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="import">Import</label>
+                                                        <input type="text" class="form-control" id="import"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="domestic">Domestic</label>
+                                                        <input type="text" class="form-control" id="domestic"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="commodity">Commodity</label>
+                                                        <input type="text" class="form-control" id="commodity"/>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" name="remarks" id="remarks">
+                                                <div class="col-md-6">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="input">Input Date <span class="text-danger">*</span></label>
                                                         <input type="date" class="form-control" name="input" id="input" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label>Remarks</label>
-                                                        <textarea class="form-control" name="remarks" id="remarks" rows="6"></textarea>
+                                                        <label class="form-label" for="notes">Remarks</label>
+                                                        <textarea class="form-control" id="notes" rows="3"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -93,6 +117,93 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
+                        <div class="modal fade" id="Viewshipper" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header border-0">
+                                        <h5 class="modal-title" id="modalTitle">
+                                            <span class="fw-mediumbold">Detail</span>
+                                            <span class="fw-light">Shipper</span>
+                                        </h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_shipper_name">Shipper Name</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_name" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_city_name">City Name</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_city_name" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_contact_person">Contact Person</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_contact_person" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_phone_number">Phone Number</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_phone_number" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_email_address">Email Address</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_email_address" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_export">Export</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_export" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_import">Import</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_import" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_domestic">Domestic</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_domestic" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_commodity">Commodity</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_commodity" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_input_date">Input Date</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_input_date" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_notes">Remarks</label>
+                                                    <textarea class="form-control-plaintext" id="view_notes" rows="2" readonly></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-0">
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                                            <i class="fas fa-window-close"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table id="multi-filter-select" class="display table table-striped table-hover">
                                 <thead class="text-center">
@@ -100,10 +211,8 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                         <th>SHIPPER</th>
                                         <th>CITY</th>
                                         <th>CP</th>
-                                        <th>PHONE</th>
-                                        <th>EMAIL</th>
                                         <th>INPUT</th>
-                                        <th>REMARKS</th>
+                                        <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <th>CREATED</th>
                                         @endif
@@ -117,10 +226,8 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                         <th>SHIPPER</th>
                                         <th>CITY</th>
                                         <th>CP</th>
-                                        <th>PHONE</th>
-                                        <th>EMAIL</th>
                                         <th>INPUT</th>
-                                        <th>REMARKS</th>
+                                        <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <th>CREATED</th>
                                         @endif
@@ -143,35 +250,11 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                             </span>
                                             @endif
                                         </td>
-                                        <td>
-                                            @if($shipper->phone_number)
-                                            {{ $shipper->phone_number }}
-                                            @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($shipper->email_address)
-                                            {{ $shipper->email_address }}
-                                            @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
-                                            @endif
-                                        </td>
                                         <td>{{ \Carbon\Carbon::parse($shipper->input)->format('d/m/y') }}</td>
                                         <td>
-                                            @if($shipper->remarks)
-                                            <button type="button" class="btn btn-sm btn-info viewRemarks" data-remarks="{{ $shipper->remarks }}" data-bs-toggle="tooltip" title="View">
+                                            <button type="button" class="btn btn-sm btn-info viewShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
-                                            @endif
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <td>{{ Str::upper($shipper->user->name) }}</td>
@@ -195,7 +278,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 9 @elseif(Auth::user()->isMarketing()) 8 @else 7 @endif" class="text-center">
+                                        <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 7 @elseif(Auth::user()->isMarketing()) 6 @else 5 @endif" class="text-center">
                                             No Data Available
                                         </td>
                                     </tr>
@@ -223,28 +306,71 @@ $(document).ready(function () {
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
 
+    function combineRemarksData() {
+        var exportVal = $('#export').val() || '';
+        var importVal = $('#import').val() || '';
+        var domesticVal = $('#domestic').val() || '';
+        var commodityVal = $('#commodity').val() || '';
+        var notesVal = $('#notes').val() || '';
+
+        var remarksData = 'Export : ' + exportVal + '\n' +
+                         'Import : ' + importVal + '\n' +
+                         'Domestic : ' + domesticVal + '\n' +
+                         'Commodity : ' + commodityVal + '\n' +
+                         'Notes : ' + notesVal;
+
+        $('#remarks').val(remarksData);
+    }
+
+    function parseRemarksData(remarksText) {
+        var lines = remarksText.split('\n');
+        var data = {
+            export: '',
+            import: '',
+            domestic: '',
+            commodity: '',
+            notes: ''
+        };
+
+        lines.forEach(function(line) {
+            if (line.startsWith('Export :')) {
+                data.export = line.replace('Export :', '').trim();
+            } else if (line.startsWith('Import :')) {
+                data.import = line.replace('Import :', '').trim();
+            } else if (line.startsWith('Domestic :')) {
+                data.domestic = line.replace('Domestic :', '').trim();
+            } else if (line.startsWith('Commodity :')) {
+                data.commodity = line.replace('Commodity :', '').trim();
+            } else if (line.startsWith('Notes :')) {
+                data.notes = line.replace('Notes :', '').trim();
+            }
+        });
+
+        return data;
+    }
+
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [3, 4, 6, 8];
+            notOrderableColumns = [2, 4, 6];
         } else if (hasActionColumn) {
-            notOrderableColumns = [3, 4, 6, 7];
+            notOrderableColumns = [2, 4, 5];
         } else {
-            notOrderableColumns = [3, 4, 6];
+            notOrderableColumns = [2, 4];
         }
 
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [0, 2, 3, 4, 5, 6, 8];
+            skipColumns = [0, 2, 3, 4, 6];
         } else if (hasActionColumn) {
-            skipColumns = [0, 2, 3, 4, 5, 6, 7];
+            skipColumns = [0, 2, 3, 4, 5];
         } else {
-            skipColumns = [0, 2, 3, 4, 5, 6];
+            skipColumns = [0, 2, 3, 4];
         }
 
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
-            order: [[5, 'desc']],
+            order: [[3, 'desc']],
             columnDefs: [
                 { orderable: false, targets: notOrderableColumns }
             ],
@@ -296,39 +422,82 @@ $(document).ready(function () {
         console.error('DataTables initialization error:', error);
     }
 
-    $('body').on('click', '.viewRemarks', function () {
-        var remarks = $(this).data('remarks');
+    $('body').on('click', '.viewShipper', function () {
+        var shipper_id = $(this).data('id');
+        
         Swal.fire({
-            title: 'Remarks',
-            html: '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 15px; background-color: #f8f9fa; border-radius: 4px; border-left: 4px solid #3085d6; line-height: 1.6;">' + remarks.replace(/\n/g, '<br>') + '</div>',
-            icon: 'info',
-            width: '600px',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Close',
-            allowOutsideClick: false
+            title: 'Loading Data...',
+            text: 'Please wait a moment',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.get("{{ route('shippers.index') }}" + '/' + shipper_id + '/edit', function (data) {
+            Swal.close();
+
+            $('#view_shipper_name').val(data.shipper_name || '-');
+            $('#view_city_name').val(data.city_name || '-');
+            $('#view_contact_person').val(data.contact_person || '-');
+            $('#view_phone_number').val(data.phone_number || '-');
+            $('#view_email_address').val(data.email_address || '-');
+
+            if (data.input) {
+                var inputDate = new Date(data.input);
+                var formattedDate = inputDate.getDate().toString().padStart(2, '0') + '/' + 
+                                  (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
+                                  inputDate.getFullYear();
+                $('#view_input_date').val(formattedDate);
+            } else {
+                $('#view_input_date').val('-');
+            }
+
+            if (data.remarks) {
+                var parsedData = parseRemarksData(data.remarks);
+                $('#view_export').val(parsedData.export || '-');
+                $('#view_import').val(parsedData.import || '-');
+                $('#view_domestic').val(parsedData.domestic || '-');
+                $('#view_commodity').val(parsedData.commodity || '-');
+                $('#view_notes').val(parsedData.notes || '-');
+            } else {
+                $('#view_export').val('-');
+                $('#view_import').val('-');
+                $('#view_domestic').val('-');
+                $('#view_commodity').val('-');
+                $('#view_notes').val('-');
+            }
+
+            $('#Viewshipper').modal('show');
+
+        }).fail(function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Load Data',
+                text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve shipper information.',
+                confirmButtonColor: '#d33'
+            });
         });
     });
 
     if (hasActionColumn) {
-        $('#shipperModal').on('shown.bs.modal', function (e) {
-            if ($('#saveBtn').val() === 'create-shipper') {
-                var remarksTemplate = 'Export : \nImport : \nDomestic : \nCommodity : \nNotes : ';
-                $('#remarks').val(remarksTemplate);
-            }
-        });
-
-        var originalRemarks = 'Export : \nImport : \nDomestic : \nCommodity : \nNotes : ';
-
         $('#createNewShipper').click(function () {
             $('#saveBtn').val("create-shipper");
             $('#shipper_id').val('');
             $('#shipperForm').trigger("reset");
+            $('#export').val('');
+            $('#import').val('');
+            $('#domestic').val('');
+            $('#commodity').val('');
+            $('#notes').val('');
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Shipper</span>');
             $('#shipperModal').modal('show');
         });
 
         $('#saveBtn').click(function (e) {
             e.preventDefault();
+
+            combineRemarksData();
 
             var formData = new FormData($('#shipperForm')[0]);
             var shipper_id = $('#shipper_id').val();
@@ -417,13 +586,11 @@ $(document).ready(function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     $('#shipperForm').trigger("reset");
-                    $('#container').val('');
-                    if ($('#saveBtn').val() === 'create-shipper') {
-                        var remarksTemplate = 'Export : \nImport : \nDomestic : \nCommodity : \nNotes : ';
-                        $('#remarks').val(remarksTemplate);
-                    } else {
-                        $('#remarks').val(originalRemarks);
-                    }
+                    $('#export').val('');
+                    $('#import').val('');
+                    $('#domestic').val('');
+                    $('#commodity').val('');
+                    $('#notes').val('');
 
                     Swal.fire({
                         icon: 'success',
@@ -469,7 +636,14 @@ $(document).ready(function () {
                                         String(inputDate.getDate()).padStart(2, '0');
                     $('#input').val(formattedDate);
                 }
-                $('#remarks').val(data.remarks);
+                if (data.remarks) {
+                    var parsedData = parseRemarksData(data.remarks);
+                    $('#export').val(parsedData.export);
+                    $('#import').val(parsedData.import);
+                    $('#domestic').val(parsedData.domestic);
+                    $('#commodity').val(parsedData.commodity);
+                    $('#notes').val(parsedData.notes);
+                }
 
             }).fail(function(xhr) {
                 Swal.fire({

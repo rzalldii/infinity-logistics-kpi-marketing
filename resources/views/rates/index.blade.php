@@ -25,9 +25,8 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
                                             <span class="fw-mediumbold">New</span>
-                                            <span class="fw-light">Rates</span>
+                                            <span class="fw-light">Rate</span>
                                         </h5>
-                                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                                     </div>
                                     <div class="modal-body">
                                         <form id="rateForm">
@@ -36,19 +35,19 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label>Port Of Loading <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="pol">Port Of Loading <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="pol" id="pol" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label>Port Of Destination <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="pod">Port Of Destination <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="pod" id="pod" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Container Type <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="container">Container Type <span class="text-danger">*</span></label>
                                                         <select class="form-select" name="container" id="container" required>
                                                             <option value="" disabled selected>Select Container Type</option>
                                                             <option value="GP">GP</option>
@@ -58,32 +57,39 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Container 20FT</label>
+                                                        <label class="form-label" for="container_20">Container 20FT</label>
                                                         <input type="number" class="form-control" name="container_20" id="container_20"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Container 40FT</label>
+                                                        <label class="form-label" for="container_40">Container 40FT</label>
                                                         <input type="number" class="form-control" name="container_40" id="container_40"/>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Liner / Forwarding <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="liner">Liner / Forwarding <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="liner" id="liner" required/>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label>Validity Date <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="free">Free Time</label>
+                                                        <input type="text" class="form-control" id="free"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="valid">Validity Date <span class="text-danger">*</span></label>
                                                         <input type="date" class="form-control" name="valid" id="valid" required/>
                                                     </div>
                                                 </div>
+                                                <input type="hidden" name="notes" id="notes">
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label>Notes</label>
-                                                        <textarea class="form-control" name="notes" id="notes" rows="6"></textarea>
+                                                        <label class="form-label" for="remarks">Notes</label>
+                                                        <textarea class="form-control" id="remarks" rows="6"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -103,18 +109,91 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
+                        <div class="modal fade" id="Viewrate" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header border-0">
+                                        <h5 class="modal-title" id="modalTitle">
+                                            <span class="fw-mediumbold">Detail</span>
+                                            <span class="fw-light">Rate</span>
+                                        </h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_pol">Port Of Loading</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_pol" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_pod">Port Of Destination</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_pod" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_container">Container Type</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_container" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_container_20">Container 20FT</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_container_20" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_container_40">Container 40FT</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_container_40" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_liner">Liner / Forwarding</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_liner" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_free">Free Time</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_free" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_valid_date">Validity Date</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_valid_date" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_remarks">Notes</label>
+                                                    <textarea class="form-control-plaintext" id="view_remarks" rows="5" readonly></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-0">
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                                            <i class="fas fa-window-close"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table id="multi-filter-select" class="display table table-striped table-hover">
                                 <thead class="text-center">
                                     <tr>
-                                        <th>POL</th>
                                         <th>POD</th>
-                                        <th>CT</th>
                                         <th>20'</th>
                                         <th>40'</th>
                                         <th>LINER</th>
                                         <th>VALID</th>
-                                        <th>NOTES</th>
+                                        <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                             <th>CREATED</th>
                                         @endif
@@ -125,14 +204,12 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                 </thead>
                                 <tfoot class="text-center">
                                     <tr>
-                                        <th>POL</th>
                                         <th>POD</th>
-                                        <th>CT</th>
                                         <th>20'</th>
                                         <th>40'</th>
                                         <th>LINER</th>
                                         <th>VALID</th>
-                                        <th>NOTES</th>
+                                        <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <th>CREATED</th>
                                         @endif
@@ -144,9 +221,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                 <tbody class="text-center">
                                     @forelse($rates as $rate)
                                     <tr id="row-{{ $rate->id }}">
-                                        <td>{{ Str::upper($rate->pol) }}</td>
                                         <td>{{ Str::upper($rate->pod) }}</td>
-                                        <td>{{ $rate->container }}</td>
                                         <td>
                                             @if($rate->container_20)
                                             {{ number_format($rate->container_20) }}
@@ -168,15 +243,9 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                         <td>{{ Str::upper($rate->liner) }}</td>
                                         <td>{{ Str::upper(\Carbon\Carbon::parse($rate->valid)->format("M'y")) }}</td>
                                         <td>
-                                            @if($rate->notes)
-                                            <button type="button" class="btn btn-sm btn-info viewNotes" data-notes="{{ $rate->notes }}" data-bs-toggle="tooltip" title="View">
+                                            <button type="button" class="btn btn-sm btn-info viewRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
-                                            @endif
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <td>{{ Str::upper($rate->user->name) }}</td>
@@ -200,7 +269,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 10 @elseif(Auth::user()->isMarketing()) 9 @else 8 @endif" class="text-center">
+                                        <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 8 @elseif(Auth::user()->isMarketing()) 7 @else 6 @endif" class="text-center">
                                             No Data Available
                                         </td>
                                     </tr>
@@ -228,28 +297,60 @@ $(document).ready(function () {
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
 
+    function combineNotesData() {
+        var freeVal = $('#free').val() || '';
+        var remarksVal = $('#remarks').val() || '';
+        
+        var notesData = 'Free Time : ' + freeVal + '\n' +
+                       'Remarks : ' + remarksVal;
+
+        $('#notes').val(notesData);
+    }
+
+    function parseNotesData(notesText) {
+        var lines = notesText.split('\n');
+        var data = {
+            free: '',
+            remarks: ''
+        };
+
+        lines.forEach(function(line) {
+            if (line.startsWith('Free Time :')) {
+                data.free = line.replace('Free Time :', '').trim();
+            } else if (line.startsWith('Remarks :')) {
+                data.remarks = line.replace('Remarks :', '').trim();
+            }
+        });
+
+        return data;
+    }
+
+    function number_format(number) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    }
+
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [7, 9];
+            notOrderableColumns = [5, 7];
         } else if (hasActionColumn) {
-            notOrderableColumns = [7, 8];
+            notOrderableColumns = [5, 6];
         } else {
-            notOrderableColumns = [7];
+            notOrderableColumns = [5];
         }
 
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [2, 3, 4, 7, 9];
+            skipColumns = [1, 2, 5, 7];
         } else if (hasActionColumn) {
-            skipColumns = [2, 3, 4, 7, 8];
+            skipColumns = [1, 2, 5, 6];
         } else {
-            skipColumns = [2, 3, 4, 7];
+            skipColumns = [1, 2, 5];
         }
     
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
-            order: [[6, 'desc']],
+            order: [[4, 'desc']],
             columnDefs: [
                 { orderable: false, targets: notOrderableColumns }
             ],
@@ -301,39 +402,74 @@ $(document).ready(function () {
         console.error('DataTables initialization error:', error);
     }
 
-    $('body').on('click', '.viewNotes', function () {
-        var notes = $(this).data('notes');
+    $('body').on('click', '.viewRate', function () {
+        var rate_id = $(this).data('id');
+
         Swal.fire({
-            title: 'Notes',
-            html: '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 15px; background-color: #f8f9fa; border-radius: 4px; border-left: 4px solid #3085d6; line-height: 1.6;">' + notes.replace(/\n/g, '<br>') + '</div>',
-            icon: 'info',
-            width: '600px',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Close',
-            allowOutsideClick: false
+            title: 'Loading Data...',
+            text: 'Please wait a moment',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.get("{{ route('rates.index') }}" + '/' + rate_id + '/edit', function (data) {
+            Swal.close();
+
+            $('#view_pol').val(data.pol || '-');
+            $('#view_pod').val(data.pod || '-');
+            $('#view_container').val(data.container || '-');
+            $('#view_container_20').val(data.container_20 ? number_format(data.container_20) : '-');
+            $('#view_container_40').val(data.container_40 ? number_format(data.container_40) : '-');
+            $('#view_liner').val(data.liner || '-');
+
+            if (data.valid) {
+                var validDate = new Date(data.valid);
+                var formattedDate = validDate.getDate().toString().padStart(2, '0') + '/' + 
+                                  (validDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
+                                  validDate.getFullYear();
+                $('#view_valid_date').val(formattedDate);
+            } else {
+                $('#view_valid_date').val('-');
+            }
+
+            if (data.notes) {
+                var parsedData = parseNotesData(data.notes);
+                $('#view_free').val(parsedData.free || '-');
+                $('#view_remarks').val(parsedData.remarks || '-');
+            } else {
+                $('#view_free').val('-');
+                $('#view_remarks').val('-');
+            }
+
+            $('#Viewrate').modal('show');
+
+        }).fail(function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Load Data',
+                text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve rate information.',
+                confirmButtonColor: '#d33'
+            });
         });
     });
 
     if (hasActionColumn) {
-        $('#rateModal').on('shown.bs.modal', function (e) {
-            if ($('#saveBtn').val() === 'create-rate') {
-                var notesTemplate = 'Free Time : \nRemarks : ';
-                $('#notes').val(notesTemplate);
-            }
-        });
-
-        var originalNotes = 'Free Time : \nRemarks : ';
-
         $('#createNewRate').click(function () {
             $('#saveBtn').val("create-rate");
             $('#rate_id').val('');
             $('#rateForm').trigger("reset");
+            $('#free').val('');
+            $('#remarks').val('');
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Rate</span>');
             $('#rateModal').modal('show');
         });
 
         $('#saveBtn').click(function (e) {
             e.preventDefault();
+
+            combineNotesData();
 
             var formData = new FormData($('#rateForm')[0]);
             var rate_id = $('#rate_id').val();
@@ -423,12 +559,8 @@ $(document).ready(function () {
                 if (result.isConfirmed) {
                     $('#rateForm').trigger("reset");
                     $('#container').val('');
-                    if ($('#saveBtn').val() === 'create-rate') {
-                        var notesTemplate = 'Free Time : \nRemarks : ';
-                        $('#notes').val(notesTemplate);
-                    } else {
-                        $('#notes').val(originalNotes);
-                    }
+                    $('#free').val('');
+                    $('#remarks').val('');
 
                     Swal.fire({
                         icon: 'success',
@@ -475,7 +607,11 @@ $(document).ready(function () {
                                         String(validDate.getDate()).padStart(2, '0');
                     $('#valid').val(formattedDate);
                 }
-                $('#notes').val(data.notes);
+                if (data.notes) {
+                    var parsedData = parseNotesData(data.notes);
+                    $('#free').val(parsedData.free);
+                    $('#remarks').val(parsedData.remarks);
+                }
 
             }).fail(function(xhr) {
                 Swal.fire({

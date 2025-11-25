@@ -31,17 +31,31 @@ class RateController extends Controller
             'valid' => 'required|date',
             'notes' => 'nullable|string',
         ]);
-        $validated['user_id'] = Auth::id();
-        Rate::create($validated);
+        $pods = array_map('trim', explode(',', $validated['pod']));
+        $pods = array_filter($pods, function($pod) {
+            return !empty($pod);
+        });
+        foreach ($pods as $pod) {
+            Rate::create([
+                'pol' => $validated['pol'],
+                'pod' => $pod,
+                'container' => $validated['container'],
+                'container_20' => $validated['container_20'],
+                'container_40' => $validated['container_40'],
+                'liner' => $validated['liner'],
+                'valid' => $validated['valid'],
+                'notes' => $validated['notes'],
+                'user_id' => Auth::id(),
+            ]);
+        }
+        // $validated['user_id'] = Auth::id();
+        // Rate::create($validated);
         return response()->json(['success' => 'Data added successfully!']);
     }
 
     public function edit($id): JsonResponse
     {
         $rate = Rate::findOrFail($id);
-        if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized!'], 403);
-        }
         return response()->json($rate);
     }
 
@@ -62,6 +76,37 @@ class RateController extends Controller
             if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
                 return response()->json(['error' => 'You cannot edit other people\'s data!'], 403);
             }
+        }
+        if (strpos($validated['pod'], ',') !== false) {
+            $pods = array_map('trim', explode(',', $validated['pod']));
+            $pods = array_filter($pods, function($pod) {
+                return !empty($pod);
+            });
+            $rate->update([
+                'pol' => $validated['pol'],
+                'pod' => $pods[0],
+                'container' => $validated['container'],
+                'container_20' => $validated['container_20'],
+                'container_40' => $validated['container_40'],
+                'liner' => $validated['liner'],
+                'valid' => $validated['valid'],
+                'notes' => $validated['notes'],
+            ]);
+            for ($i = 1; $i < count($pods); $i++) {
+                Rate::create([
+                    'pol' => $validated['pol'],
+                    'pod' => $pods[$i],
+                    'container' => $validated['container'],
+                    'container_20' => $validated['container_20'],
+                    'container_40' => $validated['container_40'],
+                    'liner' => $validated['liner'],
+                    'valid' => $validated['valid'],
+                    'notes' => $validated['notes'],
+                    'user_id' => Auth::id(),
+                    // 'user_id' => $rate->user_id,
+                ]);
+            }
+            return response()->json();
         }
         $rate->update($validated);
         return response()->json(['success' => 'Data updated successfully!']);
