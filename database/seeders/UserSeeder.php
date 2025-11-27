@@ -43,6 +43,14 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
+            'name' => 'Guest Marketing 1',
+            'email' => 'guestmarketing1@infinity-sby.com',
+            'password' => Hash::make('guest'),
+            'role' => 'marketing',
+            'is_primary' => false,
+        ]);
+
+        User::create([
             'name' => 'Guest',
             'email' => 'guest@infinity-sby.com',
             'password' => Hash::make('guest'),

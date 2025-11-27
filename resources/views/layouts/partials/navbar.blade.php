@@ -45,11 +45,11 @@
                             <p>Touch Shippers</p>
                         </a>
                     </li>
-                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                     <li class="nav-item">
-                        <a href="/reports">
+                        <a href="/activities">
                             <i class="fas fa-book-open"></i>
-                            <p>Report Marketing</p>
+                            <p>Report Activities</p>
                         </a>
                     </li>
                     @endif

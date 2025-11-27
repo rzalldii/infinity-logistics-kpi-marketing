@@ -23,12 +23,17 @@ class ShipperController extends Controller
     {
         $validated = $request->validate([
             'shipper_name' => 'required|string|max:255',
-            'city_name' => 'required|string|max:255',
+            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL / TRANSPORTER',
+            'shipper_city' => 'required|string|max:255',
+            'shipper_address' => 'nullable|string|max:255',
             'contact_person' => 'nullable|string|max:255',
             'phone_number' => 'nullable|string|max:20',
             'email_address' => 'nullable|email|max:255',
-            'input' => 'required|string|max:255',
-            'remarks' => 'nullable|string',
+            'export' => 'nullable|string|max:255',
+            'import' => 'nullable|string|max:255',
+            'domestic' => 'nullable|string|max:255',
+            'commodity' => 'nullable|string|max:255',
+            'input_date' => 'required|date',
         ]);
         $validated['user_id'] = Auth::id();
         Shipper::create($validated);
@@ -46,12 +51,17 @@ class ShipperController extends Controller
         $shipper = Shipper::findOrFail($id);
         $validated = $request->validate([
             'shipper_name' => 'required|string|max:255',
-            'city_name' => 'required|string|max:255',
+            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL / TRANSPORTER',
+            'shipper_city' => 'required|string|max:255',
+            'shipper_address' => 'nullable|string|max:255',
             'contact_person' => 'nullable|string|max:255',
             'phone_number' => 'nullable|string|max:20',
             'email_address' => 'nullable|email|max:255',
-            'input' => 'required|string|max:255',
-            'remarks' => 'nullable|string',
+            'export' => 'nullable|string|max:255',
+            'import' => 'nullable|string|max:255',
+            'domestic' => 'nullable|string|max:255',
+            'commodity' => 'nullable|string|max:255',
+            'input_date' => 'required|date',
         ]);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {

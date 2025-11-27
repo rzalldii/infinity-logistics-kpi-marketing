@@ -14,18 +14,17 @@ class Rate extends Model
         'user_id',
         'pol',
         'pod',
-        'container',
+        'container_type',
         'container_20',
         'container_40',
         'liner',
-        'valid',
+        'free_time',
+        'valid_date',
         'notes',
     ];
 
     protected $casts = [
-        'container_20' => 'decimal:2',
-        'container_40' => 'decimal:2',
-        'valid' => 'date',
+        'valid_date' => 'date',
     ];
 
     public function user()

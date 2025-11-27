@@ -19,8 +19,8 @@ Checking Rates | Admin Infinity Logistics Indonesia
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="modal fade" id="rateModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg">
+                        <div class="modal fade" id="rateModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -47,24 +47,26 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="container">Container Type <span class="text-danger">*</span></label>
-                                                        <select class="form-select" name="container" id="container" required>
+                                                        <label class="form-label" for="container_type">Container Type <span class="text-danger">*</span></label>
+                                                        <select class="form-select" name="container_type" id="container_type" required>
                                                             <option value="" disabled selected>Select Container Type</option>
                                                             <option value="GP">GP</option>
                                                             <option value="RF">RF</option>
+                                                            <option value="OT">OT</option>
+                                                            <option value="HC">HC</option>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="container_20">Container 20FT</label>
-                                                        <input type="number" class="form-control" name="container_20" id="container_20"/>
+                                                        <input type="text" class="form-control" name="container_20" id="container_20"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="container_40">Container 40FT</label>
-                                                        <input type="number" class="form-control" name="container_40" id="container_40"/>
+                                                        <input type="text" class="form-control" name="container_40" id="container_40"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -75,21 +77,20 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="free">Free Time</label>
-                                                        <input type="text" class="form-control" id="free"/>
+                                                        <label class="form-label" for="free_time">Free Time</label>
+                                                        <input type="text" class="form-control" name="free_time" id="free_time"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="valid">Validity Date <span class="text-danger">*</span></label>
-                                                        <input type="date" class="form-control" name="valid" id="valid" required/>
+                                                        <label class="form-label" for="valid_date">Valid Date <span class="text-danger">*</span></label>
+                                                        <input type="date" class="form-control" name="valid_date" id="valid_date" required/>
                                                     </div>
                                                 </div>
-                                                <input type="hidden" name="notes" id="notes">
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="remarks">Notes</label>
-                                                        <textarea class="form-control" id="remarks" rows="6"></textarea>
+                                                        <label class="form-label" for="notes">Notes</label>
+                                                        <textarea class="form-control" name="notes" id="notes" rows="6"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -109,8 +110,8 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="Viewrate" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg">
+                        <div class="modal fade" id="Viewrate" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -134,8 +135,8 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_container">Container Type</label>
-                                                    <input type="text" class="form-control-plaintext" id="view_container" readonly/>
+                                                    <label class="form-label" for="view_container_type">Container Type</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_container_type" readonly/>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -158,20 +159,20 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_free">Free Time</label>
-                                                    <input type="text" class="form-control-plaintext" id="view_free" readonly/>
+                                                    <label class="form-label" for="view_free_time">Free Time</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_free_time" readonly/>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_valid_date">Validity Date</label>
+                                                    <label class="form-label" for="view_valid_date">Valid Date</label>
                                                     <input type="text" class="form-control-plaintext" id="view_valid_date" readonly/>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_remarks">Notes</label>
-                                                    <textarea class="form-control-plaintext" id="view_remarks" rows="5" readonly></textarea>
+                                                    <label class="form-label" for="view_notes">Notes</label>
+                                                    <textarea class="form-control-plaintext" id="view_notes" rows="5" readonly></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -195,10 +196,10 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                         <th>VALID</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                            <th>CREATED</th>
+                                        <th>CREATED</th>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                            <th>ACTION</th>
+                                        <th>ACTION</th>
                                         @endif
                                     </tr>
                                 </thead>
@@ -241,7 +242,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                             @endif
                                         </td>
                                         <td>{{ Str::upper($rate->liner) }}</td>
-                                        <td>{{ Str::upper(\Carbon\Carbon::parse($rate->valid)->format("M'y")) }}</td>
+                                        <td>{{ Str::upper(\Carbon\Carbon::parse($rate->valid_date)->format("M y")) }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info viewRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
@@ -296,38 +297,6 @@ $(document).ready(function () {
     var userRole = "{{ Auth::user()->role }}";
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
-
-    function combineNotesData() {
-        var freeVal = $('#free').val() || '';
-        var remarksVal = $('#remarks').val() || '';
-        
-        var notesData = 'Free Time : ' + freeVal + '\n' +
-                       'Remarks : ' + remarksVal;
-
-        $('#notes').val(notesData);
-    }
-
-    function parseNotesData(notesText) {
-        var lines = notesText.split('\n');
-        var data = {
-            free: '',
-            remarks: ''
-        };
-
-        lines.forEach(function(line) {
-            if (line.startsWith('Free Time :')) {
-                data.free = line.replace('Free Time :', '').trim();
-            } else if (line.startsWith('Remarks :')) {
-                data.remarks = line.replace('Remarks :', '').trim();
-            }
-        });
-
-        return data;
-    }
-
-    function number_format(number) {
-        return new Intl.NumberFormat('id-ID').format(number);
-    }
 
     try {
         var notOrderableColumns;
@@ -419,13 +388,14 @@ $(document).ready(function () {
 
             $('#view_pol').val(data.pol || '-');
             $('#view_pod').val(data.pod || '-');
-            $('#view_container').val(data.container || '-');
-            $('#view_container_20').val(data.container_20 ? number_format(data.container_20) : '-');
-            $('#view_container_40').val(data.container_40 ? number_format(data.container_40) : '-');
+            $('#view_container_type').val(data.container_type || '-');
+            $('#view_container_20').val(data.container_20 || '-');
+            $('#view_container_40').val(data.container_40 || '-');
             $('#view_liner').val(data.liner || '-');
+            $('#view_free_time').val(data.free_time || '-');
 
-            if (data.valid) {
-                var validDate = new Date(data.valid);
+            if (data.valid_date) {
+                var validDate = new Date(data.valid_date);
                 var formattedDate = validDate.getDate().toString().padStart(2, '0') + '/' + 
                                   (validDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
                                   validDate.getFullYear();
@@ -434,13 +404,8 @@ $(document).ready(function () {
                 $('#view_valid_date').val('-');
             }
 
-            if (data.notes) {
-                var parsedData = parseNotesData(data.notes);
-                $('#view_free').val(parsedData.free || '-');
-                $('#view_remarks').val(parsedData.remarks || '-');
-            } else {
-                $('#view_free').val('-');
-                $('#view_remarks').val('-');
+            if ($('#view_notes').length) {
+                $('#view_notes').val(data.notes || '-');
             }
 
             $('#Viewrate').modal('show');
@@ -460,16 +425,12 @@ $(document).ready(function () {
             $('#saveBtn').val("create-rate");
             $('#rate_id').val('');
             $('#rateForm').trigger("reset");
-            $('#free').val('');
-            $('#remarks').val('');
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Rate</span>');
             $('#rateModal').modal('show');
         });
 
         $('#saveBtn').click(function (e) {
             e.preventDefault();
-
-            combineNotesData();
 
             var formData = new FormData($('#rateForm')[0]);
             var rate_id = $('#rate_id').val();
@@ -558,9 +519,6 @@ $(document).ready(function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     $('#rateForm').trigger("reset");
-                    $('#container').val('');
-                    $('#free').val('');
-                    $('#remarks').val('');
 
                     Swal.fire({
                         icon: 'success',
@@ -596,22 +554,19 @@ $(document).ready(function () {
                 $('#rate_id').val(data.id);
                 $('#pol').val(data.pol);
                 $('#pod').val(data.pod);
-                $('#container').val(data.container);
+                $('#container_type').val(data.container_type);
                 $('#container_20').val(data.container_20);
                 $('#container_40').val(data.container_40);
                 $('#liner').val(data.liner);
-                if (data.valid) {
-                    var validDate = new Date(data.valid);
+                $('#free_time').val(data.free_time);
+                if (data.valid_date) {
+                    var validDate = new Date(data.valid_date);
                     var formattedDate = validDate.getFullYear() + '-' + 
                                         String(validDate.getMonth() + 1).padStart(2, '0') + '-' + 
                                         String(validDate.getDate()).padStart(2, '0');
-                    $('#valid').val(formattedDate);
+                    $('#valid_date').val(formattedDate);
                 }
-                if (data.notes) {
-                    var parsedData = parseNotesData(data.notes);
-                    $('#free').val(parsedData.free);
-                    $('#remarks').val(parsedData.remarks);
-                }
+                $('#notes').val(data.notes);
 
             }).fail(function(xhr) {
                 Swal.fire({

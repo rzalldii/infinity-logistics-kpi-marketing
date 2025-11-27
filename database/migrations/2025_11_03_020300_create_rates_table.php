@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('pol');
             $table->string('pod');
-            $table->string('container');
-            $table->decimal('container_20', 10, 2)->nullable();
-            $table->decimal('container_40', 10, 2)->nullable();
+            $table->enum('container_type', ['GP', 'RF','OT','HC']);
+            $table->string('container_20', 10)->nullable();
+            $table->string('container_40', 10)->nullable();
             $table->string('liner');
-            $table->date('valid');
-            $table->text('notes')->nullable();
+            $table->string('free_time')->nullable();
+            $table->date('valid_date');
+            $table->string('notes')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

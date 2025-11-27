@@ -13,16 +13,21 @@ class Shipper extends Model
     protected $fillable = [
         'user_id',
         'shipper_name',
-        'city_name',
+        'shipper_type',
+        'shipper_city',
+        'shipper_address',
         'contact_person',
         'phone_number',
         'email_address',
-        'input',
-        'remarks',
+        'export',
+        'import',
+        'domestic',
+        'commodity',
+        'input_date',
     ];
 
     protected $casts = [
-        'input' => 'date',
+        'input_date' => 'date',
     ];
 
     public function user()

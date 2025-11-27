@@ -19,8 +19,8 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="modal fade" id="shipperModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg">
+                        <div class="modal fade" id="shipperModal" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -41,8 +41,26 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="city_name">City Name <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="city_name" id="city_name" required/>
+                                                        <label class="form-label" for="shipper_type">Shipper Type <span class="text-danger">*</span></label>
+                                                        <select class="form-select" name="shipper_type" id="shipper_type" required>
+                                                            <option value="" disabled selected>Select Shipper Type</option>
+                                                            <option value="DIRECT SHIPPER">DIRECT SHIPPER</option>
+                                                            <option value="FORWARDING">FORWARDING</option>
+                                                            <option value="TRADING">TRADING</option>
+                                                            <option value="EMKL / TRANSPORTER">EMKL / TRANSPORTER</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="shipper_city">Shipper City <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" name="shipper_city" id="shipper_city" required/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="shipper_address">Shipper Address</label>
+                                                        <input type="text" class="form-control" name="shipper_address" id="shipper_address"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -66,38 +84,31 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="export">Export</label>
-                                                        <input type="text" class="form-control" id="export"/>
+                                                        <input type="text" class="form-control" name="export" id="export"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="import">Import</label>
-                                                        <input type="text" class="form-control" id="import"/>
+                                                        <input type="text" class="form-control" name="import" id="import"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="domestic">Domestic</label>
-                                                        <input type="text" class="form-control" id="domestic"/>
+                                                        <input type="text" class="form-control" name="domestic" id="domestic"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="commodity">Commodity</label>
-                                                        <input type="text" class="form-control" id="commodity"/>
+                                                        <input type="text" class="form-control" name="commodity" id="commodity"/>
                                                     </div>
                                                 </div>
-                                                <input type="hidden" name="remarks" id="remarks">
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="input">Input Date <span class="text-danger">*</span></label>
-                                                        <input type="date" class="form-control" name="input" id="input" required/>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group form-group-default">
-                                                        <label class="form-label" for="notes">Remarks</label>
-                                                        <textarea class="form-control" id="notes" rows="3"></textarea>
+                                                        <label class="form-label" for="input_date">Input Date <span class="text-danger">*</span></label>
+                                                        <input type="date" class="form-control" name="input_date" id="input_date" value="{{ date('Y-m-d') }}" required/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -117,8 +128,8 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="Viewshipper" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg">
+                        <div class="modal fade" id="Viewshipper" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -136,8 +147,20 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_city_name">City Name</label>
-                                                    <input type="text" class="form-control-plaintext" id="view_city_name" readonly/>
+                                                    <label class="form-label" for="view_shipper_type">Shipper Type</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_type" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_shipper_city">Shipper City</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_city" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_shipper_address">Shipper Address</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_address" readonly/>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -188,12 +211,6 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                     <input type="text" class="form-control-plaintext" id="view_input_date" readonly/>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_notes">Remarks</label>
-                                                    <textarea class="form-control-plaintext" id="view_notes" rows="2" readonly></textarea>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer border-0">
@@ -240,7 +257,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                     @forelse($shippers as $shipper)
                                     <tr id="row-{{ $shipper->id }}">
                                         <td>{{ Str::upper($shipper->shipper_name) }}</td>
-                                        <td>{{ Str::upper($shipper->city_name) }}</td>
+                                        <td>{{ Str::upper($shipper->shipper_city) }}</td>
                                         <td>
                                             @if($shipper->contact_person)
                                             {{ Str::upper($shipper->contact_person) }}
@@ -250,7 +267,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                             </span>
                                             @endif
                                         </td>
-                                        <td>{{ \Carbon\Carbon::parse($shipper->input)->format('d/m/y') }}</td>
+                                        <td>{{ Str::upper(\Carbon\Carbon::parse($shipper->input_date)->format("d M")) }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info viewShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
@@ -305,49 +322,6 @@ $(document).ready(function () {
     var userRole = "{{ Auth::user()->role }}";
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
-
-    function combineRemarksData() {
-        var exportVal = $('#export').val() || '';
-        var importVal = $('#import').val() || '';
-        var domesticVal = $('#domestic').val() || '';
-        var commodityVal = $('#commodity').val() || '';
-        var notesVal = $('#notes').val() || '';
-
-        var remarksData = 'Export : ' + exportVal + '\n' +
-                         'Import : ' + importVal + '\n' +
-                         'Domestic : ' + domesticVal + '\n' +
-                         'Commodity : ' + commodityVal + '\n' +
-                         'Notes : ' + notesVal;
-
-        $('#remarks').val(remarksData);
-    }
-
-    function parseRemarksData(remarksText) {
-        var lines = remarksText.split('\n');
-        var data = {
-            export: '',
-            import: '',
-            domestic: '',
-            commodity: '',
-            notes: ''
-        };
-
-        lines.forEach(function(line) {
-            if (line.startsWith('Export :')) {
-                data.export = line.replace('Export :', '').trim();
-            } else if (line.startsWith('Import :')) {
-                data.import = line.replace('Import :', '').trim();
-            } else if (line.startsWith('Domestic :')) {
-                data.domestic = line.replace('Domestic :', '').trim();
-            } else if (line.startsWith('Commodity :')) {
-                data.commodity = line.replace('Commodity :', '').trim();
-            } else if (line.startsWith('Notes :')) {
-                data.notes = line.replace('Notes :', '').trim();
-            }
-        });
-
-        return data;
-    }
 
     try {
         var notOrderableColumns;
@@ -438,34 +412,25 @@ $(document).ready(function () {
             Swal.close();
 
             $('#view_shipper_name').val(data.shipper_name || '-');
-            $('#view_city_name').val(data.city_name || '-');
+            $('#view_shipper_type').val(data.shipper_type || '-');
+            $('#view_shipper_city').val(data.shipper_city || '-');
+            $('#view_shipper_address').val(data.shipper_address || '-');
             $('#view_contact_person').val(data.contact_person || '-');
             $('#view_phone_number').val(data.phone_number || '-');
             $('#view_email_address').val(data.email_address || '-');
+            $('#view_export').val(data.export || '-');
+            $('#view_import').val(data.import || '-');
+            $('#view_domestic').val(data.domestic || '-');
+            $('#view_commodity').val(data.commodity || '-');
 
-            if (data.input) {
-                var inputDate = new Date(data.input);
+            if (data.input_date) {
+                var inputDate = new Date(data.input_date);
                 var formattedDate = inputDate.getDate().toString().padStart(2, '0') + '/' + 
                                   (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
                                   inputDate.getFullYear();
                 $('#view_input_date').val(formattedDate);
             } else {
                 $('#view_input_date').val('-');
-            }
-
-            if (data.remarks) {
-                var parsedData = parseRemarksData(data.remarks);
-                $('#view_export').val(parsedData.export || '-');
-                $('#view_import').val(parsedData.import || '-');
-                $('#view_domestic').val(parsedData.domestic || '-');
-                $('#view_commodity').val(parsedData.commodity || '-');
-                $('#view_notes').val(parsedData.notes || '-');
-            } else {
-                $('#view_export').val('-');
-                $('#view_import').val('-');
-                $('#view_domestic').val('-');
-                $('#view_commodity').val('-');
-                $('#view_notes').val('-');
             }
 
             $('#Viewshipper').modal('show');
@@ -485,19 +450,12 @@ $(document).ready(function () {
             $('#saveBtn').val("create-shipper");
             $('#shipper_id').val('');
             $('#shipperForm').trigger("reset");
-            $('#export').val('');
-            $('#import').val('');
-            $('#domestic').val('');
-            $('#commodity').val('');
-            $('#notes').val('');
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Shipper</span>');
             $('#shipperModal').modal('show');
         });
 
         $('#saveBtn').click(function (e) {
             e.preventDefault();
-
-            combineRemarksData();
 
             var formData = new FormData($('#shipperForm')[0]);
             var shipper_id = $('#shipper_id').val();
@@ -586,11 +544,6 @@ $(document).ready(function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     $('#shipperForm').trigger("reset");
-                    $('#export').val('');
-                    $('#import').val('');
-                    $('#domestic').val('');
-                    $('#commodity').val('');
-                    $('#notes').val('');
 
                     Swal.fire({
                         icon: 'success',
@@ -625,24 +578,22 @@ $(document).ready(function () {
 
                 $('#shipper_id').val(data.id);
                 $('#shipper_name').val(data.shipper_name);
-                $('#city_name').val(data.city_name);
+                $('#shipper_type').val(data.shipper_type);
+                $('#shipper_city').val(data.shipper_city);
+                $('#shipper_address').val(data.shipper_address);
                 $('#contact_person').val(data.contact_person);
                 $('#phone_number').val(data.phone_number);
                 $('#email_address').val(data.email_address);
-                if (data.input) {
-                    var inputDate = new Date(data.input);
+                $('#export').val(data.export);
+                $('#import').val(data.import);
+                $('#domestic').val(data.domestic);
+                $('#commodity').val(data.commodity);
+                if (data.input_date) {
+                    var inputDate = new Date(data.input_date);
                     var formattedDate = inputDate.getFullYear() + '-' + 
                                         String(inputDate.getMonth() + 1).padStart(2, '0') + '-' + 
                                         String(inputDate.getDate()).padStart(2, '0');
-                    $('#input').val(formattedDate);
-                }
-                if (data.remarks) {
-                    var parsedData = parseRemarksData(data.remarks);
-                    $('#export').val(parsedData.export);
-                    $('#import').val(parsedData.import);
-                    $('#domestic').val(parsedData.domestic);
-                    $('#commodity').val(parsedData.commodity);
-                    $('#notes').val(parsedData.notes);
+                    $('#input_date').val(formattedDate);
                 }
 
             }).fail(function(xhr) {

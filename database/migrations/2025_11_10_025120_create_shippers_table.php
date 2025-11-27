@@ -14,12 +14,18 @@ return new class extends Migration
         Schema::create('shippers', function (Blueprint $table) {
             $table->id();
             $table->string('shipper_name');
-            $table->string('city_name');
+            $table->enum('shipper_type', ['DIRECT SHIPPER', 'FORWARDING', 'TRADING', 'EMKL / TRANSPORTER']);
+            $table->string('shipper_city');
+            $table->string('shipper_address')->nullable();
             $table->string('contact_person')->nullable();
             $table->string('phone_number', 20)->nullable();
             $table->string('email_address')->nullable();
-            $table->date('input');
-            $table->text('remarks')->nullable();
+            $table->string('export')->nullable();
+            $table->string('import')->nullable();
+            $table->string('domestic')->nullable();
+            $table->string('commodity')->nullable();
+            $table->date('input_date');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
