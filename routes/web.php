@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\ShipperController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
 
@@ -42,6 +43,11 @@ Route::middleware('auth')->group(function () {
         Route::get('activities/{id}/edit', [ActivityController::class, 'edit'])->name('activities.edit');
         Route::put('activities/{id}', [ActivityController::class, 'update'])->name('activities.update');
         Route::delete('activities/{id}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+        Route::get('activities-export', [ActivityController::class, 'exportExcel'])->name('activities.export.excel');
+    });
+
+    Route::middleware('role:super_admin')->group(function () {
+        Route::get('/audit', [AuditController::class, 'index'])->name('audit.index');
     });
 
     Route::middleware('role:super_admin')->group(function () {

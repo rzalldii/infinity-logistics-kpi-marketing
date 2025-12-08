@@ -11,10 +11,13 @@ Checking Rates | Admin Infinity Logistics Indonesia
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Checking Rates</h1>
-                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                            <button class="btn btn-primary btn-round ms-auto" id="createNewRate" data-bs-toggle="tooltip" title="Add">
-                                <i class="fas fa-plus"></i>
+                            <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
+                                <i class="fas fa-eye"></i> Toggle Columns
                             </button>
+                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
+                                <button class="btn btn-primary btn-round ms-2" id="createNewRate">
+                                    <i class="fas fa-plus"></i> Add Data
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -99,7 +102,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                     <div class="modal-footer border-0">
                                         <button type="button" id="saveBtn" class="btn btn-primary">
                                             <i class="fas fa-save"></i> Save
-                                        </button>    
+                                        </button>
                                         <button type="button" id="clearBtn" class="btn btn-warning text-white">
                                             <i class="fas fa-eraser"></i> Clear
                                         </button>
@@ -185,60 +188,79 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
+                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <select class="form-select" id="filterData">
+                                        <option value="">All Data</option>
+                                        <option value="mine">My Data</option>
+                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                        @foreach($users as $user)
+                                        <option value="{{ $user->id }}">Data {{ $user->name }}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         <div class="table-responsive">
-                            <table id="multi-filter-select" class="display table table-striped table-hover">
+                            <table id="multi-filter-select" class="display table table-striped table-hover" style="width:100%">
                                 <thead class="text-center">
                                     <tr>
+                                        <th>POL</th>
                                         <th>POD</th>
+                                        <th>CT</th>
                                         <th>20'</th>
                                         <th>40'</th>
                                         <th>LINER</th>
                                         <th>VALID</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <th>CREATED</th>
+                                            <th>CREATED</th>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                        <th>ACTION</th>
+                                            <th>ACTION</th>
                                         @endif
                                     </tr>
                                 </thead>
                                 <tfoot class="text-center">
                                     <tr>
+                                        <th>POL</th>
                                         <th>POD</th>
+                                        <th>CT</th>
                                         <th>20'</th>
                                         <th>40'</th>
                                         <th>LINER</th>
                                         <th>VALID</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <th>CREATED</th>
+                                            <th>CREATED</th>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                        <th>ACTION</th>
+                                            <th>ACTION</th>
                                         @endif
                                     </tr>
                                 </tfoot>
                                 <tbody class="text-center">
-                                    @forelse($rates as $rate)
-                                    <tr id="row-{{ $rate->id }}">
+                                    @foreach($rates as $rate)
+                                    <tr id="row-{{ $rate->id }}" data-user-id="{{ $rate->user_id }}">
+                                        <td>{{ Str::upper($rate->pol) }}</td>
                                         <td>{{ Str::upper($rate->pod) }}</td>
+                                        <td>{{ $rate->container_type }}</td>
                                         <td>
                                             @if($rate->container_20)
-                                            {{ number_format($rate->container_20) }}
+                                                {{ number_format((float)$rate->container_20) }}
                                             @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
+                                                <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($rate->container_40)
-                                            {{ number_format($rate->container_40) }}
+                                                {{ number_format((float)$rate->container_40) }}
                                             @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
+                                                <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>{{ Str::upper($rate->liner) }}</td>
@@ -249,32 +271,26 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                             </button>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <td>{{ Str::upper($rate->user->name) }}</td>
+                                            <td>{{ Str::upper($rate->user->name) }}</td>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                        <td>
-                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $rate->user_id == Auth::id()))
-                                            <button type="button" class="btn btn-sm btn-warning text-white editRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger deleteRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
-                                            @endif
-                                        </td>
+                                            <td>
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $rate->user_id == Auth::id()))
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger deleteRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                        <i class="fas fa-lock"></i>
+                                                    </button>
+                                                @endif
+                                            </td>
                                         @endif
                                     </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 8 @elseif(Auth::user()->isMarketing()) 7 @else 6 @endif" class="text-center">
-                                            No Data Available
-                                        </td>
-                                    </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -293,38 +309,53 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     var userRole = "{{ Auth::user()->role }}";
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
-
+    var currentUserId = {{ Auth::id() }};
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [5, 7];
+            notOrderableColumns = [0, 1, 2, 5, 7, 8, 9];
         } else if (hasActionColumn) {
-            notOrderableColumns = [5, 6];
+            notOrderableColumns = [0, 1, 2, 5, 7, 8];
         } else {
-            notOrderableColumns = [5];
+            notOrderableColumns = [0, 1, 2, 5, 7];
         }
-
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [1, 2, 5, 7];
+            skipColumns = [3, 4, 7, 9];
         } else if (hasActionColumn) {
-            skipColumns = [1, 2, 5, 6];
+            skipColumns = [3, 4, 7, 8];
         } else {
-            skipColumns = [1, 2, 5];
+            skipColumns = [3, 4, 7];
         }
-    
+        var hiddenColumns;
+        if (isAdmin) {
+            hiddenColumns = [0, 2, 8];
+        } else if (hasActionColumn) {
+            hiddenColumns = [0, 2];
+        } else {
+            hiddenColumns = [0, 2];
+        }
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
-            order: [[4, 'desc']],
+            autoWidth: false,
+            order: [[6, 'desc']],
             columnDefs: [
-                { orderable: false, targets: notOrderableColumns }
+            { 
+                orderable: false, 
+                targets: notOrderableColumns 
+            },
+            {
+                visible: false,
+                searchable: true,
+                targets: hiddenColumns
+            },
             ],
             language: {
                 emptyTable: "No data available in table",
+                zeroRecords: "No matching records found",
                 loadingRecords: "Loading Data...",
                 processing: "Processing your request...",
                 search: "Search:",
@@ -339,12 +370,10 @@ $(document).ready(function () {
                 this.api().columns().every(function () {
                     var column = this;
                     var columnIndex = column.index();
-
                     if (skipColumns.includes(columnIndex)) {
                         $(column.footer()).empty();
                         return;
                     }
-
                     var select = $('<select class="form-select"><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
                     .on("change", function () {
@@ -353,39 +382,62 @@ $(document).ready(function () {
                         .search(val ? "^" + val + "$" : "", true, false)
                         .draw();
                     });
-
+                    var uniqueValues = [];
                     column.data().unique().sort().each(function (d, j) {
-                        select.append(
-                            '<option value="' + d + '">' + d + "</option>"
-                        );
+                        if (d && !uniqueValues.includes(d)) {
+                            uniqueValues.push(d);
+                            select.append('<option value="' + d + '">' + d + "</option>");
+                        }
                     });
                 });
             },
         });
-
         table.on('draw', function () {
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
-
+        $('#filterData').on('change', function() {
+            var filterValue = $(this).val();
+            $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
+                return fn.name !== 'dataFilter';
+            });
+            if (filterValue) {
+                var targetUserId = filterValue === 'mine' ? currentUserId : parseInt(filterValue);
+                var dataFilter = function(settings, data, dataIndex) {
+                    var row = table.row(dataIndex).node();
+                    var userId = $(row).data('user-id');
+                    return userId == targetUserId;
+                };
+                dataFilter.name = 'dataFilter';
+                $.fn.dataTable.ext.search.push(dataFilter);
+            }
+            table.draw();
+        });
     } catch (error) {
         console.error('DataTables initialization error:', error);
     }
-
+    $('#ToggleColumns').on('click', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var isHidden = !table.column(0).visible();
+        table.columns([0, 2]).visible(isHidden);
+        if (isHidden) {
+            $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
+        } else {
+            $btn.html('<i class="fas fa-eye"></i> Toggle Columns');
+        }
+        table.columns.adjust().draw();
+    });
     $('body').on('click', '.viewRate', function () {
         var rate_id = $(this).data('id');
-
         Swal.fire({
             title: 'Loading Data...',
-            text: 'Please wait a moment',
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             }
         });
-
         $.get("{{ route('rates.index') }}" + '/' + rate_id + '/edit', function (data) {
             Swal.close();
-
             $('#view_pol').val(data.pol || '-');
             $('#view_pod').val(data.pod || '-');
             $('#view_container_type').val(data.container_type || '-');
@@ -393,7 +445,6 @@ $(document).ready(function () {
             $('#view_container_40').val(data.container_40 || '-');
             $('#view_liner').val(data.liner || '-');
             $('#view_free_time').val(data.free_time || '-');
-
             if (data.valid_date) {
                 var validDate = new Date(data.valid_date);
                 var formattedDate = validDate.getDate().toString().padStart(2, '0') + '/' + 
@@ -403,23 +454,18 @@ $(document).ready(function () {
             } else {
                 $('#view_valid_date').val('-');
             }
-
             if ($('#view_notes').length) {
                 $('#view_notes').val(data.notes || '-');
             }
-
             $('#Viewrate').modal('show');
-
-        }).fail(function(xhr) {
+        }).fail(function() {
             Swal.fire({
                 icon: 'error',
                 title: 'Failed to Load Data',
-                text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve rate information.',
                 confirmButtonColor: '#d33'
             });
         });
     });
-
     if (hasActionColumn) {
         $('#createNewRate').click(function () {
             $('#saveBtn').val("create-rate");
@@ -428,21 +474,15 @@ $(document).ready(function () {
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Rate</span>');
             $('#rateModal').modal('show');
         });
-
         $('#saveBtn').click(function (e) {
             e.preventDefault();
-
             var formData = new FormData($('#rateForm')[0]);
             var rate_id = $('#rate_id').val();
             var url = rate_id ? "{{ route('rates.index') }}" + '/' + rate_id : "{{ route('rates.store') }}";
-            var actionText = rate_id ? 'updated' : 'added';
-
             if (rate_id) {
                 formData.append('_method', 'PUT');
             }
-
             $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
-
             $.ajax({
                 type: 'POST',
                 url: url,
@@ -453,11 +493,9 @@ $(document).ready(function () {
                     $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                     $('#rateForm').trigger("reset");
                     $('#rateModal').modal('hide');
-
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success!',
-                        text: 'Data has been ' + actionText + ' successfully',
+                        title: 'Data Saved Successfully!',
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function() {
@@ -466,49 +504,39 @@ $(document).ready(function () {
                 },
                 error: function(response) {
                     $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
-
                     if (response.status === 422) {
                         var errors = response.responseJSON.errors;
                         var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
-
                         $.each(errors, function(key, value) {
                             errorList += '<li>' + value[0] + '</li>';
                         });
                         errorList += '</ul>';
-
                         Swal.fire({
                             icon: 'error',
                             title: 'Validation Error',
                             html: errorList,
                             confirmButtonColor: '#d33'
                         });
-
                     } else if (response.status === 403) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Access Denied',
-                            text: response.responseJSON?.error || 'You do not have permission to perform this action!',
                             confirmButtonColor: '#d33'
                         });
-
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Operation Failed',
-                            text: response.responseJSON?.error || response.responseJSON?.message || 'An error occurred on the server!',
                             confirmButtonColor: '#d33'
                         });
                     }
                 }
             });
         });
-
         $('#clearBtn').click(function(e) {
             e.preventDefault();
-
             Swal.fire({
-                title: 'Clear Form?',
-                text: "All unsaved data will be lost!",
+                title: 'Clear This Form?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -519,38 +547,29 @@ $(document).ready(function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     $('#rateForm').trigger("reset");
-
                     Swal.fire({
                         icon: 'success',
-                        title: 'Cleared!',
-                        text: 'Form has been cleared.',
+                        title: 'Form Cleared Successfully!',
                         showConfirmButton: false,
                         timer: 1000
                     });
                 }
             });
         });
-
         $('body').on('click', '.editRate', function () {
             var rate_id = $(this).data('id');
-
             Swal.fire({
                 title: 'Loading Data...',
-                text: 'Please wait a moment',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
                 }
             });
-
             $.get("{{ route('rates.index') }}" + '/' + rate_id + '/edit', function (data) {
                 Swal.close();
-
                 $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">Rate</span>');
                 $('#saveBtn').val("edit-rate");
-
                 $('#rateModal').modal('show');
-
                 $('#rate_id').val(data.id);
                 $('#pol').val(data.pol);
                 $('#pod').val(data.pod);
@@ -567,24 +586,19 @@ $(document).ready(function () {
                     $('#valid_date').val(formattedDate);
                 }
                 $('#notes').val(data.notes);
-
-            }).fail(function(xhr) {
+            }).fail(function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Failed to Load Data',
-                    text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve user information. Please try again.',
                     confirmButtonColor: '#d33'
                 });
             });
         });
-
         $('body').on('click', '.deleteRate', function () {
             var rate_id = $(this).data("id");
             var row = $('#row-' + rate_id);
-
             Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
+                title: 'Delete This Data?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -594,17 +608,14 @@ $(document).ready(function () {
                 reverseButtons: false
             }).then((result) => {
                 if (result.isConfirmed) {
-
                     Swal.fire({
                         title: 'Deleting Data...',
-                        text: 'Please wait a moment',
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         didOpen: () => {
                             Swal.showLoading();
                         }
                     });
-
                     $.ajax({
                         type: "DELETE",
                         url: "{{ route('rates.index') }}" + '/' + rate_id,
@@ -612,11 +623,9 @@ $(document).ready(function () {
                             row.fadeOut(300, function() {
                                 table.row($(this)).remove().draw(false);
                             });
-
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Deleted!',
-                                text: 'Data has been deleted successfully.',
+                                title: 'Data Deleted Successfully!',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
@@ -627,14 +636,12 @@ $(document).ready(function () {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Access Denied',
-                                    text: xhr.responseJSON?.error || 'You do not have permission to delete this data!',
                                     confirmButtonColor: '#d33'
                                 });
                             } else {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Deletion Failed',
-                                    text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'An error occurred while deleting data!',
                                     confirmButtonColor: '#d33'
                                 });
                             }

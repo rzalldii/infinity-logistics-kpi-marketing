@@ -26,5 +26,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ShipperSeeder::class,
         ]);
+
+        $this->call([
+            ActivitySeeder::class,
+        ]);
     }
 }

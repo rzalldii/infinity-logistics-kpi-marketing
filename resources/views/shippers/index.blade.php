@@ -11,10 +11,13 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Touch Shippers</h1>
-                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                            <button class="btn btn-primary btn-round ms-auto" id="createNewShipper" data-bs-toggle="tooltip" title="Add">
-                                <i class="fas fa-plus"></i>
+                            <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
+                                <i class="fas fa-eye"></i> Toggle Columns
                             </button>
+                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
+                                <button class="btn btn-primary btn-round ms-2" id="createNewShipper">
+                                    <i class="fas fa-plus"></i> Add Data
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -101,14 +104,15 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="commodity">Commodity</label>
-                                                        <input type="text" class="form-control" name="commodity" id="commodity"/>
+                                                        <label class="form-label" for="commodity">Commodity <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" name="commodity" id="commodity" required/>
                                                     </div>
                                                 </div>
+                                                <input type="hidden" name="input_date" id="input_date" value="{{ date('Y-m-d') }}">
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="input_date">Input Date <span class="text-danger">*</span></label>
-                                                        <input type="date" class="form-control" name="input_date" id="input_date" value="{{ date('Y-m-d') }}" required/>
+                                                        <label class="form-label" for="notes">Notes</label>
+                                                        <textarea class="form-control" name="notes" id="notes" rows="1"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -117,7 +121,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                     <div class="modal-footer border-0">
                                         <button type="button" id="saveBtn" class="btn btn-primary">
                                             <i class="fas fa-save"></i> Save
-                                        </button>    
+                                        </button>
                                         <button type="button" id="clearBtn" class="btn btn-warning text-white">
                                             <i class="fas fa-eraser"></i> Clear
                                         </button>
@@ -207,8 +211,8 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_input_date">Input Date</label>
-                                                    <input type="text" class="form-control-plaintext" id="view_input_date" readonly/>
+                                                    <label class="form-label" for="view_notes">Notes</label>
+                                                    <textarea class="form-control-plaintext" id="view_notes" rows="1" readonly></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -221,85 +225,148 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
+                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <select class="form-select" id="filterData">
+                                        <option value="">All Data</option>
+                                        <option value="mine">My Data</option>
+                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                        @foreach($users as $user)
+                                        <option value="{{ $user->id }}">Data {{ $user->name }}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         <div class="table-responsive">
                             <table id="multi-filter-select" class="display table table-striped table-hover">
                                 <thead class="text-center">
                                     <tr>
-                                        <th>SHIPPER</th>
-                                        <th>CITY</th>
-                                        <th>CP</th>
                                         <th>INPUT</th>
+                                        <th>SHIPPER</th>
+                                        <th>TYPE</th>
+                                        <th>CITY</th>
+                                        <th>ADDRESS</th>
+                                        <th>CP</th>
+                                        <th>PHONE</th>
+                                        <th>EMAIL</th>
+                                        <th>EXPORT</th>
+                                        <th>IMPORT</th>
+                                        <th>DOMESTIC</th>
+                                        <th>COMMODITY</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <th>CREATED</th>
+                                            <th>CREATED</th>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                        <th>ACTION</th>
+                                            <th>ACTION</th>
                                         @endif
                                     </tr>
                                 </thead>
                                 <tfoot class="text-center">
                                     <tr>
-                                        <th>SHIPPER</th>
-                                        <th>CITY</th>
-                                        <th>CP</th>
                                         <th>INPUT</th>
+                                        <th>SHIPPER</th>
+                                        <th>TYPE</th>
+                                        <th>CITY</th>
+                                        <th>ADDRESS</th>
+                                        <th>CP</th>
+                                        <th>PHONE</th>
+                                        <th>EMAIL</th>
+                                        <th>EXPORT</th>
+                                        <th>IMPORT</th>
+                                        <th>DOMESTIC</th>
+                                        <th>COMMODITY</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <th>CREATED</th>
+                                            <th>CREATED</th>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                        <th>ACTION</th>
+                                            <th>ACTION</th>
                                         @endif
                                     </tr>
                                 </tfoot>
                                 <tbody class="text-center">
-                                    @forelse($shippers as $shipper)
-                                    <tr id="row-{{ $shipper->id }}">
+                                    @foreach($shippers as $shipper)
+                                    <tr id="row-{{ $shipper->id }}" data-user-id="{{ $shipper->user_id }}">
+                                        <td>{{ Str::upper(\Carbon\Carbon::parse($shipper->input_date)->format("d M")) }}</td>
                                         <td>{{ Str::upper($shipper->shipper_name) }}</td>
+                                        <td>{{ $shipper->shipper_type }}</td>
                                         <td>{{ Str::upper($shipper->shipper_city) }}</td>
+                                        <td>{{ $shipper->shipper_address }}</td>
                                         <td>
                                             @if($shipper->contact_person)
-                                            {{ Str::upper($shipper->contact_person) }}
+                                                {{ Str::upper($shipper->contact_person) }}
                                             @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
+                                                <span class="text-muted">—</span>
                                             @endif
                                         </td>
-                                        <td>{{ Str::upper(\Carbon\Carbon::parse($shipper->input_date)->format("d M")) }}</td>
+                                        <td>
+                                            @if($shipper->phone_number)
+                                                {{ $shipper->phone_number }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($shipper->email_address)
+                                                {{ $shipper->email_address }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($shipper->export)
+                                                {{ Str::upper($shipper->export) }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($shipper->import)
+                                                {{ Str::upper($shipper->import) }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($shipper->domestic)
+                                                {{ Str::upper($shipper->domestic) }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $shipper->commodity }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info viewShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <td>{{ Str::upper($shipper->user->name) }}</td>
+                                            <td>{{ Str::upper($shipper->user->name) }}</td>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                        <td>
-                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $shipper->user_id == Auth::id()))
-                                            <button type="button" class="btn btn-sm btn-warning text-white editShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger deleteShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
-                                            @endif
-                                        </td>
+                                            <td>
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $shipper->user_id == Auth::id()))
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger deleteShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                        <i class="fas fa-lock"></i>
+                                                    </button>
+                                                @endif
+                                            </td>
                                         @endif
                                     </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 7 @elseif(Auth::user()->isMarketing()) 6 @else 5 @endif" class="text-center">
-                                            No Data Available
-                                        </td>
-                                    </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -318,38 +385,53 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     var userRole = "{{ Auth::user()->role }}";
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
-
+    var currentUserId = {{ Auth::id() }};
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [2, 4, 6];
+            notOrderableColumns = [2, 3, 4, 6, 7, 11, 12, 13, 14];
         } else if (hasActionColumn) {
-            notOrderableColumns = [2, 4, 5];
+            notOrderableColumns = [2, 3, 4, 6, 7, 11, 12, 13];
         } else {
-            notOrderableColumns = [2, 4];
+            notOrderableColumns = [2, 3, 4, 6, 7, 11, 12];
         }
-
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [0, 2, 3, 4, 6];
+            skipColumns = [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14];
         } else if (hasActionColumn) {
-            skipColumns = [0, 2, 3, 4, 5];
+            skipColumns = [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
         } else {
-            skipColumns = [0, 2, 3, 4];
+            skipColumns = [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         }
-
+        var hiddenColumns;
+        if (isAdmin) {
+            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 11, 13];
+        } else if (hasActionColumn) {
+            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 11];
+        } else {
+            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 11];
+        }
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
-            order: [[3, 'desc']],
+            autoWidth: false,
+            order: [[0, 'desc']],
             columnDefs: [
-                { orderable: false, targets: notOrderableColumns }
+            {
+                orderable: false,
+                targets: notOrderableColumns
+            },
+            {
+                visible: false,
+                searchable: true,
+                targets: hiddenColumns
+            },
             ],
             language: {
                 emptyTable: "No data available in table",
+                zeroRecords: "No matching records found",
                 loadingRecords: "Loading Data...",
                 processing: "Processing your request...",
                 search: "Search:",
@@ -364,12 +446,10 @@ $(document).ready(function () {
                 this.api().columns().every(function () {
                     var column = this;
                     var columnIndex = column.index();
-
                     if (skipColumns.includes(columnIndex)) {
                         $(column.footer()).empty();
                         return;
                     }
-
                     var select = $('<select class="form-select"><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
                     .on("change", function () {
@@ -378,39 +458,62 @@ $(document).ready(function () {
                         .search(val ? "^" + val + "$" : "", true, false)
                         .draw();
                     });
-
+                    var uniqueValues = [];
                     column.data().unique().sort().each(function (d, j) {
-                        select.append(
-                            '<option value="' + d + '">' + d + "</option>"
-                        );
+                        if (d && !uniqueValues.includes(d)) {
+                            uniqueValues.push(d);
+                            select.append('<option value="' + d + '">' + d + "</option>");
+                        }
                     });
                 });
             },
         });
-
         table.on('draw', function () {
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
-
+        $('#filterData').on('change', function() {
+            var filterValue = $(this).val();
+            $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
+                return fn.name !== 'dataFilter';
+            });
+            if (filterValue) {
+                var targetUserId = filterValue === 'mine' ? currentUserId : parseInt(filterValue);
+                var dataFilter = function(settings, data, dataIndex) {
+                    var row = table.row(dataIndex).node();
+                    var userId = $(row).data('user-id');
+                    return userId == targetUserId;
+                };
+                dataFilter.name = 'dataFilter';
+                $.fn.dataTable.ext.search.push(dataFilter);
+            }
+            table.draw();
+        });
     } catch (error) {
         console.error('DataTables initialization error:', error);
     }
-
+    $('#ToggleColumns').on('click', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var isHidden = !table.column(5).visible();
+        table.columns([5, 6, 7, 8, 9, 10]).visible(isHidden);
+        if (isHidden) {
+            $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
+        } else {
+            $btn.html('<i class="fas fa-eye"></i> Toggle Columns');
+        }
+        table.columns.adjust().draw();
+    });
     $('body').on('click', '.viewShipper', function () {
         var shipper_id = $(this).data('id');
-        
         Swal.fire({
             title: 'Loading Data...',
-            text: 'Please wait a moment',
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             }
         });
-
         $.get("{{ route('shippers.index') }}" + '/' + shipper_id + '/edit', function (data) {
             Swal.close();
-
             $('#view_shipper_name').val(data.shipper_name || '-');
             $('#view_shipper_type').val(data.shipper_type || '-');
             $('#view_shipper_city').val(data.shipper_city || '-');
@@ -422,29 +525,18 @@ $(document).ready(function () {
             $('#view_import').val(data.import || '-');
             $('#view_domestic').val(data.domestic || '-');
             $('#view_commodity').val(data.commodity || '-');
-
-            if (data.input_date) {
-                var inputDate = new Date(data.input_date);
-                var formattedDate = inputDate.getDate().toString().padStart(2, '0') + '/' + 
-                                  (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
-                                  inputDate.getFullYear();
-                $('#view_input_date').val(formattedDate);
-            } else {
-                $('#view_input_date').val('-');
+            if ($('#view_notes').length) {
+                $('#view_notes').val(data.notes || '-');
             }
-
             $('#Viewshipper').modal('show');
-
-        }).fail(function(xhr) {
+        }).fail(function() {
             Swal.fire({
                 icon: 'error',
                 title: 'Failed to Load Data',
-                text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve shipper information.',
                 confirmButtonColor: '#d33'
             });
         });
     });
-
     if (hasActionColumn) {
         $('#createNewShipper').click(function () {
             $('#saveBtn').val("create-shipper");
@@ -453,21 +545,15 @@ $(document).ready(function () {
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Shipper</span>');
             $('#shipperModal').modal('show');
         });
-
         $('#saveBtn').click(function (e) {
             e.preventDefault();
-
             var formData = new FormData($('#shipperForm')[0]);
             var shipper_id = $('#shipper_id').val();
             var url = shipper_id ? "{{ route('shippers.index') }}" + '/' + shipper_id : "{{ route('shippers.store') }}";
-            var actionText = shipper_id ? 'updated' : 'added';
-
             if (shipper_id) {
                 formData.append('_method', 'PUT');
             }
-
             $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
-
             $.ajax({
                 type: 'POST',
                 url: url,
@@ -478,11 +564,9 @@ $(document).ready(function () {
                     $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
                     $('#shipperForm').trigger("reset");
                     $('#shipperModal').modal('hide');
-
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success!',
-                        text: 'Data has been ' + actionText + ' successfully',
+                        title: 'Data Saved Successfully!',
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function() {
@@ -491,49 +575,39 @@ $(document).ready(function () {
                 },
                 error: function(response) {
                     $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
-
                     if (response.status === 422) {
                         var errors = response.responseJSON.errors;
                         var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
-
                         $.each(errors, function(key, value) {
                             errorList += '<li>' + value[0] + '</li>';
                         });
                         errorList += '</ul>';
-
                         Swal.fire({
                             icon: 'error',
                             title: 'Validation Error',
                             html: errorList,
                             confirmButtonColor: '#d33'
                         });
-
                     } else if (response.status === 403) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Access Denied',
-                            text: response.responseJSON?.error || 'You do not have permission to perform this action!',
                             confirmButtonColor: '#d33'
                         });
-
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Operation Failed',
-                            text: response.responseJSON?.error || response.responseJSON?.message || 'An error occurred on the server!',
                             confirmButtonColor: '#d33'
                         });
                     }
                 }
             });
         });
-
         $('#clearBtn').click(function(e) {
             e.preventDefault();
-
             Swal.fire({
-                title: 'Clear Form?',
-                text: "All unsaved data will be lost!",
+                title: 'Clear This Form?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -544,38 +618,29 @@ $(document).ready(function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     $('#shipperForm').trigger("reset");
-
                     Swal.fire({
                         icon: 'success',
-                        title: 'Cleared!',
-                        text: 'Form has been cleared.',
+                        title: 'Form Cleared Successfully!',
                         showConfirmButton: false,
                         timer: 1000
                     });
                 }
             });
         });
-
         $('body').on('click', '.editShipper', function () {
             var shipper_id = $(this).data('id');
-
             Swal.fire({
                 title: 'Loading Data...',
-                text: 'Please wait a moment',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
                 }
             });
-
             $.get("{{ route('shippers.index') }}" + '/' + shipper_id + '/edit', function (data) {
                 Swal.close();
-
                 $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">Shipper</span>');
                 $('#saveBtn').val("edit-shipper");
-
                 $('#shipperModal').modal('show');
-
                 $('#shipper_id').val(data.id);
                 $('#shipper_name').val(data.shipper_name);
                 $('#shipper_type').val(data.shipper_type);
@@ -588,31 +653,20 @@ $(document).ready(function () {
                 $('#import').val(data.import);
                 $('#domestic').val(data.domestic);
                 $('#commodity').val(data.commodity);
-                if (data.input_date) {
-                    var inputDate = new Date(data.input_date);
-                    var formattedDate = inputDate.getFullYear() + '-' + 
-                                        String(inputDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                        String(inputDate.getDate()).padStart(2, '0');
-                    $('#input_date').val(formattedDate);
-                }
-
-            }).fail(function(xhr) {
+                $('#notes').val(data.notes);
+            }).fail(function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Failed to Load Data',
-                    text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve user information. Please try again.',
                     confirmButtonColor: '#d33'
                 });
             });
         });
-
         $('body').on('click', '.deleteShipper', function () {
             var shipper_id = $(this).data("id");
             var row = $('#row-' + shipper_id);
-
             Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
+                title: 'Delete This Data?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -622,17 +676,14 @@ $(document).ready(function () {
                 reverseButtons: false
             }).then((result) => {
                 if (result.isConfirmed) {
-
                     Swal.fire({
                         title: 'Deleting Data...',
-                        text: 'Please wait a moment',
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         didOpen: () => {
                             Swal.showLoading();
                         }
                     });
-
                     $.ajax({
                         type: "DELETE",
                         url: "{{ route('shippers.index') }}" + '/' + shipper_id,
@@ -640,11 +691,9 @@ $(document).ready(function () {
                             row.fadeOut(300, function() {
                                 table.row($(this)).remove().draw(false);
                             });
-
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Deleted!',
-                                text: 'Data has been deleted successfully.',
+                                title: 'Data Deleted Successfully!',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
@@ -655,14 +704,12 @@ $(document).ready(function () {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Access Denied',
-                                    text: xhr.responseJSON?.error || 'You do not have permission to delete this data!',
                                     confirmButtonColor: '#d33'
                                 });
                             } else {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Deletion Failed',
-                                    text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'An error occurred while deleting data!',
                                     confirmButtonColor: '#d33'
                                 });
                             }

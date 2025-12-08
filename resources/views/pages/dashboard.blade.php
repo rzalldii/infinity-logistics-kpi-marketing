@@ -18,7 +18,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-icon">
-                                <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                <div class="icon-big text-center icon-info bubble-shadow-small">
                                     <i class="fas fa-dollar-sign"></i>
                                 </div>
                             </div>
@@ -37,12 +37,12 @@ Dashboard | Admin Infinity Logistics Indonesia
                                     </small>
                                     @else
                                     <h4 class="card-title text-muted">No Data Available</h4>
-                                    <small class="text-muted">Begin by adding your rate entry today</small>
+                                    <small class="text-muted">Begin by adding your rate today</small>
                                     @endif
                                 </div>
                             </div>
                             <div class="col-auto ms-auto">
-                                <a href="{{ route('rates.index') }}" class="btn btn-link btn-lg text-primary">
+                                <a href="/rates" class="btn btn-link btn-lg text-info">
                                     <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
@@ -55,7 +55,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-icon">
-                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                <div class="icon-big text-center icon-primary bubble-shadow-small">
                                     <i class="fas fa-list-ul"></i>
                                 </div>
                             </div>
@@ -73,12 +73,12 @@ Dashboard | Admin Infinity Logistics Indonesia
                                     </small>
                                     @else
                                     <h4 class="card-title text-muted">No Data Available</h4>
-                                    <small class="text-muted">Begin by adding your shipper entry today</small>
+                                    <small class="text-muted">Begin by adding your shipper today</small>
                                     @endif
                                 </div>
                             </div>
                             <div class="col-auto ms-auto">
-                                <a href="{{ route('shippers.index') }}" class="btn btn-link btn-lg text-secondary">
+                                <a href="/shippers" class="btn btn-link btn-lg text-primary">
                                     <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
@@ -86,42 +86,42 @@ Dashboard | Admin Infinity Logistics Indonesia
                     </div>
                 </div>
             </div>
-            <!-- <div class="col-sm-12 col-md-12">
+            <div class="col-sm-12 col-md-6">
                 <div class="card card-stats card-round">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-icon">
-                                <div class="icon-big text-center icon-success bubble-shadow-small">
+                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
                                     <i class="fas fa-book-open"></i>
                                 </div>
                             </div>
                             <div class="col col-stats ms-6 ms-sm-3">
                                 <div class="numbers">
-                                    <p class="card-category">Last Submission - Report Marketing</p>
-                                    @if($lastShipper)
-                                    <h4 class="card-title">{{ Str::upper($lastShipper->shipper_name) }}</h4>
+                                    <p class="card-category">Last Submission - Report Activities</p>
+                                    @if($lastActivity)
+                                    <h4 class="card-title">{{ Str::upper($lastActivity->concept_type) }} - {{ Str::upper($lastActivity->activity_type) }}</h4>
                                     <small class="text-muted">
-                                        <i class="far fa-clock"></i> {{ $lastShipper->created_at->diffForHumans() }}
+                                        <i class="far fa-clock"></i> {{ $lastActivity->created_at->diffForHumans() }}
                                         @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin())
                                         <br>
-                                        <i class="far fa-user"></i> Submitted by {{ $lastShipper->user->name }}
+                                        <i class="far fa-user"></i> Submitted by {{ $lastActivity->user->name }}
                                         @endif
                                     </small>
                                     @else
                                     <h4 class="card-title text-muted">No Data Available</h4>
-                                    <small class="text-muted">Begin by adding your first shipper entry</small>
+                                    <small class="text-muted">Begin by adding your activity today</small>
                                     @endif
                                 </div>
                             </div>
                             <div class="col-auto ms-auto">
-                                <a href="{{ route('shippers.index') }}" class="btn btn-link btn-lg text-success">
+                                <a href="/activities" class="btn btn-link btn-lg text-secondary">
                                     <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>
         @endif
         <!-- @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())

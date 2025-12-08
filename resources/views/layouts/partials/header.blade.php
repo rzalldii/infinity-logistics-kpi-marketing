@@ -6,14 +6,14 @@
     <title>@yield('title')</title>
 
     <meta name="theme-color" content="#6777ef">
-    <link rel="apple-touch-icon" href="<?php echo url('/'); ?>/img/favicon.ico">
-    <link rel="manifest" href="<?php echo url('/'); ?>/manifest.json">
+    <link rel="apple-touch-icon" href="{{ url('/') }}/img/favicon.ico">
+    <link rel="manifest" href="{{ url('/') }}/manifest.json">
 
     <!-- Favicons -->
-    <link href="<?php echo url('/'); ?>/img/favicon.ico" rel="icon" alt="Icon Infinity">
+    <link href="{{ url('/') }}/img/favicon.ico" rel="icon" alt="Icon Infinity">
 
     <!-- Fonts and icons -->
-    <script src="<?php echo url('/'); ?>/js/plugin/webfont/webfont.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/webfont/webfont.min.js"></script>
     <script>
         WebFont.load({
         google: { families: ["Public Sans:300,400,500,600,700"] },
@@ -24,7 +24,7 @@
             "Font Awesome 5 Brands",
             "simple-line-icons",
             ],
-            urls: ["<?php echo url('/'); ?>/css/fonts.min.css"],
+            urls: ["{{ url('/') }}/css/fonts.min.css"],
             },
             active: function () {
             sessionStorage.fonts = true;
@@ -33,12 +33,12 @@
     </script>
 
     <!-- Preload CSS Files -->
-    <link href="<?php echo url('/'); ?>/css/bootstrap.min.css" rel="preload" as="style">
-    <link href="<?php echo url('/'); ?>/css/plugins.min.css" rel="preload" as="style">
-    <link href="<?php echo url('/'); ?>/css/kaiadmin.min.css" rel="preload" as="style">
+    <link href="{{ url('/') }}/css/bootstrap.min.css" rel="preload" as="style">
+    <link href="{{ url('/') }}/css/plugins.min.css" rel="preload" as="style">
+    <link href="{{ url('/') }}/css/kaiadmin.min.css" rel="preload" as="style">
 
     <!-- Stylesheet CSS Files -->
-    <link href="<?php echo url('/'); ?>/css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?php echo url('/'); ?>/css/plugins.min.css" rel="stylesheet">
-    <link href="<?php echo url('/'); ?>/css/kaiadmin.min.css" rel="stylesheet">
+    <link href="{{ url('/') }}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url('/') }}/css/plugins.min.css" rel="stylesheet">
+    <link href="{{ url('/') }}/css/kaiadmin.min.css" rel="stylesheet">
 </head>

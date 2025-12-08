@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipper;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -16,28 +17,30 @@ class ShipperController extends Controller
             return response()->json($shippers);
         }
         $shippers = Shipper::latest()->get();
-        return view('shippers.index', compact('shippers'));
+        $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        return view('shippers.index', compact('shippers', 'users'));
     }
 
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'shipper_name' => 'required|string|max:255',
+            'shipper_name' => 'required|string',
             'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL / TRANSPORTER',
-            'shipper_city' => 'required|string|max:255',
-            'shipper_address' => 'nullable|string|max:255',
-            'contact_person' => 'nullable|string|max:255',
+            'shipper_city' => 'required|string',
+            'shipper_address' => 'nullable|string',
+            'contact_person' => 'nullable|string',
             'phone_number' => 'nullable|string|max:20',
-            'email_address' => 'nullable|email|max:255',
-            'export' => 'nullable|string|max:255',
-            'import' => 'nullable|string|max:255',
-            'domestic' => 'nullable|string|max:255',
-            'commodity' => 'nullable|string|max:255',
+            'email_address' => 'nullable|email',
+            'export' => 'nullable|string',
+            'import' => 'nullable|string',
+            'domestic' => 'nullable|string',
+            'commodity' => 'required|string',
             'input_date' => 'required|date',
+            'notes' => 'nullable|string',
         ]);
         $validated['user_id'] = Auth::id();
-        Shipper::create($validated);
-        return response()->json(['success' => 'Data added successfully!']);
+        $shipper = Shipper::create($validated);
+        return response()->json($shipper, 201);
     }
 
     public function edit($id): JsonResponse
@@ -50,26 +53,27 @@ class ShipperController extends Controller
     {
         $shipper = Shipper::findOrFail($id);
         $validated = $request->validate([
-            'shipper_name' => 'required|string|max:255',
+            'shipper_name' => 'required|string',
             'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL / TRANSPORTER',
-            'shipper_city' => 'required|string|max:255',
-            'shipper_address' => 'nullable|string|max:255',
-            'contact_person' => 'nullable|string|max:255',
+            'shipper_city' => 'required|string',
+            'shipper_address' => 'nullable|string',
+            'contact_person' => 'nullable|string',
             'phone_number' => 'nullable|string|max:20',
-            'email_address' => 'nullable|email|max:255',
-            'export' => 'nullable|string|max:255',
-            'import' => 'nullable|string|max:255',
-            'domestic' => 'nullable|string|max:255',
-            'commodity' => 'nullable|string|max:255',
+            'email_address' => 'nullable|email',
+            'export' => 'nullable|string',
+            'import' => 'nullable|string',
+            'domestic' => 'nullable|string',
+            'commodity' => 'required|string',
             'input_date' => 'required|date',
+            'notes' => 'nullable|string',
         ]);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
-                return response()->json(['error' => 'You cannot edit other people\'s data!'], 403);
+                return response()->json(null, 403);
             }
         }
         $shipper->update($validated);
-        return response()->json(['success' => 'Data updated successfully!']);
+        return response()->json($shipper, 200);
     }
 
     public function destroy($id): JsonResponse
@@ -77,10 +81,10 @@ class ShipperController extends Controller
         $shipper = Shipper::findOrFail($id);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
-                return response()->json(['error' => 'You cannot delete other people\'s data!'], 403);
+                return response()->json(null, 403);
             }
         }
         $shipper->delete();
-        return response()->json(['success' => 'Data deleted successfully!']);
+        return response()->json(null, 204);
     }
 }

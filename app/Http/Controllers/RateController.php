@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rate;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -16,26 +17,28 @@ class RateController extends Controller
             return response()->json($rates);
         }
         $rates = Rate::latest()->get();
-        return view('rates.index', compact('rates'));
+        $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        return view('rates.index', compact('rates', 'users'));
     }
 
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'pol' => 'required|string|max:255',
-            'pod' => 'required|string|max:255',
+            'pol' => 'required|string',
+            'pod' => 'required|string',
             'container_type' => 'required|in:GP,RF,OT,HC',
             'container_20' => 'nullable|string|max:10',
             'container_40' => 'nullable|string|max:10',
-            'liner' => 'required|string|max:255',
-            'free_time' => 'nullable|string|max:255',
+            'liner' => 'required|string',
+            'free_time' => 'nullable|string',
             'valid_date' => 'required|date',
-            'notes' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
         ]);
         $pods = array_map('trim', explode(',', $validated['pod']));
         $pods = array_filter($pods, function($pod) {
             return !empty($pod);
         });
+        $createdRates = [];
         foreach ($pods as $pod) {
             Rate::create([
                 'pol' => $validated['pol'],
@@ -50,7 +53,7 @@ class RateController extends Controller
                 'user_id' => Auth::id(),
             ]);
         }
-        return response()->json(['success' => 'Data added successfully!']);
+        return response()->json($createdRates, 201);
     }
 
     public function edit($id): JsonResponse
@@ -63,19 +66,19 @@ class RateController extends Controller
     {
         $rate = Rate::findOrFail($id);
         $validated = $request->validate([
-            'pol' => 'required|string|max:255',
-            'pod' => 'required|string|max:255',
+            'pol' => 'required|string',
+            'pod' => 'required|string',
             'container_type' => 'required|in:GP,RF,OT,HC',
             'container_20' => 'nullable|string|max:10',
             'container_40' => 'nullable|string|max:10',
-            'liner' => 'required|string|max:255',
-            'free_time' => 'nullable|string|max:255',
+            'liner' => 'required|string',
+            'free_time' => 'nullable|string',
             'valid_date' => 'required|date',
-            'notes' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
         ]);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
-                return response()->json(['error' => 'You cannot edit other people\'s data!'], 403);
+                return response()->json(null, 403);
             }
         }
         if (strpos($validated['pod'], ',') !== false) {
@@ -108,10 +111,10 @@ class RateController extends Controller
                     'user_id' => Auth::id(),
                 ]);
             }
-            return response()->json();
+            return response()->json($rate, 200);
         }
         $rate->update($validated);
-        return response()->json(['success' => 'Data updated successfully!']);
+        return response()->json($rate, 200);
     }
 
     public function destroy($id): JsonResponse
@@ -119,10 +122,10 @@ class RateController extends Controller
         $rate = Rate::findOrFail($id);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
-                return response()->json(['error' => 'You cannot delete other people\'s data!'], 403);
+                return response()->json(null, 403);
             }
         }
         $rate->delete();
-        return response()->json(['success' => 'Data deleted successfully!']);
+        return response()->json(null, 204);
     }
 }

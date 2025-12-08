@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
             $table->date('report_date');
-            $table->string('concept_type', 20);
-            $table->string('activity_type', 20);
+            $table->enum('concept_type', ['NEW SHIPPER', 'FOLLOW UP']);
+            $table->enum('activity_type', ['VISIT', 'CALL']);
             $table->date('visit_date')->nullable();
+            $table->enum('status', ['CLOSING', 'PENDING', 'FAILED'])->nullable();
+            $table->string('status_detail')->nullable();
             $table->text('prospect')->nullable();
-            $table->string('status', 20)->nullable();
-            $table->text('status_detail')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('shipper_id')->constrained()->onDelete('cascade');
             $table->timestamps();

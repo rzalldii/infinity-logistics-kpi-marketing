@@ -23,8 +23,9 @@ return new class extends Migration
             $table->string('export')->nullable();
             $table->string('import')->nullable();
             $table->string('domestic')->nullable();
-            $table->string('commodity')->nullable();
+            $table->string('commodity');
             $table->date('input_date');
+            $table->text('notes')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

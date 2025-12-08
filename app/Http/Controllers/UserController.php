@@ -29,8 +29,8 @@ class UserController extends Controller
             'role' => 'required|in:super_admin,admin,marketing,guest',
         ]);
         $validated['password'] = Hash::make($validated['password']);
-        User::create($validated);
-        return response()->json(['success' => 'User added successfully!']);
+        $user = User::create($validated);
+        return response()->json($user, 201);
     }
 
     public function edit($id): JsonResponse
@@ -54,13 +54,13 @@ class UserController extends Controller
             unset($validated['password']);
         }
         $user->update($validated);
-        return response()->json(['success' => 'User updated successfully!']);
+        return response()->json($user, 200);
     }
 
     public function destroy($id): JsonResponse
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return response()->json(['success' => 'User deleted successfully!']);
+        return response()->json(null, 204);
     }
 }

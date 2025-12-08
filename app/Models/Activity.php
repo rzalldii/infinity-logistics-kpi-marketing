@@ -17,9 +17,9 @@ class Activity extends Model
         'shipper_id',
         'activity_type',
         'visit_date',
-        'prospect',
         'status',
         'status_detail',
+        'prospect',
     ];
 
     protected $casts = [

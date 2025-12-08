@@ -5,22 +5,72 @@ Report Activities | Admin Infinity Logistics Indonesia
 @section('content')
 <div class="container">
     <div class="page-inner">
-        <div class="page-header">
-            <h1 class="fw-bold mb-3">Report Activities</h1>
-        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
-                            <div class="card-title">Daily Report</div>
-                            <button class="btn btn-primary btn-round ms-auto" id="createNewActivity" data-bs-toggle="tooltip" title="Add">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                            <h1 class="card-title">Report Activities</h1>
+                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                <button class="btn btn-success btn-round ms-auto" id="ExportExcel">
+                                    <i class="fas fa-file-excel"></i> Export Excel
+                                </button>
+                                <button class="btn btn-info btn-round ms-2" id="ToggleColumns">
+                                    <i class="fas fa-eye"></i> Toggle Columns
+                                </button>
+                                <button class="btn btn-primary btn-round ms-2" id="createNewActivity">
+                                    <i class="fas fa-plus"></i> Add Data
+                                </button>
+                            @else
+                                <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
+                                    <i class="fas fa-eye"></i> Toggle Columns
+                                </button>
+                                <button class="btn btn-primary btn-round ms-2" id="createNewActivity">
+                                    <i class="fas fa-plus"></i> Add Data
+                                </button>
+                            @endif
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="modal fade" id="activityModal" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+                        <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header border-0">
+                                        <h5 class="modal-title" id="modalTitle">
+                                            <span class="fw-mediumbold">Export</span>
+                                            <span class="fw-light">Excel</span>
+                                        </h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="exportForm">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="form-label fw-bold" for="export_date_from">From Date <span class="text-danger">*</span></label>
+                                                        <input type="date" class="form-control" id="export_date_from" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="form-label fw-bold" for="export_date_to">To Date <span class="text-danger">*</span></label>
+                                                        <input type="date" class="form-control" id="export_date_to" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer border-0">
+                                        <button type="button" class="btn btn-success" id="confirmExport">
+                                            <i class="fas fa-download"></i> Download
+                                        </button>
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                                            <i class="fas fa-window-close"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
@@ -34,43 +84,40 @@ Report Activities | Admin Infinity Logistics Indonesia
                                             @csrf
                                             <input type="hidden" name="activity_id" id="activity_id">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group form-group-default">
-                                                        <label class="form-label" for="report_date">Report Date <span class="text-danger">*</span></label>
-                                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                                        <input type="date" class="form-control" name="report_date" id="report_date" value="{{ date('Y-m-d') }}" required>
-                                                        @else
-                                                        <input type="date" class="form-control" name="report_date" id="report_date" value="{{ date('Y-m-d') }}" readonly required>
-                                                        @endif
-                                                    </div>
-                                                </div>
+                                                <input type="hidden" name="report_date" id="report_date" value="{{ date('Y-m-d') }}">
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="concept_type">Concept Type <span class="text-danger">*</span></label>
                                                         <select class="form-select" name="concept_type" id="concept_type" required>
                                                             <option value="" disabled selected>Select Concept Type</option>
-                                                            <option value="new_shipper">NEW SHIPPER</option>
-                                                            <option value="follow_up">FOLLOW UP</option>
+                                                            <option value="NEW SHIPPER">NEW SHIPPER</option>
+                                                            <option value="FOLLOW UP">FOLLOW UP</option>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="shipper_id">Shipper Name <span class="text-danger">*</span></label>
-                                                        <select class="form-select" name="shipper_id" id="shipper_id" required>
+                                                        <select class="form-select select2" name="shipper_id" id="shipper_id" required>
                                                             <option value="" disabled selected>Select Shipper Name</option>
                                                             @foreach($shippers as $shipper)
-                                                            <option value="{{ $shipper->id }}" data-type="{{ $shipper->shipper_type }}">
-                                                            {{ Str::upper($shipper->shipper_name) }} - {{ Str::upper($shipper->shipper_city) }}
-                                                            </option>
+                                                                <option value="{{ $shipper->id }}" data-type="{{ $shipper->shipper_type }}" data-commodity="{{ $shipper->commodity }}">
+                                                                    {{ $shipper->shipper_name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6" id="edit_shipper_type_group" style="display: none;">
-                                                    <div class="form-group form-group-default">
-                                                        <label class="form-label" for="edit_shipper_type_display">Shipper Type</label>
-                                                        <input type="text" class="form-control" id="edit_shipper_type_display" readonly>
+                                                <div class="col-md-6">
+                                                    <div class="form-group form-group-default" id="shipper_type_group" style="display: none;">
+                                                        <label class="form-label" for="shipper_type_display">Shipper Type</label>
+                                                        <input type="text" class="form-control-plaintext" id="shipper_type_display" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group form-group-default" id="commodity_group" style="display: none;">
+                                                        <label class="form-label" for="commodity_display">Commodity</label>
+                                                        <input type="text" class="form-control-plaintext" id="commodity_display" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -78,8 +125,8 @@ Report Activities | Admin Infinity Logistics Indonesia
                                                         <label class="form-label" for="activity_type">Activity Type <span class="text-danger">*</span></label>
                                                         <select class="form-select" name="activity_type" id="activity_type" required>
                                                             <option value="" disabled selected>Select Activity Type</option>
-                                                            <option value="visit">VISIT</option>
-                                                            <option value="call">CALL</option>
+                                                            <option value="VISIT">VISIT</option>
+                                                            <option value="CALL">CALL</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -91,9 +138,9 @@ Report Activities | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="status">Status Type <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="status">Status</label>
                                                         <select class="form-select" name="status" id="status">
-                                                            <option value="" disabled selected>Select Status Type</option>
+                                                            <option value="" disabled selected>Select Status</option>
                                                             <option value="CLOSING">CLOSING</option>
                                                             <option value="PENDING">PENDING</option>
                                                             <option value="FAILED">FAILED</option>
@@ -108,8 +155,8 @@ Report Activities | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label class="form-label" for="prospect">Prospect</span></label>
-                                                        <textarea class="form-control-plaintext"name="prospect" id="prospect" rows="2"></textarea>
+                                                        <label class="form-label" for="prospect">Prospect</label>
+                                                        <textarea class="form-control" name="prospect" id="prospect" rows="1"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -118,7 +165,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                                     <div class="modal-footer border-0">
                                         <button type="button" id="saveBtn" class="btn btn-primary">
                                             <i class="fas fa-save"></i> Save
-                                        </button>    
+                                        </button>
                                         <button type="button" id="clearBtn" class="btn btn-warning text-white">
                                             <i class="fas fa-eraser"></i> Clear
                                         </button>
@@ -142,26 +189,26 @@ Report Activities | Admin Infinity Logistics Indonesia
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_report_date">Report Date</label>
-                                                    <input type="text" class="form-control-plaintext" id="view_report_date" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group form-group-default">
                                                     <label class="form-label" for="view_concept_type">Concept Type</label>
                                                     <input type="text" class="form-control-plaintext" id="view_concept_type" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_shipper_id">Shipper Name</label>
-                                                    <input type="text" class="form-control-plaintext" id="view_shipper_id" readonly>
+                                                    <label class="form-label" for="view_shipper_name">Shipper Name</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_name" readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6" id="shipper_type_group" style="display: none;">
-                                                <div class="form-group form-group-default">
-                                                    <label class="form-label" for="shipper_type">Shipper Type</label>
-                                                    <input type="text" class="form-control" id="shipper_type_display" readonly>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default" id="view_shipper_type_group">
+                                                    <label class="form-label" for="view_shipper_type">Shipper Type</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_type" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-default" id="view_commodity_group">
+                                                    <label class="form-label" for="view_commodity">Commodity</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_commodity" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -171,26 +218,26 @@ Report Activities | Admin Infinity Logistics Indonesia
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group form-group-default" id="visit_date_group" style="display: none;">
-                                                    <label class="form-label" for="visit_date">Visit Date</label>
-                                                    <input type="date" class="form-control" name="visit_date" id="visit_date">
+                                                <div class="form-group form-group-default" id="view_visit_date_group">
+                                                    <label class="form-label" for="view_visit_date">Visit Date</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_visit_date" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_status">Status Type</label>
+                                                    <label class="form-label" for="view_status">Status</label>
                                                     <input type="text" class="form-control-plaintext" id="view_status" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group form-group-default" id="status_detail_group" style="display: none;">
-                                                    <label class="form-label" for="status_detail">Status Detail</label>
-                                                    <input type="text" class="form-control" name="status_detail" id="status_detail">
+                                                <div class="form-group form-group-default" id="view_status_detail_group">
+                                                    <label class="form-label" for="view_status_detail">Status Detail</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_status_detail" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_prospect">Prospect</span></label>
+                                                    <label class="form-label" for="view_prospect">Prospect</label>
                                                     <textarea class="form-control-plaintext" id="view_prospect" rows="1" readonly></textarea>
                                                 </div>
                                             </div>
@@ -204,16 +251,35 @@ Report Activities | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
+                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <select class="form-select" id="filterUser">
+                                        <option value="">All Data</option>
+                                        @foreach($users as $user)
+                                        <option value="{{ $user->name }}">Data {{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         <div class="table-responsive">
-                            <table id="multi-filter-select" class="display table table-striped table-hover">
+                            <table id="multi-filter-select" class="display table table-striped table-hover" style="width:100%">
                                 <thead class="text-center">
                                     <tr>
                                         <th>DATE</th>
                                         <th>CONCEPT</th>
                                         <th>SHIPPER</th>
+                                        <th>TYPE</th>
+                                        <th>COMMODITY</th>
+                                        <th>ACTIVITY</th>
+                                        <th>VISIT</th>
+                                        <th>STATUS</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <th>CREATED</th>
+                                            <th>CREATED</th>
                                         @endif
                                         <th>ACTION</th>
                                     </tr>
@@ -223,51 +289,79 @@ Report Activities | Admin Infinity Logistics Indonesia
                                         <th>DATE</th>
                                         <th>CONCEPT</th>
                                         <th>SHIPPER</th>
+                                        <th>TYPE</th>
+                                        <th>COMMODITY</th>
+                                        <th>ACTIVITY</th>
+                                        <th>VISIT</th>
+                                        <th>STATUS</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <th>CREATED</th>
+                                            <th>CREATED</th>
                                         @endif
                                         <th>ACTION</th>
                                     </tr>
                                 </tfoot>
                                 <tbody class="text-center">
-                                    @forelse($activities as $activity)
+                                    @foreach($activities as $activity)
                                     <tr>
                                         <td>{{ Str::upper(\Carbon\Carbon::parse($activity->report_date)->format("d M")) }}</td>
-                                        <td>{{ Str::upper(str_replace('_', ' ', $activity->concept_type)) }}</td>
+                                        <td>{{ $activity->concept_type }}</td>
                                         <td>{{ Str::upper($activity->shipper->shipper_name) }}</td>
+                                        <td>{{ $activity->shipper->shipper_type }}</td>
+                                        <td>{{ $activity->shipper->commodity }}</td>
+                                        <td>{{ $activity->activity_type }}</td>
+                                        <td>
+                                            @if($activity->visit_date)
+                                                {{ Str::upper(\Carbon\Carbon::parse($activity->visit_date)->format("d M")) }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($activity->status)
+                                                {{ $activity->status }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info viewActivity" data-id="{{ $activity->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <td>{{ Str::upper($activity->user->name) }}</td>
+                                            <td>{{ Str::upper($activity->user->name) }}</td>
                                         @endif
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                                         <td>
-                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $activity->user_id == Auth::id()))
-                                            <button type="button" class="btn btn-sm btn-warning text-white editActivity" data-id="{{ $activity->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger deleteActivity" data-id="{{ $activity->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                                <button type="button" class="btn btn-sm btn-warning text-white editActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger deleteActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                             @else
-                                            <span class="btn btn-sm btn-secondary" style="cursor: default;" data-bs-toggle="tooltip" title="None">
-                                                <i class="fas fa-minus"></i>
-                                            </span>
+                                                @php
+                                                    $reportDate = \Carbon\Carbon::parse($activity->report_date)->format('Y-m-d');
+                                                    $today = \Carbon\Carbon::now()->format('Y-m-d');
+                                                    $isToday = ($reportDate === $today);
+                                                @endphp
+                                                @if($isToday)
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger deleteActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                        <i class="fas fa-lock"></i>
+                                                    </button>
+                                                @endif
                                             @endif
                                         </td>
-                                        @endif
                                     </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="@if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) 7 @elseif(Auth::user()->isMarketing()) 6 @else 5 @endif" class="text-center">
-                                            No Data Available
-                                        </td>
-                                    </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -276,54 +370,119 @@ Report Activities | Admin Infinity Logistics Indonesia
             </div>
         </div>
         <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card card-primary">
-                    <div class="card-header">
-                        <div class="card-title">WEEKLY SUMMARY</div>
-                        <p class="text-white mb-0"><small>{{ now()->startOfWeek()->format('d M') }} - {{ now()->endOfWeek()->format('d M Y') }}</small></p>
+            <div class="col-md-4">
+                <div class="card card-info">
+                    <div class="card-header text-center">
+                        <div class="card-title">DAILY SUMMARY</div>
+                        <p class="text-white mb-0">
+                            <small>{{ now()->format('d M Y') }}</small>
+                        </p>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6">
-                                <p><strong>New Shipper:</strong> {{ $weeklyReport->new_shipper_count ?? 0 }}</p>
-                                <p><strong>Follow Up:</strong> {{ $weeklyReport->follow_up_count ?? 0 }}</p>
+                                <p><strong>New Shipper :</strong> <span id="dailyNewShipper">{{ $dailyReport->new_shipper_count ?? 0 }}</span></p>
+                                <p><strong>Follow Up :</strong> <span id="dailyFollowUp">{{ $dailyReport->follow_up_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
-                                <p><strong>Visit:</strong> {{ $weeklyReport->visit_count ?? 0 }}</p>
-                                <p><strong>Call:</strong> {{ $weeklyReport->call_count ?? 0 }}</p>
+                                <p><strong>Visit :</strong> <span id="dailyVisit">{{ $dailyReport->visit_count ?? 0 }}</span></p>
+                                <p><strong>Call :</strong> <span id="dailyCall">{{ $dailyReport->call_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
-                        <p class="mb-0">
-                            <span class="badge badge-success">CLOSING: {{ $weeklyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING: {{ $weeklyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED: {{ $weeklyReport->failed_count ?? 0 }}</span>
+                        <div class="row">
+                            <div class="col-6">
+                                <p>Direct Shipper : <span id="dailyDirect">{{ $dailyReport->direct_shipper_count ?? 0 }}</span></p>
+                                <p>Forwarding : <span id="dailyForward">{{ $dailyReport->forwarding_count ?? 0 }}</span></p>
+                            </div>
+                            <div class="col-6">
+                                <p>Trading : <span id="dailyTrade">{{ $dailyReport->trading_count ?? 0 }}</span></p>
+                                <p>EMKL : <span id="dailyEmkl">{{ $dailyReport->emkl_count ?? 0 }}</span></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="mb-2 text-center">
+                            <span class="badge badge-success">CLOSING : <span id="dailyClosing">{{ $dailyReport->closing_count ?? 0 }}</span></span>
+                            <span class="badge badge-warning">PENDING : <span id="dailyPending">{{ $dailyReport->pending_count ?? 0 }}</span></span>
+                            <span class="badge badge-danger">FAILED : <span id="dailyFailed">{{ $dailyReport->failed_count ?? 0 }}</span></span>
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card card-primary">
-                    <div class="card-header">
-                        <div class="card-title">MONTHLY SUMMARY</div>
-                        <p class="text-white mb-0"><small>{{ now()->format('F Y') }}</small></p>
+                    <div class="card-header text-center">
+                        <div class="card-title">WEEKLY SUMMARY</div>
+                        <p class="text-white mb-0">
+                            <small>{{ now()->startOfWeek()->format('d M') }} - {{ now()->endOfWeek()->format('d M Y') }}</small>
+                        </p>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6">
-                                <p><strong>New Shipper:</strong> {{ $monthlyReport->new_shipper_count ?? 0 }}</p>
-                                <p><strong>Follow Up:</strong> {{ $monthlyReport->follow_up_count ?? 0 }}</p>
+                                <p><strong>New Shipper :</strong> <span id="weeklyNewShipper">{{ $weeklyReport->new_shipper_count ?? 0 }}</span></p>
+                                <p><strong>Follow Up :</strong> <span id="weeklyFollowUp">{{ $weeklyReport->follow_up_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
-                                <p><strong>Visit:</strong> {{ $monthlyReport->visit_count ?? 0 }}</p>
-                                <p><strong>Call:</strong> {{ $monthlyReport->call_count ?? 0 }}</p>
+                                <p><strong>Visit :</strong> <span id="weeklyVisit">{{ $weeklyReport->visit_count ?? 0 }}</span></p>
+                                <p><strong>Call :</strong> <span id="weeklyCall">{{ $weeklyReport->call_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
-                        <p class="mb-0">
-                            <span class="badge badge-success">CLOSING: {{ $monthlyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING: {{ $monthlyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED: {{ $monthlyReport->failed_count ?? 0 }}</span>
+                        <div class="row">
+                            <div class="col-6">
+                                <p>Direct Shipper : <span id="weeklyDirect">{{ $weeklyReport->direct_shipper_count ?? 0 }}</span></p>
+                                <p>Forwarding : <span id="weeklyForward">{{ $weeklyReport->forwarding_count ?? 0 }}</span></p>
+                            </div>
+                            <div class="col-6">
+                                <p>Trading : <span id="weeklyTrade">{{ $weeklyReport->trading_count ?? 0 }}</span></p>
+                                <p>EMKL : <span id="weeklyEmkl">{{ $weeklyReport->emkl_count ?? 0 }}</span></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="mb-2 text-center">
+                            <span class="badge badge-success">CLOSING : <span id="weeklyClosing">{{ $weeklyReport->closing_count ?? 0 }}</span></span>
+                            <span class="badge badge-warning">PENDING : <span id="weeklyPending">{{ $weeklyReport->pending_count ?? 0 }}</span></span>
+                            <span class="badge badge-danger">FAILED : <span id="weeklyFailed">{{ $weeklyReport->failed_count ?? 0 }}</span></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-secondary">
+                    <div class="card-header text-center">
+                        <div class="card-title">MONTHLY SUMMARY</div>
+                        <p class="text-white mb-0">
+                            <small>{{ now()->format('F Y') }}</small>
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <p><strong>New Shipper :</strong> <span id="monthlyNewShipper">{{ $monthlyReport->new_shipper_count ?? 0 }}</span></p>
+                                <p><strong>Follow Up :</strong> <span id="monthlyFollowUp">{{ $monthlyReport->follow_up_count ?? 0 }}</span></p>
+                            </div>
+                            <div class="col-6">
+                                <p><strong>Visit :</strong> <span id="monthlyVisit">{{ $monthlyReport->visit_count ?? 0 }}</span></p>
+                                <p><strong>Call :</strong> <span id="monthlyCall">{{ $monthlyReport->call_count ?? 0 }}</span></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                <p>Direct Shipper : <span id="monthlyDirect">{{ $monthlyReport->direct_shipper_count ?? 0 }}</span></p>
+                                <p>Forwarding : <span id="monthlyForward">{{ $monthlyReport->forwarding_count ?? 0 }}</span></p>
+                            </div>
+                            <div class="col-6">
+                                <p>Trading : <span id="monthlyTrade">{{ $monthlyReport->trading_count ?? 0 }}</span></p>
+                                <p>EMKL : <span id="monthlyEmkl">{{ $monthlyReport->emkl_count ?? 0 }}</span></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="mb-2 text-center">
+                            <span class="badge badge-success">CLOSING : <span id="monthlyClosing">{{ $monthlyReport->closing_count ?? 0 }}</span></span>
+                            <span class="badge badge-warning">PENDING : <span id="monthlyPending">{{ $monthlyReport->pending_count ?? 0 }}</span></span>
+                            <span class="badge badge-danger">FAILED : <span id="monthlyFailed">{{ $monthlyReport->failed_count ?? 0 }}</span></span>
                         </p>
                     </div>
                 </div>
@@ -340,33 +499,217 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     var userRole = "{{ Auth::user()->role }}";
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
-
+    var activitiesData = @json($activities);
+    var table;
+    function isSameDate(date1, date2) {
+        return date1.getFullYear() === date2.getFullYear() &&
+               date1.getMonth() === date2.getMonth() &&
+               date1.getDate() === date2.getDate();
+    }
+    function calculateSummaryFromFiltered(userName) {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var weekStart = new Date(today);
+        var day = weekStart.getDay();
+        var diff = weekStart.getDate() - day + (day === 0 ? -6 : 1);
+        weekStart.setDate(diff);
+        weekStart.setHours(0, 0, 0, 0);
+        var weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999);
+        var monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        monthStart.setHours(0, 0, 0, 0);
+        var monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        monthEnd.setHours(23, 59, 59, 999);
+        var daily = {
+            new_shipper: 0, follow_up: 0, visit: 0, call: 0,
+            direct: 0, forward: 0, trade: 0, emkl: 0,
+            closing: 0, pending: 0, failed: 0
+        };
+        var weekly = {
+            new_shipper: 0, follow_up: 0, visit: 0, call: 0,
+            direct: 0, forward: 0, trade: 0, emkl: 0,
+            closing: 0, pending: 0, failed: 0
+        };
+        var monthly = {
+            new_shipper: 0, follow_up: 0, visit: 0, call: 0,
+            direct: 0, forward: 0, trade: 0, emkl: 0,
+            closing: 0, pending: 0, failed: 0
+        };
+        activitiesData.forEach(function(activity) {
+            if (userName && activity.user && activity.user.name !== userName) {
+                return;
+            }
+            var reportDate = new Date(activity.report_date);
+            reportDate.setHours(0, 0, 0, 0);
+            if (reportDate.getTime() === today.getTime()) {
+                updateCounters(daily, activity);
+            }
+            if (reportDate >= weekStart && reportDate <= weekEnd) {
+                updateCounters(weekly, activity);
+            }
+            if (reportDate >= monthStart && reportDate <= monthEnd) {
+                updateCounters(monthly, activity);
+            }
+        });
+        updateSummaryUI(daily, weekly, monthly);
+    }
+    function updateCounters(counter, activity) {
+        if (activity.concept_type === 'NEW SHIPPER') counter.new_shipper++;
+        if (activity.concept_type === 'FOLLOW UP') counter.follow_up++;
+        if (activity.activity_type === 'VISIT') counter.visit++;
+        if (activity.activity_type === 'CALL') counter.call++;
+        if (activity.shipper) {
+            if (activity.shipper.shipper_type === 'DIRECT SHIPPER') counter.direct++;
+            if (activity.shipper.shipper_type === 'FORWARDING') counter.forward++;
+            if (activity.shipper.shipper_type === 'TRADING') counter.trade++;
+            if (activity.shipper.shipper_type === 'EMKL / TRANSPORTER') counter.emkl++;
+        }
+        if (activity.status === 'CLOSING') counter.closing++;
+        if (activity.status === 'PENDING') counter.pending++;
+        if (activity.status === 'FAILED') counter.failed++;
+    }
+    function updateSummaryUI(daily, weekly, monthly) {
+        $('#dailyNewShipper').text(daily.new_shipper);
+        $('#dailyFollowUp').text(daily.follow_up);
+        $('#dailyVisit').text(daily.visit);
+        $('#dailyCall').text(daily.call);
+        $('#dailyDirect').text(daily.direct);
+        $('#dailyForward').text(daily.forward);
+        $('#dailyTrade').text(daily.trade);
+        $('#dailyEmkl').text(daily.emkl);
+        $('#dailyClosing').text(daily.closing);
+        $('#dailyPending').text(daily.pending);
+        $('#dailyFailed').text(daily.failed);
+        $('#weeklyNewShipper').text(weekly.new_shipper);
+        $('#weeklyFollowUp').text(weekly.follow_up);
+        $('#weeklyVisit').text(weekly.visit);
+        $('#weeklyCall').text(weekly.call);
+        $('#weeklyDirect').text(weekly.direct);
+        $('#weeklyForward').text(weekly.forward);
+        $('#weeklyTrade').text(weekly.trade);
+        $('#weeklyEmkl').text(weekly.emkl);
+        $('#weeklyClosing').text(weekly.closing);
+        $('#weeklyPending').text(weekly.pending);
+        $('#weeklyFailed').text(weekly.failed);
+        $('#monthlyNewShipper').text(monthly.new_shipper);
+        $('#monthlyFollowUp').text(monthly.follow_up);
+        $('#monthlyVisit').text(monthly.visit);
+        $('#monthlyCall').text(monthly.call);
+        $('#monthlyDirect').text(monthly.direct);
+        $('#monthlyForward').text(monthly.forward);
+        $('#monthlyTrade').text(monthly.trade);
+        $('#monthlyEmkl').text(monthly.emkl);
+        $('#monthlyClosing').text(monthly.closing);
+        $('#monthlyPending').text(monthly.pending);
+        $('#monthlyFailed').text(monthly.failed);
+    }
+    $('#ExportExcel').on('click', function() {
+        var today = new Date();
+        var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        $('#export_date_from').val(formatDateForInput(firstDayOfMonth));
+        $('#export_date_to').val(formatDateForInput(today));
+        $('#exportModal').modal('show');
+    });
+    function formatDateForInput(date) {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+    $('#confirmExport').on('click', function() {
+        var dateFrom = $('#export_date_from').val();
+        var dateTo = $('#export_date_to').val();
+        if (!dateFrom || !dateTo) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Date Range',
+            });
+            return;
+        }
+        if (new Date(dateFrom) > new Date(dateTo)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Start Date Cannot Exceed End Date!',
+            });
+            return;
+        }
+        var url = "{{ route('activities.export.excel') }}";
+        url += '?date_from=' + dateFrom;
+        url += '&date_to=' + dateTo;
+        $('#confirmExport').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        $('#exportModal').modal('hide');
+        Swal.fire({
+            title: 'Preparing Excel...',
+            html: 'Exporting data from <b>' + dateFrom + '</b> to <b>' + dateTo + '</b>',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        setTimeout(function() {
+            window.location.href = url;
+            Swal.close();
+            $('#confirmExport').prop('disabled', false).html('<i class="fas fa-download"></i> Download Excel');
+            setTimeout(function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Export Complete!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }, 500);
+        }, 1000);
+    });
+    $('#export_date_from').on('change', function() {
+        var dateFrom = new Date($(this).val());
+        var dateTo = $('#export_date_to').val();
+        if (dateTo) {
+            var dateToObj = new Date(dateTo);
+            if (dateFrom > dateToObj) {
+                $('#export_date_to').val($(this).val());
+            }
+        }
+    });
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [3, 4, 5];
+            notOrderableColumns = [1, 3, 5, 7, 8, 9, 10];
         } else {
-            notOrderableColumns = [3, 4];
+            notOrderableColumns = [1, 3, 5, 7, 8, 9];
         }
-
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [3, 4, 5];
+            skipColumns = [0, 2, 4, 6, 8, 10];
         } else {
-            skipColumns = [3, 4];
+            skipColumns = [0, 2, 4, 6, 8, 9];
         }
-    
-        var table = $("#multi-filter-select").DataTable({
+        var hiddenColumns;
+        if (isAdmin) {
+            hiddenColumns = [3, 4, 6, 7, 9];
+        } else {
+            hiddenColumns = [3, 4, 6, 7];
+        }
+        table = $("#multi-filter-select").DataTable({
             pageLength: 10,
+            autoWidth: false,
             order: [[0, 'desc']],
             columnDefs: [
-                { orderable: false, targets: notOrderableColumns }
+            { 
+                orderable: false, 
+                targets: notOrderableColumns 
+            },
+            {
+                visible: false,
+                searchable: true,
+                targets: hiddenColumns
+            },
             ],
             language: {
                 emptyTable: "No data available in table",
+                zeroRecords: "No matching records found",
                 loadingRecords: "Loading Data...",
                 processing: "Processing your request...",
                 search: "Search:",
@@ -381,12 +724,10 @@ $(document).ready(function () {
                 this.api().columns().every(function () {
                     var column = this;
                     var columnIndex = column.index();
-
                     if (skipColumns.includes(columnIndex)) {
                         $(column.footer()).empty();
                         return;
                     }
-
                     var select = $('<select class="form-select"><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
                     .on("change", function () {
@@ -395,119 +736,152 @@ $(document).ready(function () {
                         .search(val ? "^" + val + "$" : "", true, false)
                         .draw();
                     });
-
+                    var uniqueValues = [];
                     column.data().unique().sort().each(function (d, j) {
-                        select.append(
-                            '<option value="' + d + '">' + d + "</option>"
-                        );
+                        if (d && !uniqueValues.includes(d)) {
+                            uniqueValues.push(d);
+                            select.append('<option value="' + d + '">' + d + "</option>");
+                        }
                     });
                 });
             },
         });
-
         table.on('draw', function () {
+            $('[data-bs-toggle="tooltip"]').tooltip('dispose');
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
-
+        $('#filterUser').on('change', function() {
+            if (!table) return;
+            var userName = this.value;
+            if (isAdmin) {
+                table.column(9).search(userName ? "^" + userName + "$" : "", true, false).draw();
+                calculateSummaryFromFiltered(userName);
+            }
+        });
     } catch (error) {
         console.error('DataTables initialization error:', error);
     }
-
-    // ✅ VIEW ACTIVITY BUTTON - FIXED
+    $('#ToggleColumns').on('click', function (e) {
+        e.preventDefault();
+        if (!table) return;
+        var $btn = $(this);
+        var isHidden = !table.column(3).visible();
+        table.columns([3, 4, 6, 7]).visible(isHidden);
+        if (isHidden) {
+            $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
+        } else {
+            $btn.html('<i class="fas fa-eye"></i> Toggle Columns');
+        }
+        table.columns.adjust().draw();
+    });
     $('body').on('click', '.viewActivity', function () {
         var activity_id = $(this).data('id');
-
         Swal.fire({
             title: 'Loading Data...',
-            text: 'Please wait a moment',
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             }
         });
-
         $.get("{{ route('activities.index') }}" + '/' + activity_id + '/edit', function (data) {
             Swal.close();
-
-            // Format report date - SAMA FORMAT DENGAN TABLE
-            if (data.report_date) {
-                var reportDate = new Date(data.report_date);
-                var day = reportDate.getDate().toString().padStart(2, '0');
-                var month = reportDate.toLocaleString('en', { month: 'short' }).toUpperCase();
-                $('#view_report_date').val(day + ' ' + month);
-            } else {
-                $('#view_report_date').val('-');
-            }
-
-            $('#view_concept_type').val(data.concept_type ? data.concept_type.replace('_', ' ').toUpperCase() : '-');
-            
-            // ✅ FIXED: Show shipper name AND shipper type
+            $('#view_concept_type').val(data.concept_type || '-');
             if (data.shipper) {
-                $('#view_shipper_name').val(data.shipper.shipper_name.toUpperCase());
-                
+                $('#view_shipper_name').val(data.shipper.shipper_name);
                 if (data.shipper.shipper_type) {
                     $('#view_shipper_type_group').show();
-                    $('#view_shipper_type').val(data.shipper.shipper_type.toUpperCase());
+                    $('#view_shipper_type').val(data.shipper.shipper_type);
                 } else {
                     $('#view_shipper_type_group').hide();
+                }
+                if (data.shipper.commodity) {
+                    $('#view_commodity_group').show();
+                    $('#view_commodity').val(data.shipper.commodity);
+                } else {
+                    $('#view_commodity_group').hide();
                 }
             } else {
                 $('#view_shipper_name').val('-');
                 $('#view_shipper_type_group').hide();
+                $('#view_commodity_group').hide();
             }
-            
-            $('#view_activity_type').val(data.activity_type ? data.activity_type.toUpperCase() : '-');
-            
-            // Format visit date jika ada
+            $('#view_activity_type').val(data.activity_type || '-');
             if (data.visit_date) {
                 var visitDate = new Date(data.visit_date);
-                var vDay = visitDate.getDate().toString().padStart(2, '0');
-                var vMonth = visitDate.toLocaleString('en', { month: 'short' }).toUpperCase();
-                $('#view_visit_date').val(vDay + ' ' + vMonth);
+                var formattedVisitDate = visitDate.getDate().toString().padStart(2, '0') + '/' + 
+                                    (visitDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
+                                    visitDate.getFullYear();
+                $('#view_visit_date').val(formattedVisitDate);
                 $('#view_visit_date_group').show();
             } else {
+                $('#view_visit_date').val('-');
                 $('#view_visit_date_group').hide();
             }
-
             $('#view_status').val(data.status || '-');
-            
             if (data.status_detail) {
                 $('#view_status_detail').val(data.status_detail);
                 $('#view_status_detail_group').show();
             } else {
+                $('#view_status_detail').val('-');
                 $('#view_status_detail_group').hide();
             }
-            
             $('#view_prospect').val(data.prospect || '-');
-
             $('#Viewactivity').modal('show');
-
-        }).fail(function(xhr) {
+        }).fail(function() {
             Swal.fire({
                 icon: 'error',
                 title: 'Failed to Load Data',
-                text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve activity information.',
                 confirmButtonColor: '#d33'
             });
         });
     });
-
-    // ✅ SHOW/HIDE CONDITIONAL FIELDS - FIXED FOR EDIT MODAL
+    if (!$('#shipper_id').hasClass("select2-hidden-accessible")) {
+        $('#shipper_id').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownParent: $('#activityModal'),
+            language: {
+                noResults: function() {
+                    return "No data found";
+                }
+            },
+            matcher: function(params, data) {
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+                if (typeof data.text === 'undefined') {
+                    return null;
+                }
+                if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                    return data;
+                }
+                return null;
+            }
+        });
+    }
     $('#shipper_id').on('change', function() {
         var selectedOption = $(this).find(':selected');
         var shipperType = selectedOption.data('type');
-        
+        var commodity = selectedOption.data('commodity');
         if ($(this).val()) {
-            $('#edit_shipper_type_group').show();
-            $('#edit_shipper_type_display').val(shipperType || '-');
+            $('#shipper_type_group').show();
+            $('#shipper_type_display').val(shipperType || '-');
+            if (commodity) {
+                $('#commodity_group').show();
+                $('#commodity_display').val(commodity);
+            } else {
+                $('#commodity_group').hide();
+                $('#commodity_display').val('');
+            }
         } else {
-            $('#edit_shipper_type_group').hide();
-            $('#edit_shipper_type_display').val('');
+            $('#shipper_type_group').hide();
+            $('#shipper_type_display').val('');
+            $('#commodity_group').hide();
+            $('#commodity_display').val('');
         }
     });
-
     $('#activity_type').change(function() {
-        if ($(this).val() === 'visit') {
+        if ($(this).val() === 'VISIT') {
             $('#visit_date_group').show();
             $('#visit_date').prop('required', true);
         } else {
@@ -516,7 +890,6 @@ $(document).ready(function () {
             $('#visit_date').val('');
         }
     });
-
     $('#status').change(function() {
         if ($(this).val()) {
             $('#status_detail_group').show();
@@ -524,243 +897,227 @@ $(document).ready(function () {
             $('#status_detail_group').hide();
         }
     });
-
-    if (hasActionColumn) {
-        // CREATE NEW ACTIVITY BUTTON
-        $('#createNewActivity').click(function () {
-            $('#saveBtn').val("create-activity");
-            $('#activity_id').val('');
-            $('#activityForm').trigger("reset");
-            
-            $('#report_date').val('{{ date("Y-m-d") }}');
-            
-            $('#edit_shipper_type_group').hide();
-            $('#visit_date_group').hide();
-            $('#status_detail_group').hide();
-            $('#visit_date').prop('required', false);
-            
-            $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Activity</span>');
-            $('#activityModal').modal('show');
-        });
-
-        // SAVE BUTTON
-        $('#saveBtn').click(function (e) {
-            e.preventDefault();
-
-            var formData = new FormData($('#activityForm')[0]);
-            var activity_id = $('#activity_id').val();
-            var url = activity_id ? "{{ route('activities.index') }}" + '/' + activity_id : "{{ route('activities.store') }}";
-            var actionText = activity_id ? 'updated' : 'added';
-
-            if (activity_id) {
-                formData.append('_method', 'PUT');
+    $('#createNewActivity').click(function () {
+        $('#saveBtn').val("create-activity");
+        $('#activity_id').val('');
+        $('#activityForm').trigger("reset");
+        $('#shipper_id').val(null).trigger('change');
+        $('#shipper_type_group').hide();
+        $('#commodity_group').hide();
+        $('#visit_date_group').hide();
+        $('#status_detail_group').hide();
+        $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Activity</span>');
+        $('#activityModal').modal('show');
+    });
+    $('#saveBtn').click(function (e) {
+        e.preventDefault();
+        var formData = new FormData($('#activityForm')[0]);
+        var activity_id = $('#activity_id').val();
+        var url = activity_id ? "{{ route('activities.index') }}" + '/' + activity_id : "{{ route('activities.store') }}";
+        if (activity_id) {
+            formData.append('_method', 'PUT');
+        }
+        $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
+                $('#activityForm').trigger("reset");
+                $('#activityModal').modal('hide');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Data Saved Successfully!',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(function() {
+                    location.reload();
+                });
+            },
+            error: function(response) {
+                $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
+                if (response.status === 422) {
+                    var errors = response.responseJSON.errors;
+                    var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
+                    $.each(errors, function(key, value) {
+                        errorList += '<li>' + value[0] + '</li>';
+                    });
+                    errorList += '</ul>';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        html: errorList,
+                        confirmButtonColor: '#d33'
+                    });
+                } else if (response.status === 403) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Access Denied',
+                        confirmButtonColor: '#d33'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Operation Failed',
+                        confirmButtonColor: '#d33'
+                    });
+                }
             }
-
-            $('#saveBtn').html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
-                    $('#activityForm').trigger("reset");
-                    $('#activityModal').modal('hide');
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'Data has been ' + actionText + ' successfully',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function() {
-                        location.reload();
-                    });
-                },
-                error: function(response) {
-                    $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
-
-                    if (response.status === 422) {
-                        var errors = response.responseJSON.errors;
-                        var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
-
-                        $.each(errors, function(key, value) {
-                            errorList += '<li>' + value[0] + '</li>';
-                        });
-                        errorList += '</ul>';
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Validation Error',
-                            html: errorList,
-                            confirmButtonColor: '#d33'
-                        });
-
-                    } else if (response.status === 403) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Access Denied',
-                            text: response.responseJSON?.error || 'You do not have permission to perform this action!',
-                            confirmButtonColor: '#d33'
-                        });
-
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Operation Failed',
-                            text: response.responseJSON?.error || response.responseJSON?.message || 'An error occurred on the server!',
-                            confirmButtonColor: '#d33'
-                        });
-                    }
-                }
-            });
         });
-
-        // CLEAR BUTTON
-        $('#clearBtn').click(function(e) {
-            e.preventDefault();
-
-            Swal.fire({
-                title: 'Clear Form?',
-                text: "All unsaved data will be lost!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Clear',
-                cancelButtonText: 'Cancel',
-                reverseButtons: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#activityForm').trigger("reset");
-                    
-                    $('#report_date').val('{{ date("Y-m-d") }}');
-                    
-                    $('#edit_shipper_type_group').hide();
-                    $('#visit_date_group').hide();
-                    $('#status_detail_group').hide();
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cleared!',
-                        text: 'Form has been cleared.',
-                        showConfirmButton: false,
-                        timer: 1000
-                    });
-                }
-            });
+    });
+    $('#clearBtn').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Clear This Form?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Clear',
+            cancelButtonText: 'Cancel',
+            reverseButtons: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#activityForm').trigger("reset");
+                $('#shipper_id').val(null).trigger('change');
+                $('#shipper_type_group').hide();
+                $('#commodity_group').hide();
+                $('#visit_date_group').hide();
+                $('#status_detail_group').hide();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Form Cleared Successfully!',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
         });
-
-        // ✅ EDIT ACTIVITY BUTTON - FIXED
-        $('body').on('click', '.editActivity', function () {
-            var activity_id = $(this).data('id');
-
-            Swal.fire({
-                title: 'Loading Data...',
-                text: 'Please wait a moment',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            $.get("{{ route('activities.index') }}" + '/' + activity_id + '/edit', function (data) {
-                Swal.close();
-
-                $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">Activity</span>');
-                $('#saveBtn').val("edit-activity");
-
-                $('#activityModal').modal('show');
-
-                $('#activity_id').val(data.id);
-                $('#report_date').val(data.report_date);
-                $('#concept_type').val(data.concept_type);
-                $('#shipper_id').val(data.shipper_id).trigger('change'); // ✅ Trigger change untuk show shipper_type
-                $('#activity_type').val(data.activity_type).trigger('change'); // ✅ Trigger untuk visit_date
-                $('#visit_date').val(data.visit_date);
-                $('#prospect').val(data.prospect);
-                $('#status').val(data.status).trigger('change'); // ✅ Trigger untuk status_detail
-                $('#status_detail').val(data.status_detail);
-
-            }).fail(function(xhr) {
+    });
+    $('body').on('click', '.editActivity', function () {
+        var activity_id = $(this).data('id');
+        var reportDate = $(this).data('report-date');
+        if (userRole === 'marketing') {
+            var activityDate = new Date(reportDate);
+            var today = new Date();
+            if (!isSameDate(activityDate, today)) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Failed to Load Data',
-                    text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'Unable to retrieve activity information. Please try again.',
+                    title: 'Access Denied',
                     confirmButtonColor: '#d33'
                 });
-            });
+                return false;
+            }
+        }
+        Swal.fire({
+            title: 'Loading Data...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
-
-        // DELETE ACTIVITY BUTTON
-        $('body').on('click', '.deleteActivity', function () {
-            var activity_id = $(this).data("id");
-            var row = $(this).closest('tr');
-
+        $.get("{{ route('activities.index') }}" + '/' + activity_id + '/edit', function (data) {
+            Swal.close();
+            $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">Activity</span>');
+            $('#saveBtn').val("edit-activity");
+            $('#activityModal').modal('show');
+            $('#activity_id').val(data.id);
+            $('#concept_type').val(data.concept_type);
+            $('#shipper_id').val(data.shipper_id).trigger('change');
+            $('#activity_type').val(data.activity_type).trigger('change');
+            if (data.visit_date) {
+                var visitDate = new Date(data.visit_date);
+                var formattedDate = visitDate.getFullYear() + '-' + 
+                                    String(visitDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                    String(visitDate.getDate()).padStart(2, '0');
+                $('#visit_date').val(formattedDate);
+            }
+            $('#status').val(data.status).trigger('change');
+            $('#status_detail').val(data.status_detail);
+            $('#prospect').val(data.prospect);
+        }).fail(function() {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, Delete',
-                cancelButtonText: 'Cancel',
-                reverseButtons: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-
-                    Swal.fire({
-                        title: 'Deleting Data...',
-                        text: 'Please wait a moment',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    $.ajax({
-                        type: "DELETE",
-                        url: "{{ route('activities.index') }}" + '/' + activity_id,
-                        success: function (response) {
-                            row.fadeOut(300, function() {
-                                table.row($(this)).remove().draw(false);
-                            });
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Deleted!',
-                                text: 'Data has been deleted successfully.',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        },
-                        error: function (xhr) {
-                            console.error('Error:', xhr);
-                            if (xhr.status === 403) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Access Denied',
-                                    text: xhr.responseJSON?.error || 'You do not have permission to delete this data!',
-                                    confirmButtonColor: '#d33'
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Deletion Failed',
-                                    text: xhr.responseJSON?.error || xhr.responseJSON?.message || 'An error occurred while deleting data!',
-                                    confirmButtonColor: '#d33'
-                                });
-                            }
-                        }
-                    });
-                }
+                icon: 'error',
+                title: 'Failed to Load Data',
+                confirmButtonColor: '#d33'
             });
         });
-    }
+    });
+    $('body').on('click', '.deleteActivity', function () {
+        var activity_id = $(this).data("id");
+        var reportDate = $(this).data('report-date');
+        if (userRole === 'marketing') {
+            var activityDate = new Date(reportDate);
+            var today = new Date();
+            if (!isSameDate(activityDate, today)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    confirmButtonColor: '#d33'
+                });
+                return false;
+            }
+        }
+        var row = $('#row-' + activity_id);
+        Swal.fire({
+            title: 'Delete This Data?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel',
+            reverseButtons: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Deleting Data...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                $.ajax({
+                    type: "DELETE",
+                    url: "{{ route('activities.index') }}" + '/' + activity_id,
+                    success: function (response) {
+                        row.fadeOut(300, function() {
+                            if (table) {
+                                table.row($(this)).remove().draw(false);
+                            }
+                            var currentFilter = $('#filterUser').val();
+                            calculateSummaryFromFiltered(currentFilter);
+                        });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Data Deleted Successfully!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error('Error:', xhr);
+                        if (xhr.status === 403) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Access Denied',
+                                confirmButtonColor: '#d33'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Deletion Failed',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
 });
 </script>
 @endsection('script')

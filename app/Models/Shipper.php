@@ -24,6 +24,7 @@ class Shipper extends Model
         'domestic',
         'commodity',
         'input_date',
+        'notes',
     ];
 
     protected $casts = [

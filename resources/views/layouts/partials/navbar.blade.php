@@ -3,7 +3,7 @@
         <div class="sidebar-logo">
             <div class="logo-header" data-background-color="dark">
                 <!-- <div class="logo">
-                    <img src="<?php echo url('/'); ?>/img/logo.png" class="navbar-brand" height="20" alt=""/>
+                    <img src="{{ url('/') }}/img/logo.png" class="navbar-brand" height="20" alt=""/>
                 </div> -->
                 <div class="nav-toggle">
                     <button class="btn btn-toggle toggle-sidebar">
@@ -55,6 +55,12 @@
                     @endif
                     @if(Auth::user()->isSuperAdmin())
                     <li class="nav-item">
+                        <a href="/audit">
+                            <i class="fas fa-history"></i>
+                            <p>Audit Logs</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="/users">
                             <i class="fas fa-user"></i>
                             <p>User Management</p>
@@ -70,7 +76,7 @@
             <div class="main-header-logo">
                 <div class="logo-header" data-background-color="dark">
                     <!-- <div class="logo">
-                        <img src="<?php echo url('/'); ?>/img/logo.png" class="navbar-brand" height="20" alt=""/>
+                        <img src="{{ url('/') }}/img/logo.png" class="navbar-brand" height="20" alt=""/>
                     </div> -->
                     <div class="nav-toggle">
                         <button class="btn btn-toggle toggle-sidebar">

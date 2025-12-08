@@ -8,14 +8,14 @@
     <title>Sign In | Admin Infinity Logistics Indonesia</title>
 
     <meta name="theme-color" content="#6777ef">
-    <link rel="apple-touch-icon" href="<?php echo url('/'); ?>/img/favicon.ico">
-    <link rel="manifest" href="<?php echo url('/'); ?>/manifest.json">
+    <link rel="apple-touch-icon" href="{{ url('/') }}/img/favicon.ico">
+    <link rel="manifest" href="{{ url('/') }}/manifest.json">
 
     <!-- Favicons -->
-    <link href="<?php echo url('/'); ?>/img/favicon.ico" rel="icon" alt="Icon Infinity">
+    <link href="{{ url('/') }}/img/favicon.ico" rel="icon" alt="Icon Infinity">
 
     <!-- Fonts and icons -->
-    <script src="<?php echo url('/'); ?>/js/plugin/webfont/webfont.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/webfont/webfont.min.js"></script>
     <script>
         WebFont.load({
         google: { families: ["Public Sans:300,400,500,600,700"] },
@@ -26,7 +26,7 @@
             "Font Awesome 5 Brands",
             "simple-line-icons",
             ],
-            urls: ["<?php echo url('/'); ?>/css/fonts.min.css"],
+            urls: ["{{ url('/') }}/css/fonts.min.css"],
             },
             active: function () {
             sessionStorage.fonts = true;
@@ -35,14 +35,14 @@
     </script>
 
     <!-- Preload CSS Files -->
-    <link href="<?php echo url('/'); ?>/css/bootstrap.min.css" rel="preload" as="style">
-    <link href="<?php echo url('/'); ?>/css/plugins.min.css" rel="preload" as="style">
-    <link href="<?php echo url('/'); ?>/css/kaiadmin.min.css" rel="preload" as="style">
+    <link href="{{ url('/') }}/css/bootstrap.min.css" rel="preload" as="style">
+    <link href="{{ url('/') }}/css/plugins.min.css" rel="preload" as="style">
+    <link href="{{ url('/') }}/css/kaiadmin.min.css" rel="preload" as="style">
 
     <!-- Stylesheet CSS Files -->
-    <link href="<?php echo url('/'); ?>/css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?php echo url('/'); ?>/css/plugins.min.css" rel="stylesheet">
-    <link href="<?php echo url('/'); ?>/css/kaiadmin.min.css" rel="stylesheet">
+    <link href="{{ url('/') }}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url('/') }}/css/plugins.min.css" rel="stylesheet">
+    <link href="{{ url('/') }}/css/kaiadmin.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container d-flex flex-column">
@@ -51,36 +51,29 @@
                 <div class="card smooth-shadow-md">
                     <div class="card-body p-6">
                         <div class="mb-4">
-                            <img src="<?php echo url('/'); ?>/img/logo.png" width="150" class="d-block mx-auto" alt="">
+                            <img src="{{ url('/') }}/img/logo.png" width="150" class="d-block mx-auto" alt="">
                         </div>
-                        <form method="POST" action="{{ route('login.post') }}">
+                        <form id="loginForm" method="POST" action="{{ route('login.post') }}">
                             @csrf
                             @if(session('error'))
                                 <div class="alert alert-danger">{{ session('error') }}</div>
                             @endif
-                            @if(session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
-                            @endif
                             <div class="mb-3">
                                 <label for="login" class="form-label">Name or Email</label>
-                                <input type="text" name="login" class="form-control @error('login') is-invalid @enderror" value="{{ old('login') }}" required>
-                                @error('login')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <input type="text" name="login" class="form-control" value="{{ old('login') }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <div style="position: relative;">
-                                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                                    <input type="password" name="password" class="form-control" required>
                                     <i class="fa fa-eye" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
-                                    @error('password')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
                             </div>
                             <div>
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">Sign in</button>
+                                    <button id="loginBtn" type="submit" class="btn btn-primary">
+                                        <i class="fas fa-sign-in-alt"></i> Sign in
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -94,28 +87,27 @@
     </div>
 
     <!--   Core JS Files   -->
-    <script src="<?php echo url('/'); ?>/js/core/jquery.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/core/popper.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/core/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/chart.js/chart.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/chart-circle/circles.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/datatables/datatables.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/jsvectormap/jsvectormap.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/jsvectormap/world.js"></script>
-    <script src="<?php echo url('/'); ?>/js/plugin/sweetalert2/sweetalert2.all.min.js"></script>
-    <script src="<?php echo url('/'); ?>/js/kaiadmin.min.js"></script>
-    <script src="<?php echo url('/'); ?>/sw.js'"></script>
+    <script src="{{ url('/') }}/js/core/jquery.min.js"></script>
+    <script src="{{ url('/') }}/js/core/popper.min.js"></script>
+    <script src="{{ url('/') }}/js/core/bootstrap.bundle.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/chart.js/chart.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/chart-circle/circles.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/datatables/datatables.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/jsvectormap/world.js"></script>
+    <script src="{{ url('/') }}/js/plugin/select2/select2.full.min.js"></script>
+    <script src="{{ url('/') }}/js/plugin/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="{{ url('/') }}/js/kaiadmin.min.js"></script>
+    <script src="{{ url('/') }}/sw.js'"></script>
     <script>
     if (!navigator.serviceWorker.controller) {
         navigator.serviceWorker.register("/sw.js").then(function (reg) {
             console.log("Service worker registered: " + reg.scope);
         });
     }
-    </script>
-    <script>
     $(document).ready(function() {
         $('#togglePassword').on('click', function() {
             const passwordField = $('input[name="password"]');
@@ -128,6 +120,16 @@
                 eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
             }
         });
+    });
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Credentials!',
+            confirmButtonColor: '#d33'
+        });
+    @endif
+    $('#loginForm').on('submit', function() {
+        $('#loginBtn').html('<i class="fas fa-spinner fa-spin"></i> Signing in...').prop('disabled', true);
     });
     </script>
 </body>

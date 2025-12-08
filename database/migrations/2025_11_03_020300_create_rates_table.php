@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('liner');
             $table->string('free_time')->nullable();
             $table->date('valid_date');
-            $table->string('notes')->nullable();
+            $table->text('notes')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
