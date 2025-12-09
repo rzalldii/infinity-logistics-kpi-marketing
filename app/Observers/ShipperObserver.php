@@ -15,6 +15,7 @@ class ShipperObserver
             'event' => 'created',
             'user_id' => Auth::id(),
             'description' => strtoupper($shipper->shipper_name),
+            'new_values' => $shipper->toArray(),
         ]);
     }
 
@@ -26,6 +27,8 @@ class ShipperObserver
             'event' => 'updated',
             'user_id' => Auth::id(),
             'description' => strtoupper($shipper->shipper_name),
+            'old_values' => $shipper->getOriginal(),
+            'new_values' => $shipper->getChanges(),
         ]);
     }
 
@@ -37,6 +40,7 @@ class ShipperObserver
             'event' => 'deleted',
             'user_id' => Auth::id(),
             'description' => strtoupper($shipper->shipper_name),
+            'old_values' => $shipper->toArray(),
         ]);
     }
 }

@@ -503,6 +503,7 @@ $(document).ready(function () {
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var activitiesData = @json($activities);
     var table;
+    var isTableReady = false;
     function isSameDate(date1, date2) {
         return date1.getFullYear() === date2.getFullYear() &&
                date1.getMonth() === date2.getMonth() &&
@@ -721,6 +722,8 @@ $(document).ready(function () {
                 }
             },
             initComplete: function () {
+                isTableReady = true;
+                console.log('DataTable initialized successfully');
                 this.api().columns().every(function () {
                     var column = this;
                     var columnIndex = column.index();
@@ -744,26 +747,34 @@ $(document).ready(function () {
                         }
                     });
                 });
+                calculateSummaryFromFiltered(null);
             },
         });
         table.on('draw', function () {
             $('[data-bs-toggle="tooltip"]').tooltip('dispose');
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
-        $('#filterUser').on('change', function() {
-            if (!table) return;
-            var userName = this.value;
-            if (isAdmin) {
-                table.column(9).search(userName ? "^" + userName + "$" : "", true, false).draw();
-                calculateSummaryFromFiltered(userName);
-            }
-        });
     } catch (error) {
         console.error('DataTables initialization error:', error);
     }
+    $('#filterUser').on('change', function() {
+        if (!isTableReady || !table) {
+            console.warn('Table not ready yet');
+            return;
+        }
+        var userName = this.value;
+        if (isAdmin) {
+            var searchValue = userName ? "^" + userName + "$" : "";
+            table.column(9).search(searchValue, true, false).draw();
+            calculateSummaryFromFiltered(userName);
+        }
+    });
     $('#ToggleColumns').on('click', function (e) {
         e.preventDefault();
-        if (!table) return;
+        if (!isTableReady || !table) {
+            console.warn('Table not ready yet');
+            return;
+        }
         var $btn = $(this);
         var isHidden = !table.column(3).visible();
         table.columns([3, 4, 6, 7]).visible(isHidden);
@@ -1060,7 +1071,8 @@ $(document).ready(function () {
                 return false;
             }
         }
-        var row = $('#row-' + activity_id);
+        var $row = $(this).closest('tr');
+        var dtRow = table.row($row);
         Swal.fire({
             title: 'Delete This Data?',
             icon: 'warning',
@@ -1084,13 +1096,16 @@ $(document).ready(function () {
                     type: "DELETE",
                     url: "{{ route('activities.index') }}" + '/' + activity_id,
                     success: function (response) {
-                        row.fadeOut(300, function() {
-                            if (table) {
-                                table.row($(this)).remove().draw(false);
-                            }
-                            var currentFilter = $('#filterUser').val();
-                            calculateSummaryFromFiltered(currentFilter);
+                        if (isTableReady && table) {
+                            dtRow.remove();
+                            table.draw(false);
+                        }
+                        $row.fadeOut(300);
+                        activitiesData = activitiesData.filter(function(activity) {
+                            return activity.id !== activity_id;
                         });
+                        var currentFilter = $('#filterUser').val();
+                        calculateSummaryFromFiltered(currentFilter);
                         Swal.fire({
                             icon: 'success',
                             title: 'Data Deleted Successfully!',

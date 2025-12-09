@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Audit;
-use App\Models\Rate;
-use App\Models\Shipper;
-use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,20 +27,18 @@ class AuditController extends Controller
             return [
                 'id' => $log->id,
                 'type' => $type,
+                'auditable_type' => $log->auditable_type,
+                'auditable_id' => $log->auditable_id,
                 'user' => $log->user,
                 'description' => $log->description,
-                'detail' => ucfirst($log->event),
+                'action' => ucfirst($log->event),
                 'created_at' => $log->created_at
             ];
         });
-        $totalRates = Rate::count();
-        $totalShippers = Shipper::count();
-        $totalActivities = Activity::count();
-        $totalLogs = $logs->count();
         $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])
             ->where('id', '!=', Auth::id())
             ->orderBy('name')
             ->get();
-        return view('pages.audit', compact('logs', 'totalRates', 'totalShippers', 'totalActivities', 'totalLogs', 'users'));
+        return view('pages.audit', compact('logs', 'users'));
     }
 }

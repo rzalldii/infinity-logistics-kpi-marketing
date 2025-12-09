@@ -15,6 +15,7 @@ class RateObserver
             'event' => 'created',
             'user_id' => Auth::id(),
             'description' => strtoupper($rate->pol) . ' - ' . strtoupper($rate->pod),
+            'new_values' => $rate->toArray(),
         ]);
     }
 
@@ -26,6 +27,8 @@ class RateObserver
             'event' => 'updated',
             'user_id' => Auth::id(),
             'description' => strtoupper($rate->pol) . ' - ' . strtoupper($rate->pod),
+            'old_values' => $rate->getOriginal(),
+            'new_values' => $rate->getChanges(),
         ]);
     }
 
@@ -37,6 +40,7 @@ class RateObserver
             'event' => 'deleted',
             'user_id' => Auth::id(),
             'description' => strtoupper($rate->pol) . ' - ' . strtoupper($rate->pod),
+            'old_values' => $rate->toArray(),
         ]);
     }
 }

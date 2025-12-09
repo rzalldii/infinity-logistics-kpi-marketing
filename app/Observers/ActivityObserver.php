@@ -15,6 +15,7 @@ class ActivityObserver
             'event' => 'created',
             'user_id' => Auth::id(),
             'description' => $activity->concept_type . ' - ' . $activity->activity_type,
+            'new_values' => $activity->toArray(),
         ]);
     }
 
@@ -26,6 +27,8 @@ class ActivityObserver
             'event' => 'updated',
             'user_id' => Auth::id(),
             'description' => $activity->concept_type . ' - ' . $activity->activity_type,
+            'old_values' => $activity->getOriginal(),
+            'new_values' => $activity->getChanges(),
         ]);
     }
 
@@ -37,6 +40,7 @@ class ActivityObserver
             'event' => 'deleted',
             'user_id' => Auth::id(),
             'description' => $activity->concept_type . ' - ' . $activity->activity_type,
+            'old_values' => $activity->toArray(),
         ]);
     }
 }

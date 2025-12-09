@@ -108,6 +108,8 @@
             console.log("Service worker registered: " + reg.scope);
         });
     }
+    </script>
+    <script>
     $(document).ready(function() {
         $('#togglePassword').on('click', function() {
             const passwordField = $('input[name="password"]');
