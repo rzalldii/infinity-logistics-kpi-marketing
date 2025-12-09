@@ -78,7 +78,7 @@ Audit Logs | Admin Infinity Logistics Indonesia
                                         @endif
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-info viewAudit" data-action="{{ $log['action'] }}" data-old="{{ json_encode($log['old_values']) }}" data-new="{{ json_encode($log['new_values']) }}">
+                                        <button type="button" class="btn btn-sm btn-info viewAudit" data-type="{{ $log['auditable_type'] }}" data-action="{{ $log['action'] }}" data-old="{{ json_encode($log['old_values']) }}" data-new="{{ json_encode($log['new_values']) }}">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </td>
@@ -168,53 +168,65 @@ $(document).ready(function () {
         }
     });
     $('body').on('click', '.viewAudit', function() {
+        var type = $(this).data('type');
         var action = $(this).data('action');
-        var oldVal = $(this).data('old');
-        var newVal = $(this).data('new');
+        var oldVal = $(this).data('old') || {};
+        var newVal = $(this).data('new') || {};
         var tbody = $('#auditChangesTable tbody');
         tbody.empty();
+        var fieldOrder = {
+            'Rate': [
+                'pol', 'pod', 'container_type', 'container_20', 'container_40', 
+                'liner', 'free_time', 'valid_date', 'notes'
+            ],
+            'Shipper': [
+                'shipper_name', 'shipper_type', 'shipper_city', 'shipper_address', 
+                'contact_person', 'phone_number', 'email_address', 
+                'export', 'import', 'domestic', 'commodity', 'notes'
+            ],
+            'Activity': [
+                'concept_type', 'shipper_id', 'activity_type', 'visit_date', 
+                'status', 'status_detail', 'prospect'
+            ]
+        };
+        function formatLabel(key) {
+            return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
         function formatVal(val) {
-            if (val === null) return '—';
+            if (val === null || val === undefined || val === '') return '—';
             if (typeof val === 'object') return JSON.stringify(val);
             return val;
         }
-        if (action === 'Created') {
-            $.each(newVal, function(key, value) {
-                tbody.append(`
-                    <tr>
-                        <td class="fw-bold">${key}</td>
-                        <td class="text-muted"><em>Created</em></td>
-                        <td class="text-success">${formatVal(value)}</td>
-                    </tr>
-                `);
-            });
-        } else if (action === 'Updated') {
-            $.each(newVal, function(key, value) {
-                if(key === 'updated_at') return;
-                var oldValue = (oldVal && oldVal[key] !== undefined) ? oldVal[key] : null;
-                var newValue = value;
-                var isChanged = String(oldValue) !== String(newValue);
-                var oldStyle = isChanged ? 'class="text-danger"' : 'class="text-muted"';
-                var newStyle = isChanged ? 'class="text-success"' : 'class="text-muted"';
-                tbody.append(`
-                    <tr>
-                        <td class="fw-bold">${key}</td>
-                        <td ${oldStyle}>${formatVal(oldValue)}</td>
-                        <td ${newStyle}>${formatVal(newValue)}</td>
-                    </tr>
-                `);
-            });
-        } else if (action === 'Deleted') {
-            $.each(oldVal, function(key, value) {
-                tbody.append(`
-                    <tr>
-                        <td class="fw-bold">${key}</td>
-                        <td class="text-danger">${formatVal(value)}</td>
-                        <td class="text-muted"><em>Deleted</em></td>
-                    </tr>
-                `);
-            });
-        }
+        var columnsToShow = fieldOrder[type] ? fieldOrder[type] : Object.keys({...oldVal, ...newVal});
+        $.each(columnsToShow, function(i, key) {
+            var rawOld = oldVal[key]; 
+            var rawNew = newVal[key];
+            var oldContent = formatVal(rawOld);
+            var newContent = formatVal(rawNew);
+            var isChanged = String(rawOld ?? '') !== String(rawNew ?? '');
+            if (action === 'Updated') {
+                if (isChanged) {
+                    newContent = `<span class="text-success">${newContent}</span>`;
+                    oldContent = `<span class="text-danger">${oldContent}</span>`;
+                } else {
+                    oldContent = `<span class="text-muted">${oldContent}</span>`;
+                    newContent = `<span class="text-muted">${newContent}</span>`;
+                }
+            } else if (action === 'Created') {
+                oldContent = '<span class="text-muted">Created</span>';
+                newContent = `<span class="text-success">${newContent}</span>`;
+            } else if (action === 'Deleted') {
+                oldContent = `<span class="text-danger">${oldContent}</span>`;
+                newContent = '<span class="text-muted">Deleted</span>';
+            }
+            tbody.append(`
+                <tr>
+                    <td class="fw-bold">${formatLabel(key)}</td>
+                    <td>${oldContent}</td>
+                    <td>${newContent}</td>
+                </tr>
+            `);
+        });
         var myModal = new bootstrap.Modal(document.getElementById('Viewaudit'));
         myModal.show();
     });
