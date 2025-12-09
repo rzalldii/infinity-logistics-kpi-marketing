@@ -28,7 +28,7 @@ class ActivityObserver
             'user_id' => Auth::id(),
             'description' => $activity->concept_type . ' - ' . $activity->activity_type,
             'old_values' => $activity->getOriginal(),
-            'new_values' => $activity->getChanges(),
+            'new_values' => $activity->getAttributes(),
         ]);
     }
 

@@ -324,7 +324,7 @@ $(document).ready(function () {
         }
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [3, 4, 7, 9];
+            skipColumns = [3, 4, 7, 8, 9];
         } else if (hasActionColumn) {
             skipColumns = [3, 4, 7, 8];
         } else {
@@ -332,7 +332,7 @@ $(document).ready(function () {
         }
         var hiddenColumns;
         if (isAdmin) {
-            hiddenColumns = [0, 2, 8];
+            hiddenColumns = [0, 2];
         } else if (hasActionColumn) {
             hiddenColumns = [0, 2];
         } else {

@@ -397,7 +397,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                             </div>
                             <div class="col-6">
                                 <p>Trading : <span id="dailyTrade">{{ $dailyReport->trading_count ?? 0 }}</span></p>
-                                <p>EMKL : <span id="dailyEmkl">{{ $dailyReport->emkl_count ?? 0 }}</span></p>
+                                <p>Transporter : <span id="dailyEmkl">{{ $dailyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
@@ -436,7 +436,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                             </div>
                             <div class="col-6">
                                 <p>Trading : <span id="weeklyTrade">{{ $weeklyReport->trading_count ?? 0 }}</span></p>
-                                <p>EMKL : <span id="weeklyEmkl">{{ $weeklyReport->emkl_count ?? 0 }}</span></p>
+                                <p>Transporter : <span id="weeklyEmkl">{{ $weeklyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
@@ -475,7 +475,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                             </div>
                             <div class="col-6">
                                 <p>Trading : <span id="monthlyTrade">{{ $monthlyReport->trading_count ?? 0 }}</span></p>
-                                <p>EMKL : <span id="monthlyEmkl">{{ $monthlyReport->emkl_count ?? 0 }}</span></p>
+                                <p>Transporter : <span id="monthlyEmkl">{{ $monthlyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
@@ -683,13 +683,13 @@ $(document).ready(function () {
         }
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [0, 2, 4, 6, 8, 10];
+            skipColumns = [0, 2, 4, 6, 8, 9, 10];
         } else {
             skipColumns = [0, 2, 4, 6, 8, 9];
         }
         var hiddenColumns;
         if (isAdmin) {
-            hiddenColumns = [3, 4, 6, 7, 9];
+            hiddenColumns = [3, 4, 6, 7];
         } else {
             hiddenColumns = [3, 4, 6, 7];
         }

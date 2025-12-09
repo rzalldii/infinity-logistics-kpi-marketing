@@ -32,7 +32,9 @@ class AuditController extends Controller
                 'user' => $log->user,
                 'description' => $log->description,
                 'action' => ucfirst($log->event),
-                'created_at' => $log->created_at
+                'created_at' => $log->created_at,
+                'old_values' => $log->old_values, 
+                'new_values' => $log->new_values,
             ];
         });
         $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])

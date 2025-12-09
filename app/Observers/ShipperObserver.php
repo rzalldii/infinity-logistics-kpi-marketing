@@ -28,7 +28,7 @@ class ShipperObserver
             'user_id' => Auth::id(),
             'description' => strtoupper($shipper->shipper_name),
             'old_values' => $shipper->getOriginal(),
-            'new_values' => $shipper->getChanges(),
+            'new_values' => $shipper->getAttributes(),
         ]);
     }
 

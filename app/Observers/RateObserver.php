@@ -28,7 +28,7 @@ class RateObserver
             'user_id' => Auth::id(),
             'description' => strtoupper($rate->pol) . ' - ' . strtoupper($rate->pod),
             'old_values' => $rate->getOriginal(),
-            'new_values' => $rate->getChanges(),
+            'new_values' => $rate->getAttributes(),
         ]);
     }
 
