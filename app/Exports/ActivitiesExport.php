@@ -30,23 +30,26 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
 
     public function collection()
     {
+        $endDate = Carbon::parse($this->dateTo)->endOfDay(); 
+        $startDate = Carbon::parse($this->dateFrom)->startOfDay();
+
         $activities = Activity::with('shipper', 'user')
-            ->whereBetween('report_date', [$this->dateFrom, $this->dateTo])
-            ->orderBy('report_date', 'desc')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return $activities->map(function ($activity) {
             return [
-                Carbon::parse($activity->report_date)->format('d M Y'),
+                $activity->created_at->format('d M Y'),
                 $activity->concept_type,
-                $activity->shipper->shipper_name ?? '-',
-                $activity->shipper->shipper_type ?? '-',
-                $activity->shipper->commodity ?? '-',
+                $activity->shipper->shipper_name ?? '—',
+                $activity->shipper->shipper_type ?? '—',
+                $activity->shipper->commodity ?? '—',
                 $activity->activity_type,
-                $activity->visit_date ? Carbon::parse($activity->visit_date)->format('d M Y') : '-',
-                $activity->status ?? '-',
-                $activity->status_detail ?? '-',
-                $activity->prospect ?? '-',
+                $activity->visit_date ? Carbon::parse($activity->visit_date)->format('d M Y') : '—',
+                $activity->status ?? '—',
+                $activity->status_detail ?? '—',
+                $activity->prospect ?? '—',
                 $activity->user->name,
             ];
         });
@@ -165,7 +168,7 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
                     $dateRange = 'Period: ' . Carbon::parse($this->dateFrom)->format('d M Y') 
                                . ' - ' . Carbon::parse($this->dateTo)->format('d M Y');
                     $sheet->setCellValue('A' . $footerRow, $dateRange);
-                    $sheet->mergeCells('A' . $footerRow . ':D' . $footerRow);
+                    $sheet->mergeCells('A' . $footerRow . ':F' . $footerRow);
                 }
 
                 $exportInfo = 'Exported by: ' . Auth::user()->name . ' on ' . now()->format('d M Y H:i');
@@ -179,7 +182,7 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
                         'color' => ['rgb' => '666666'],
                     ],
                     'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
                         'vertical' => Alignment::VERTICAL_CENTER,
                     ],
                 ]);

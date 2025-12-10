@@ -25,7 +25,7 @@ class ShipperController extends Controller
     {
         $validated = $request->validate([
             'shipper_name' => 'required|string',
-            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL / TRANSPORTER',
+            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL',
             'shipper_city' => 'required|string',
             'shipper_address' => 'nullable|string',
             'contact_person' => 'nullable|string',
@@ -35,9 +35,15 @@ class ShipperController extends Controller
             'import' => 'nullable|string',
             'domestic' => 'nullable|string',
             'commodity' => 'required|string',
-            'input_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
+        $exists = Shipper::where('shipper_name', $validated['shipper_name'])
+            ->where('shipper_type', $validated['shipper_type'])
+            ->where('shipper_city', $validated['shipper_city'])
+            ->exists();
+        if ($exists) {
+            return response()->json(['data' => []], 422);
+        }
         $validated['user_id'] = Auth::id();
         $shipper = Shipper::create($validated);
         return response()->json($shipper, 201);
@@ -54,7 +60,7 @@ class ShipperController extends Controller
         $shipper = Shipper::findOrFail($id);
         $validated = $request->validate([
             'shipper_name' => 'required|string',
-            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL / TRANSPORTER',
+            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL',
             'shipper_city' => 'required|string',
             'shipper_address' => 'nullable|string',
             'contact_person' => 'nullable|string',
@@ -64,13 +70,20 @@ class ShipperController extends Controller
             'import' => 'nullable|string',
             'domestic' => 'nullable|string',
             'commodity' => 'required|string',
-            'input_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
                 return response()->json(null, 403);
             }
+        }
+        $exists = Shipper::where('shipper_name', $validated['shipper_name'])
+            ->where('shipper_type', $validated['shipper_type'])
+            ->where('shipper_city', $validated['shipper_city'])
+            ->where('id', '!=', $id)
+            ->exists();
+        if ($exists) {
+            return response()->json(['data' => []], 422);
         }
         $shipper->update($validated);
         return response()->json($shipper, 200);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('shippers', function (Blueprint $table) {
             $table->id();
             $table->string('shipper_name');
-            $table->enum('shipper_type', ['DIRECT SHIPPER', 'FORWARDING', 'TRADING', 'EMKL / TRANSPORTER']);
+            $table->enum('shipper_type', ['DIRECT SHIPPER', 'FORWARDING', 'TRADING', 'EMKL']);
             $table->string('shipper_city');
             $table->string('shipper_address')->nullable();
             $table->string('contact_person')->nullable();
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('import')->nullable();
             $table->string('domestic')->nullable();
             $table->string('commodity');
-            $table->date('input_date');
             $table->text('notes')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();

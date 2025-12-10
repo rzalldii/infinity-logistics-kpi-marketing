@@ -26,7 +26,7 @@ class RateController extends Controller
         $validated = $request->validate([
             'pol' => 'required|string',
             'pod' => 'required|string',
-            'container_type' => 'required|in:GP,RF,OT,HC',
+            'container_type' => 'required|in:GP,RF,OT',
             'container_20' => 'nullable|string|max:10',
             'container_40' => 'nullable|string|max:10',
             'liner' => 'required|string',
@@ -39,8 +39,19 @@ class RateController extends Controller
             return !empty($pod);
         });
         $createdRates = [];
+        $duplicateCount = 0;
         foreach ($pods as $pod) {
-            Rate::create([
+            $exists = Rate::where('pol', $validated['pol'])
+                ->where('pod', $pod)
+                ->where('container_type', $validated['container_type'])
+                ->where('liner', $validated['liner'])
+                ->where('valid_date', $validated['valid_date'])
+                ->exists();
+            if ($exists) {
+                $duplicateCount++;
+                continue;
+            }
+            $rate = Rate::create([
                 'pol' => $validated['pol'],
                 'pod' => $pod,
                 'container_type' => $validated['container_type'],
@@ -52,6 +63,12 @@ class RateController extends Controller
                 'notes' => $validated['notes'],
                 'user_id' => Auth::id(),
             ]);
+            $createdRates[] = $rate;
+        }
+        if (empty($createdRates) && $duplicateCount > 0) {
+            return response()->json([
+                'data' => []
+            ], 422);
         }
         return response()->json($createdRates, 201);
     }
@@ -68,7 +85,7 @@ class RateController extends Controller
         $validated = $request->validate([
             'pol' => 'required|string',
             'pod' => 'required|string',
-            'container_type' => 'required|in:GP,RF,OT,HC',
+            'container_type' => 'required|in:GP,RF,OT',
             'container_20' => 'nullable|string|max:10',
             'container_40' => 'nullable|string|max:10',
             'liner' => 'required|string',
@@ -81,37 +98,15 @@ class RateController extends Controller
                 return response()->json(null, 403);
             }
         }
-        if (strpos($validated['pod'], ',') !== false) {
-            $pods = array_map('trim', explode(',', $validated['pod']));
-            $pods = array_filter($pods, function($pod) {
-                return !empty($pod);
-            });
-            $rate->update([
-                'pol' => $validated['pol'],
-                'pod' => $pods[0],
-                'container_type' => $validated['container_type'],
-                'container_20' => $validated['container_20'],
-                'container_40' => $validated['container_40'],
-                'liner' => $validated['liner'],
-                'free_time' => $validated['free_time'],
-                'valid_date' => $validated['valid_date'],
-                'notes' => $validated['notes'],
-            ]);
-            for ($i = 1; $i < count($pods); $i++) {
-                Rate::create([
-                    'pol' => $validated['pol'],
-                    'pod' => $pods[$i],
-                    'container_type' => $validated['container_type'],
-                    'container_20' => $validated['container_20'],
-                    'container_40' => $validated['container_40'],
-                    'liner' => $validated['liner'],
-                    'free_time' => $validated['free_time'],
-                    'valid_date' => $validated['valid_date'],
-                    'notes' => $validated['notes'],
-                    'user_id' => Auth::id(),
-                ]);
-            }
-            return response()->json($rate, 200);
+        $exists = Rate::where('pol', $validated['pol'])
+            ->where('pod', $validated['pod'])
+            ->where('container_type', $validated['container_type'])
+            ->where('liner', $validated['liner'])
+            ->where('valid_date', $validated['valid_date'])
+            ->where('id', '!=', $id)
+            ->exists();
+        if ($exists) {
+            return response()->json(['data' => []], 422);
         }
         $rate->update($validated);
         return response()->json($rate, 200);

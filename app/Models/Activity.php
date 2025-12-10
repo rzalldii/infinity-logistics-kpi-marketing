@@ -12,7 +12,6 @@ class Activity extends Model
 
     protected $fillable = [
         'user_id',
-        'report_date',
         'concept_type',
         'shipper_id',
         'activity_type',
@@ -23,7 +22,6 @@ class Activity extends Model
     ];
 
     protected $casts = [
-        'report_date' => 'date',
         'visit_date'  => 'date',
     ];
 

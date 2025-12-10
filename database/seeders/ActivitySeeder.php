@@ -16,7 +16,6 @@ class ActivitySeeder extends Seeder
     {
         Activity::create([
             'user_id' => 4,
-            'report_date' => Carbon::now(),
             'concept_type' => 'NEW SHIPPER',
             'shipper_id' => 1,
             'activity_type' => 'VISIT',
@@ -28,13 +27,12 @@ class ActivitySeeder extends Seeder
 
         Activity::create([
             'user_id' => 5,
-            'report_date' => Carbon::now(),
             'concept_type' => 'FOLLOW UP',
             'shipper_id' => 2,
             'activity_type' => 'CALL',
             'visit_date' => null,
             'status' => 'CLOSING',
-            'status_detail' => 'Deal closed for 10 containers GP 20ft',
+            'status_detail' => '10 containers GP 20ft',
             'prospect' => 'Discussing container availability for next month',
         ]);
     }

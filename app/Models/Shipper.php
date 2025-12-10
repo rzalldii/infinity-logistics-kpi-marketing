@@ -23,16 +23,45 @@ class Shipper extends Model
         'import',
         'domestic',
         'commodity',
-        'input_date',
         'notes',
-    ];
-
-    protected $casts = [
-        'input_date' => 'date',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function setShipperNameAttribute($value)
+    {
+        $this->attributes['shipper_name'] = strtoupper($value);
+    }
+
+    public function setShipperCityAttribute($value)
+    {
+        $this->attributes['shipper_city'] = strtoupper($value);
+    }
+
+    public function setContactPersonAttribute($value)
+    {
+        $this->attributes['contact_person'] = strtoupper($value);
+    }
+
+    public function setExportAttribute($value)
+    {
+        $this->attributes['export'] = strtoupper($value);
+    }
+
+    public function setImportAttribute($value)
+    {
+        $this->attributes['import'] = strtoupper($value);
+    }
+
+    public function setDomesticAttribute($value)
+    {
+        $this->attributes['domestic'] = strtoupper($value);
+    }
+
+    public function setCommodityAttribute($value)
+    {
+        $this->attributes['commodity'] = strtoupper($value);
     }
 }

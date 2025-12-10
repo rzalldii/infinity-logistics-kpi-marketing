@@ -50,7 +50,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                             <option value="DIRECT SHIPPER">DIRECT SHIPPER</option>
                                                             <option value="FORWARDING">FORWARDING</option>
                                                             <option value="TRADING">TRADING</option>
-                                                            <option value="EMKL / TRANSPORTER">EMKL / TRANSPORTER</option>
+                                                            <option value="EMKL">EMKL</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -108,7 +108,6 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                         <input type="text" class="form-control" name="commodity" id="commodity" required/>
                                                     </div>
                                                 </div>
-                                                <input type="hidden" name="input_date" id="input_date" value="{{ date('Y-m-d') }}">
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="notes">Notes</label>
@@ -246,7 +245,6 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                             <table id="multi-filter-select" class="display table table-striped table-hover">
                                 <thead class="text-center">
                                     <tr>
-                                        <th>INPUT</th>
                                         <th>SHIPPER</th>
                                         <th>TYPE</th>
                                         <th>CITY</th>
@@ -269,7 +267,6 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                 </thead>
                                 <tfoot class="text-center">
                                     <tr>
-                                        <th>INPUT</th>
                                         <th>SHIPPER</th>
                                         <th>TYPE</th>
                                         <th>CITY</th>
@@ -293,14 +290,13 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                 <tbody class="text-center">
                                     @foreach($shippers as $shipper)
                                     <tr id="row-{{ $shipper->id }}" data-user-id="{{ $shipper->user_id }}">
-                                        <td>{{ Str::upper(\Carbon\Carbon::parse($shipper->input_date)->format("d M")) }}</td>
-                                        <td>{{ Str::upper($shipper->shipper_name) }}</td>
+                                        <td>{{ $shipper->shipper_name }}</td>
                                         <td>{{ $shipper->shipper_type }}</td>
-                                        <td>{{ Str::upper($shipper->shipper_city) }}</td>
+                                        <td>{{ $shipper->shipper_city }}</td>
                                         <td>{{ $shipper->shipper_address }}</td>
                                         <td>
                                             @if($shipper->contact_person)
-                                                {{ Str::upper($shipper->contact_person) }}
+                                                {{ $shipper->contact_person }}
                                             @else
                                                 <span class="text-muted">—</span>
                                             @endif
@@ -321,21 +317,21 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                         </td>
                                         <td>
                                             @if($shipper->export)
-                                                {{ Str::upper($shipper->export) }}
+                                                {{ $shipper->export }}
                                             @else
                                                 <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($shipper->import)
-                                                {{ Str::upper($shipper->import) }}
+                                                {{ $shipper->import }}
                                             @else
                                                 <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($shipper->domestic)
-                                                {{ Str::upper($shipper->domestic) }}
+                                                {{ $shipper->domestic }}
                                             @else
                                                 <span class="text-muted">—</span>
                                             @endif
@@ -392,32 +388,32 @@ $(document).ready(function () {
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [2, 3, 4, 6, 7, 11, 12, 13, 14];
+            notOrderableColumns = [1, 2, 3, 5, 6, 10, 11, 12, 13];
         } else if (hasActionColumn) {
-            notOrderableColumns = [2, 3, 4, 6, 7, 11, 12, 13];
+            notOrderableColumns = [1, 2, 3, 5, 6, 10, 11, 12];
         } else {
-            notOrderableColumns = [2, 3, 4, 6, 7, 11, 12];
+            notOrderableColumns = [1, 2, 3, 5, 6, 10, 11];
         }
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+            skipColumns = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
         } else if (hasActionColumn) {
-            skipColumns = [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+            skipColumns = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         } else {
-            skipColumns = [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            skipColumns = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         }
         var hiddenColumns;
         if (isAdmin) {
-            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 11];
+            hiddenColumns = [3, 4, 5, 6, 7, 8, 9];
         } else if (hasActionColumn) {
-            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 11];
+            hiddenColumns = [3, 4, 5, 6, 7, 8, 9];
         } else {
-            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 11];
+            hiddenColumns = [3, 4, 5, 6, 7, 8, 9];
         }
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
             autoWidth: false,
-            order: [[0, 'desc']],
+            order: [[0, 'asc']],
             columnDefs: [
             {
                 orderable: false,
@@ -494,8 +490,8 @@ $(document).ready(function () {
     $('#ToggleColumns').on('click', function (e) {
         e.preventDefault();
         var $btn = $(this);
-        var isHidden = !table.column(5).visible();
-        table.columns([5, 6, 7, 8, 9, 10]).visible(isHidden);
+        var isHidden = !table.column(4).visible();
+        table.columns([4, 7, 8, 9]).visible(isHidden);
         if (isHidden) {
             $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
         } else {
@@ -514,19 +510,19 @@ $(document).ready(function () {
         });
         $.get("{{ route('shippers.index') }}" + '/' + shipper_id + '/edit', function (data) {
             Swal.close();
-            $('#view_shipper_name').val(data.shipper_name || '-');
-            $('#view_shipper_type').val(data.shipper_type || '-');
-            $('#view_shipper_city').val(data.shipper_city || '-');
-            $('#view_shipper_address').val(data.shipper_address || '-');
-            $('#view_contact_person').val(data.contact_person || '-');
-            $('#view_phone_number').val(data.phone_number || '-');
-            $('#view_email_address').val(data.email_address || '-');
-            $('#view_export').val(data.export || '-');
-            $('#view_import').val(data.import || '-');
-            $('#view_domestic').val(data.domestic || '-');
-            $('#view_commodity').val(data.commodity || '-');
+            $('#view_shipper_name').val(data.shipper_name || '—');
+            $('#view_shipper_type').val(data.shipper_type || '—');
+            $('#view_shipper_city').val(data.shipper_city || '—');
+            $('#view_shipper_address').val(data.shipper_address || '—');
+            $('#view_contact_person').val(data.contact_person || '—');
+            $('#view_phone_number').val(data.phone_number || '—');
+            $('#view_email_address').val(data.email_address || '—');
+            $('#view_export').val(data.export || '—');
+            $('#view_import').val(data.import || '—');
+            $('#view_domestic').val(data.domestic || '—');
+            $('#view_commodity').val(data.commodity || '—');
             if ($('#view_notes').length) {
-                $('#view_notes').val(data.notes || '-');
+                $('#view_notes').val(data.notes || '—');
             }
             $('#Viewshipper').modal('show');
         }).fail(function() {

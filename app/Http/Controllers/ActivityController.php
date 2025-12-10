@@ -16,7 +16,7 @@ class ActivityController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Activity::with(['user', 'shipper'])->latest('report_date');
+        $query = Activity::with(['user', 'shipper'])->latest();
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing()) {
                 $query->where('user_id', Auth::id());
@@ -37,7 +37,6 @@ class ActivityController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'report_date'   => 'required|date',
             'concept_type'  => 'required|in:NEW SHIPPER,FOLLOW UP',
             'shipper_id'    => 'required|exists:shippers,id',
             'activity_type' => 'required|in:VISIT,CALL',
@@ -61,7 +60,6 @@ class ActivityController extends Controller
     {
         $activity = Activity::findOrFail($id);
         $validated = $request->validate([
-            'report_date'   => 'required|date',
             'concept_type'  => 'required|in:NEW SHIPPER,FOLLOW UP',
             'shipper_id'    => 'required|exists:shippers,id',
             'activity_type' => 'required|in:VISIT,CALL',
@@ -74,9 +72,9 @@ class ActivityController extends Controller
             if (Auth::user()->isMarketing() && $activity->user_id !== Auth::id()) {
                 return response()->json(null, 403);
             }
-            $reportDate = Carbon::parse($activity->report_date)->format('Y-m-d');
+            $date = $activity->created_at->format('Y-m-d');
             $today = Carbon::now()->format('Y-m-d');
-            if ($reportDate !== $today) {
+            if ($date !== $today) {
                 return response()->json(null, 403);
             }
         }
@@ -91,9 +89,9 @@ class ActivityController extends Controller
             if (Auth::user()->isMarketing() && $activity->user_id !== Auth::id()) {
                 return response()->json(null, 403);
             }
-            $reportDate = Carbon::parse($activity->report_date)->format('Y-m-d');
+            $date = $activity->created_at->format('Y-m-d');
             $today = Carbon::now()->format('Y-m-d');
-            if ($reportDate !== $today) {
+            if ($date !== $today) {
                 return response()->json(null, 403);
             }
         }
@@ -104,7 +102,7 @@ class ActivityController extends Controller
     private function getDailyReport()
     {
         $query = Activity::with('shipper')
-            ->whereDate('report_date', now()->toDateString());
+            ->whereDate('created_at', now()->toDateString());
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing()) {
                 $query->where('user_id', Auth::id());
@@ -129,7 +127,7 @@ class ActivityController extends Controller
     private function getWeeklyReport()
     {
         $query = Activity::with('shipper')
-            ->whereBetween('report_date', [
+            ->whereBetween('created_at', [
                 now()->startOfWeek(),
                 now()->endOfWeek(),
             ]);
@@ -157,8 +155,8 @@ class ActivityController extends Controller
     private function getMonthlyReport()
     {
         $query = Activity::with('shipper')
-            ->whereYear('report_date', now()->year)
-            ->whereMonth('report_date', now()->month);
+            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing()) {
                 $query->where('user_id', Auth::id());
@@ -184,15 +182,15 @@ class ActivityController extends Controller
     {
         $query = Activity::join('shippers', 'activities.shipper_id', '=', 'shippers.id');
         if ($period === 'today') {
-            $query->whereDate('activities.report_date', now()->toDateString());
+            $query->whereDate('activities.created_at', now()->toDateString());
         } elseif ($period === 'week') {
-            $query->whereBetween('activities.report_date', [
+            $query->whereBetween('activities.created_at', [
                 now()->startOfWeek(),
                 now()->endOfWeek(),
             ]);
         } elseif ($period === 'month') {
-            $query->whereYear('activities.report_date', now()->year)
-                  ->whereMonth('activities.report_date', now()->month);
+            $query->whereYear('activities.created_at', now()->year)
+                  ->whereMonth('activities.created_at', now()->month);
         }
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing()) {
@@ -203,7 +201,7 @@ class ActivityController extends Controller
             SUM(CASE WHEN shippers.shipper_type = 'DIRECT SHIPPER' THEN 1 ELSE 0 END) as direct_shipper_count,
             SUM(CASE WHEN shippers.shipper_type = 'FORWARDING' THEN 1 ELSE 0 END) as forwarding_count,
             SUM(CASE WHEN shippers.shipper_type = 'TRADING' THEN 1 ELSE 0 END) as trading_count,
-            SUM(CASE WHEN shippers.shipper_type = 'EMKL / TRANSPORTER' THEN 1 ELSE 0 END) as emkl_count
+            SUM(CASE WHEN shippers.shipper_type = 'EMKL' THEN 1 ELSE 0 END) as emkl_count
         ")->first();
         return [
             'direct_shipper_count' => $result->direct_shipper_count ?? 0,

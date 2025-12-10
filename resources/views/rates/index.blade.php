@@ -56,7 +56,6 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                             <option value="GP">GP</option>
                                                             <option value="RF">RF</option>
                                                             <option value="OT">OT</option>
-                                                            <option value="HC">HC</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -215,6 +214,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                         <th>20'</th>
                                         <th>40'</th>
                                         <th>LINER</th>
+                                        <th>FT</th>
                                         <th>VALID</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
@@ -233,6 +233,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                         <th>20'</th>
                                         <th>40'</th>
                                         <th>LINER</th>
+                                        <th>FT</th>
                                         <th>VALID</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
@@ -246,8 +247,8 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                 <tbody class="text-center">
                                     @foreach($rates as $rate)
                                     <tr id="row-{{ $rate->id }}" data-user-id="{{ $rate->user_id }}">
-                                        <td>{{ Str::upper($rate->pol) }}</td>
-                                        <td>{{ Str::upper($rate->pod) }}</td>
+                                        <td>{{ $rate->pol }}</td>
+                                        <td>{{ $rate->pod }}</td>
                                         <td>{{ $rate->container_type }}</td>
                                         <td>
                                             @if($rate->container_20)
@@ -263,7 +264,14 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 <span class="text-muted">—</span>
                                             @endif
                                         </td>
-                                        <td>{{ Str::upper($rate->liner) }}</td>
+                                        <td>{{ $rate->liner }}</td>
+                                        <td>
+                                            @if($rate->free_time)
+                                                {{ $rate->free_time }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
                                         <td>{{ Str::upper(\Carbon\Carbon::parse($rate->valid_date)->format("M y")) }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info viewRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="View">
@@ -316,32 +324,32 @@ $(document).ready(function () {
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [0, 1, 2, 5, 7, 8, 9];
+            notOrderableColumns = [0, 1, 2, 5, 6, 8, 9, 10];
         } else if (hasActionColumn) {
-            notOrderableColumns = [0, 1, 2, 5, 7, 8];
+            notOrderableColumns = [0, 1, 2, 5, 6, 8, 9];
         } else {
-            notOrderableColumns = [0, 1, 2, 5, 7];
+            notOrderableColumns = [0, 1, 2, 5, 6, 8];
         }
         var skipColumns;
         if (isAdmin) {
-            skipColumns = [3, 4, 7, 8, 9];
+            skipColumns = [3, 4, 6, 8, 9, 10];
         } else if (hasActionColumn) {
-            skipColumns = [3, 4, 7, 8];
+            skipColumns = [3, 4, 6, 8, 10];
         } else {
-            skipColumns = [3, 4, 7];
+            skipColumns = [3, 4, 6, 8];
         }
         var hiddenColumns;
         if (isAdmin) {
-            hiddenColumns = [0, 2];
+            hiddenColumns = [0, 2, 6];
         } else if (hasActionColumn) {
-            hiddenColumns = [0, 2];
+            hiddenColumns = [0, 2, 6];
         } else {
-            hiddenColumns = [0, 2];
+            hiddenColumns = [0, 2, 6];
         }
         var table = $("#multi-filter-select").DataTable({
             pageLength: 10,
             autoWidth: false,
-            order: [[6, 'desc']],
+            order: [[7, 'desc']],
             columnDefs: [
             { 
                 orderable: false, 
@@ -419,7 +427,7 @@ $(document).ready(function () {
         e.preventDefault();
         var $btn = $(this);
         var isHidden = !table.column(0).visible();
-        table.columns([0, 2]).visible(isHidden);
+        table.columns([0, 2, 6]).visible(isHidden);
         if (isHidden) {
             $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
         } else {
@@ -438,13 +446,13 @@ $(document).ready(function () {
         });
         $.get("{{ route('rates.index') }}" + '/' + rate_id + '/edit', function (data) {
             Swal.close();
-            $('#view_pol').val(data.pol || '-');
-            $('#view_pod').val(data.pod || '-');
-            $('#view_container_type').val(data.container_type || '-');
-            $('#view_container_20').val(data.container_20 || '-');
-            $('#view_container_40').val(data.container_40 || '-');
-            $('#view_liner').val(data.liner || '-');
-            $('#view_free_time').val(data.free_time || '-');
+            $('#view_pol').val(data.pol || '—');
+            $('#view_pod').val(data.pod || '—');
+            $('#view_container_type').val(data.container_type || '—');
+            $('#view_container_20').val(data.container_20 || '—');
+            $('#view_container_40').val(data.container_40 || '—');
+            $('#view_liner').val(data.liner || '—');
+            $('#view_free_time').val(data.free_time || '—');
             if (data.valid_date) {
                 var validDate = new Date(data.valid_date);
                 var formattedDate = validDate.getDate().toString().padStart(2, '0') + '/' + 
@@ -452,10 +460,10 @@ $(document).ready(function () {
                                   validDate.getFullYear();
                 $('#view_valid_date').val(formattedDate);
             } else {
-                $('#view_valid_date').val('-');
+                $('#view_valid_date').val('—');
             }
             if ($('#view_notes').length) {
-                $('#view_notes').val(data.notes || '-');
+                $('#view_notes').val(data.notes || '—');
             }
             $('#Viewrate').modal('show');
         }).fail(function() {

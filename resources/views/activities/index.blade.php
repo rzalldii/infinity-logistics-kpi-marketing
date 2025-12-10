@@ -84,7 +84,6 @@ Report Activities | Admin Infinity Logistics Indonesia
                                             @csrf
                                             <input type="hidden" name="activity_id" id="activity_id">
                                             <div class="row">
-                                                <input type="hidden" name="report_date" id="report_date" value="{{ date('Y-m-d') }}">
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="concept_type">Concept Type <span class="text-danger">*</span></label>
@@ -304,9 +303,9 @@ Report Activities | Admin Infinity Logistics Indonesia
                                 <tbody class="text-center">
                                     @foreach($activities as $activity)
                                     <tr>
-                                        <td>{{ Str::upper(\Carbon\Carbon::parse($activity->report_date)->format("d M")) }}</td>
+                                        <td>{{ Str::upper($activity->created_at->format("d M")) }}</td>
                                         <td>{{ $activity->concept_type }}</td>
-                                        <td>{{ Str::upper($activity->shipper->shipper_name) }}</td>
+                                        <td>{{ $activity->shipper->shipper_name }}</td>
                                         <td>{{ $activity->shipper->shipper_type }}</td>
                                         <td>{{ $activity->shipper->commodity }}</td>
                                         <td>{{ $activity->activity_type }}</td>
@@ -334,23 +333,23 @@ Report Activities | Admin Infinity Logistics Indonesia
                                         @endif
                                         <td>
                                             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                                <button type="button" class="btn btn-sm btn-warning text-white editActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Edit">
+                                                <button type="button" class="btn btn-sm btn-warning text-white editActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-danger deleteActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Delete">
+                                                <button type="button" class="btn btn-sm btn-danger deleteActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             @else
                                                 @php
-                                                    $reportDate = \Carbon\Carbon::parse($activity->report_date)->format('Y-m-d');
+                                                    $reportDate = $activity->created_at->format('Y-m-d');
                                                     $today = \Carbon\Carbon::now()->format('Y-m-d');
                                                     $isToday = ($reportDate === $today);
                                                 @endphp
                                                 @if($isToday)
-                                                    <button type="button" class="btn btn-sm btn-warning text-white editActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Edit">
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-sm btn-danger deleteActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->report_date }}" data-bs-toggle="tooltip" title="Delete">
+                                                    <button type="button" class="btn btn-sm btn-danger deleteActivity" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Delete">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 @else
@@ -397,7 +396,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                             </div>
                             <div class="col-6">
                                 <p>Trading : <span id="dailyTrade">{{ $dailyReport->trading_count ?? 0 }}</span></p>
-                                <p>Transporter : <span id="dailyEmkl">{{ $dailyReport->emkl_count ?? 0 }}</span></p>
+                                <p>EMKL : <span id="dailyEmkl">{{ $dailyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
@@ -436,7 +435,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                             </div>
                             <div class="col-6">
                                 <p>Trading : <span id="weeklyTrade">{{ $weeklyReport->trading_count ?? 0 }}</span></p>
-                                <p>Transporter : <span id="weeklyEmkl">{{ $weeklyReport->emkl_count ?? 0 }}</span></p>
+                                <p>EMKL : <span id="weeklyEmkl">{{ $weeklyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
@@ -475,7 +474,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                             </div>
                             <div class="col-6">
                                 <p>Trading : <span id="monthlyTrade">{{ $monthlyReport->trading_count ?? 0 }}</span></p>
-                                <p>Transporter : <span id="monthlyEmkl">{{ $monthlyReport->emkl_count ?? 0 }}</span></p>
+                                <p>EMKL : <span id="monthlyEmkl">{{ $monthlyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
                         <hr>
@@ -543,7 +542,7 @@ $(document).ready(function () {
             if (userName && activity.user && activity.user.name !== userName) {
                 return;
             }
-            var reportDate = new Date(activity.report_date);
+            var reportDate = new Date(activity.created_at);
             reportDate.setHours(0, 0, 0, 0);
             if (reportDate.getTime() === today.getTime()) {
                 updateCounters(daily, activity);
@@ -796,7 +795,7 @@ $(document).ready(function () {
         });
         $.get("{{ route('activities.index') }}" + '/' + activity_id + '/edit', function (data) {
             Swal.close();
-            $('#view_concept_type').val(data.concept_type || '-');
+            $('#view_concept_type').val(data.concept_type || '—');
             if (data.shipper) {
                 $('#view_shipper_name').val(data.shipper.shipper_name);
                 if (data.shipper.shipper_type) {
@@ -812,11 +811,11 @@ $(document).ready(function () {
                     $('#view_commodity_group').hide();
                 }
             } else {
-                $('#view_shipper_name').val('-');
+                $('#view_shipper_name').val('—');
                 $('#view_shipper_type_group').hide();
                 $('#view_commodity_group').hide();
             }
-            $('#view_activity_type').val(data.activity_type || '-');
+            $('#view_activity_type').val(data.activity_type || '—');
             if (data.visit_date) {
                 var visitDate = new Date(data.visit_date);
                 var formattedVisitDate = visitDate.getDate().toString().padStart(2, '0') + '/' + 
@@ -825,18 +824,18 @@ $(document).ready(function () {
                 $('#view_visit_date').val(formattedVisitDate);
                 $('#view_visit_date_group').show();
             } else {
-                $('#view_visit_date').val('-');
+                $('#view_visit_date').val('—');
                 $('#view_visit_date_group').hide();
             }
-            $('#view_status').val(data.status || '-');
+            $('#view_status').val(data.status || '—');
             if (data.status_detail) {
                 $('#view_status_detail').val(data.status_detail);
                 $('#view_status_detail_group').show();
             } else {
-                $('#view_status_detail').val('-');
+                $('#view_status_detail').val('—');
                 $('#view_status_detail_group').hide();
             }
-            $('#view_prospect').val(data.prospect || '-');
+            $('#view_prospect').val(data.prospect || '—');
             $('#Viewactivity').modal('show');
         }).fail(function() {
             Swal.fire({
@@ -1009,7 +1008,7 @@ $(document).ready(function () {
     });
     $('body').on('click', '.editActivity', function () {
         var activity_id = $(this).data('id');
-        var reportDate = $(this).data('report-date');
+        var reportDate = $(this).data('created_at');
         if (userRole === 'marketing') {
             var activityDate = new Date(reportDate);
             var today = new Date();
@@ -1058,7 +1057,7 @@ $(document).ready(function () {
     });
     $('body').on('click', '.deleteActivity', function () {
         var activity_id = $(this).data("id");
-        var reportDate = $(this).data('report-date');
+        var reportDate = $(this).data('created_at');
         if (userRole === 'marketing') {
             var activityDate = new Date(reportDate);
             var today = new Date();

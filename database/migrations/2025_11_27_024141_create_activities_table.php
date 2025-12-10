@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->date('report_date');
             $table->enum('concept_type', ['NEW SHIPPER', 'FOLLOW UP']);
             $table->enum('activity_type', ['VISIT', 'CALL']);
             $table->date('visit_date')->nullable();
@@ -23,7 +22,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('shipper_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            $table->index(['user_id', 'report_date']);
+            $table->index(['user_id']);
         });
     }
 

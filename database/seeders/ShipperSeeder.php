@@ -27,8 +27,7 @@ class ShipperSeeder extends Seeder
             'import' => 'China',
             'domestic' => 'Makassar',
             'commodity' => 'Electronics',
-            'input_date' => Carbon::now(),
-            'notes' => 'FCL only',
+            'notes' => 'Test',
         ]);
 
         Shipper::create([
@@ -44,8 +43,7 @@ class ShipperSeeder extends Seeder
             'import' => 'Thailand',
             'domestic' => 'Medan',
             'commodity' => 'Food & Beverage',
-            'input_date' => Carbon::now(),
-            'notes' => 'LCL only',
+            'notes' => 'Test1',
         ]);
     }
 }

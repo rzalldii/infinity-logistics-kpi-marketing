@@ -26,7 +26,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                                 <div class="numbers">
                                     <p class="card-category">Last Submission - Checking Rates</p>
                                     @if($lastRate)
-                                    <h4 class="card-title">{{ Str::upper($lastRate->pol) }} - {{ Str::upper($lastRate->pod) }}</h4>
+                                    <h4 class="card-title">{{ $lastRate->pol }} - {{ $lastRate->pod }}</h4>
                                     <small class="text-muted">
                                         <i class="far fa-clock"></i> 
                                         {{ $lastRate->created_at->diffForHumans() }}
@@ -63,7 +63,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                                 <div class="numbers">
                                     <p class="card-category">Last Submission - Touch Shippers</p>
                                     @if($lastShipper)
-                                    <h4 class="card-title">{{ Str::upper($lastShipper->shipper_name) }}</h4>
+                                    <h4 class="card-title">{{ $lastShipper->shipper_name }}</h4>
                                     <small class="text-muted">
                                         <i class="far fa-clock"></i> {{ $lastShipper->created_at->diffForHumans() }}
                                         @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin())
@@ -99,7 +99,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                                 <div class="numbers">
                                     <p class="card-category">Last Submission - Report Activities</p>
                                     @if($lastActivity)
-                                    <h4 class="card-title">{{ Str::upper($lastActivity->concept_type) }} - {{ Str::upper($lastActivity->activity_type) }}</h4>
+                                    <h4 class="card-title">{{ $lastActivity->concept_type }} - {{ $lastActivity->activity_type }}</h4>
                                     <small class="text-muted">
                                         <i class="far fa-clock"></i> {{ $lastActivity->created_at->diffForHumans() }}
                                         @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin())

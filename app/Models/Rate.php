@@ -31,4 +31,24 @@ class Rate extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function setPolAttribute($value)
+    {
+        $this->attributes['pol'] = strtoupper($value);
+    }
+
+    public function setPodAttribute($value)
+    {
+        $this->attributes['pod'] = strtoupper($value);
+    }
+
+    public function setLinerAttribute($value)
+    {
+        $this->attributes['liner'] = strtoupper($value);
+    }
+
+    public function setFreeTimeAttribute($value)
+    {
+        $this->attributes['free_time'] = strtoupper($value);
+    }
 }
