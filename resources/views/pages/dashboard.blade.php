@@ -13,7 +13,7 @@ Dashboard | Admin Infinity Logistics Indonesia
         </div>
         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
         <div class="row">
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-12">
                 <div class="card card-stats card-round">
                     <div class="card-body">
                         <div class="row align-items-center">
@@ -50,7 +50,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-12">
                 <div class="card card-stats card-round">
                     <div class="card-body">
                         <div class="row align-items-center">
@@ -86,7 +86,7 @@ Dashboard | Admin Infinity Logistics Indonesia
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-12">
                 <div class="card card-stats card-round">
                     <div class="card-body">
                         <div class="row align-items-center">

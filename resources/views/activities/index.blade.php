@@ -70,7 +70,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                        <div class="modal fade" id="activityModal" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
@@ -380,8 +380,8 @@ Report Activities | Admin Infinity Logistics Indonesia
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6">
-                                <p><strong>New Shipper :</strong> <span id="dailyNewShipper">{{ $dailyReport->new_shipper_count ?? 0 }}</span></p>
-                                <p><strong>Follow Up :</strong> <span id="dailyFollowUp">{{ $dailyReport->follow_up_count ?? 0 }}</span></p>
+                                <p><strong>New :</strong> <span id="dailyNewShipper">{{ $dailyReport->new_shipper_count ?? 0 }}</span></p>
+                                <p><strong>Follow :</strong> <span id="dailyFollowUp">{{ $dailyReport->follow_up_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
                                 <p><strong>Visit :</strong> <span id="dailyVisit">{{ $dailyReport->visit_count ?? 0 }}</span></p>
@@ -391,11 +391,11 @@ Report Activities | Admin Infinity Logistics Indonesia
                         <hr>
                         <div class="row">
                             <div class="col-6">
-                                <p>Direct Shipper : <span id="dailyDirect">{{ $dailyReport->direct_shipper_count ?? 0 }}</span></p>
-                                <p>Forwarding : <span id="dailyForward">{{ $dailyReport->forwarding_count ?? 0 }}</span></p>
+                                <p>Direct : <span id="dailyDirect">{{ $dailyReport->direct_shipper_count ?? 0 }}</span></p>
+                                <p>Forward : <span id="dailyForward">{{ $dailyReport->forwarding_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
-                                <p>Trading : <span id="dailyTrade">{{ $dailyReport->trading_count ?? 0 }}</span></p>
+                                <p>Trade : <span id="dailyTrade">{{ $dailyReport->trading_count ?? 0 }}</span></p>
                                 <p>EMKL : <span id="dailyEmkl">{{ $dailyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
@@ -419,8 +419,8 @@ Report Activities | Admin Infinity Logistics Indonesia
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6">
-                                <p><strong>New Shipper :</strong> <span id="weeklyNewShipper">{{ $weeklyReport->new_shipper_count ?? 0 }}</span></p>
-                                <p><strong>Follow Up :</strong> <span id="weeklyFollowUp">{{ $weeklyReport->follow_up_count ?? 0 }}</span></p>
+                                <p><strong>New :</strong> <span id="weeklyNewShipper">{{ $weeklyReport->new_shipper_count ?? 0 }}</span></p>
+                                <p><strong>Follow :</strong> <span id="weeklyFollowUp">{{ $weeklyReport->follow_up_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
                                 <p><strong>Visit :</strong> <span id="weeklyVisit">{{ $weeklyReport->visit_count ?? 0 }}</span></p>
@@ -430,11 +430,11 @@ Report Activities | Admin Infinity Logistics Indonesia
                         <hr>
                         <div class="row">
                             <div class="col-6">
-                                <p>Direct Shipper : <span id="weeklyDirect">{{ $weeklyReport->direct_shipper_count ?? 0 }}</span></p>
-                                <p>Forwarding : <span id="weeklyForward">{{ $weeklyReport->forwarding_count ?? 0 }}</span></p>
+                                <p>Direct : <span id="weeklyDirect">{{ $weeklyReport->direct_shipper_count ?? 0 }}</span></p>
+                                <p>Forward : <span id="weeklyForward">{{ $weeklyReport->forwarding_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
-                                <p>Trading : <span id="weeklyTrade">{{ $weeklyReport->trading_count ?? 0 }}</span></p>
+                                <p>Trade : <span id="weeklyTrade">{{ $weeklyReport->trading_count ?? 0 }}</span></p>
                                 <p>EMKL : <span id="weeklyEmkl">{{ $weeklyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
@@ -458,8 +458,8 @@ Report Activities | Admin Infinity Logistics Indonesia
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6">
-                                <p><strong>New Shipper :</strong> <span id="monthlyNewShipper">{{ $monthlyReport->new_shipper_count ?? 0 }}</span></p>
-                                <p><strong>Follow Up :</strong> <span id="monthlyFollowUp">{{ $monthlyReport->follow_up_count ?? 0 }}</span></p>
+                                <p><strong>New :</strong> <span id="monthlyNewShipper">{{ $monthlyReport->new_shipper_count ?? 0 }}</span></p>
+                                <p><strong>Follow :</strong> <span id="monthlyFollowUp">{{ $monthlyReport->follow_up_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
                                 <p><strong>Visit :</strong> <span id="monthlyVisit">{{ $monthlyReport->visit_count ?? 0 }}</span></p>
@@ -469,11 +469,11 @@ Report Activities | Admin Infinity Logistics Indonesia
                         <hr>
                         <div class="row">
                             <div class="col-6">
-                                <p>Direct Shipper : <span id="monthlyDirect">{{ $monthlyReport->direct_shipper_count ?? 0 }}</span></p>
-                                <p>Forwarding : <span id="monthlyForward">{{ $monthlyReport->forwarding_count ?? 0 }}</span></p>
+                                <p>Direct : <span id="monthlyDirect">{{ $monthlyReport->direct_shipper_count ?? 0 }}</span></p>
+                                <p>Forward : <span id="monthlyForward">{{ $monthlyReport->forwarding_count ?? 0 }}</span></p>
                             </div>
                             <div class="col-6">
-                                <p>Trading : <span id="monthlyTrade">{{ $monthlyReport->trading_count ?? 0 }}</span></p>
+                                <p>Trade : <span id="monthlyTrade">{{ $monthlyReport->trading_count ?? 0 }}</span></p>
                                 <p>EMKL : <span id="monthlyEmkl">{{ $monthlyReport->emkl_count ?? 0 }}</span></p>
                             </div>
                         </div>
@@ -688,9 +688,9 @@ $(document).ready(function () {
         }
         var hiddenColumns;
         if (isAdmin) {
-            hiddenColumns = [3, 4, 6, 7];
+            hiddenColumns = [3, 4, 6];
         } else {
-            hiddenColumns = [3, 4, 6, 7];
+            hiddenColumns = [3, 4, 6];
         }
         table = $("#multi-filter-select").DataTable({
             pageLength: 10,
@@ -776,7 +776,7 @@ $(document).ready(function () {
         }
         var $btn = $(this);
         var isHidden = !table.column(3).visible();
-        table.columns([3, 4, 6, 7]).visible(isHidden);
+        table.columns([3, 4, 6]).visible(isHidden);
         if (isHidden) {
             $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
         } else {
@@ -845,28 +845,32 @@ $(document).ready(function () {
             });
         });
     });
+    function formatShipper(state) {
+        if (!state.id) { return state.text; }
+        var type = $(state.element).data('type');
+        var commodity = $(state.element).data('commodity');
+        var $state = $(
+            '<div class="d-flex flex-column">' +
+                '<span class="fw-bold">' + state.text + '</span>' +
+                '<span class="text-muted small" style="font-size: 0.85em;">' + 
+                    '<i class="fas fa-info-circle me-1"></i>' + (type || '-') + 
+                    (commodity ? ' &bull; ' + commodity : '') + 
+                '</span>' +
+            '</div>'
+        );
+        return $state;
+    }
     if (!$('#shipper_id').hasClass("select2-hidden-accessible")) {
         $('#shipper_id').select2({
             theme: 'bootstrap-5',
             width: '100%',
             dropdownParent: $('#activityModal'),
+            templateResult: formatShipper,
             language: {
                 noResults: function() {
                     return "No data found";
                 }
             },
-            matcher: function(params, data) {
-                if ($.trim(params.term) === '') {
-                    return data;
-                }
-                if (typeof data.text === 'undefined') {
-                    return null;
-                }
-                if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
-                    return data;
-                }
-                return null;
-            }
         });
     }
     $('#shipper_id').on('change', function() {

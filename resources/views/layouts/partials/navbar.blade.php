@@ -1,10 +1,11 @@
 <div class="wrapper">
-    <div class="sidebar" data-background-color="dark">
+    <div class="sidebar" data-background-color="white">
         <div class="sidebar-logo">
-            <div class="logo-header" data-background-color="dark">
-                <!-- <div class="logo">
-                    <img src="{{ url('/') }}/img/logo.png" class="navbar-brand" height="20" alt=""/>
-                </div> -->
+            <div class="logo-header" data-background-color="white">
+                <div class="logo">
+                    <img src="{{ url('/') }}/img/logo_light.svg" class="navbar-brand" height="100" alt=""/>
+                </div>
+                
                 <div class="nav-toggle">
                     <button class="btn btn-toggle toggle-sidebar">
                         <i class="gg-menu-right"></i>
@@ -74,10 +75,10 @@
     <div class="main-panel">
         <div class="main-header">
             <div class="main-header-logo">
-                <div class="logo-header" data-background-color="dark">
-                    <!-- <div class="logo">
-                        <img src="{{ url('/') }}/img/logo.png" class="navbar-brand" height="20" alt=""/>
-                    </div> -->
+                <div class="logo-header" data-background-color="white">
+                    <div class="logo">
+                        <img src="{{ url('/') }}/img/logo_light.svg" class="navbar-brand" alt=""/>
+                    </div>
                     <div class="nav-toggle">
                         <button class="btn btn-toggle toggle-sidebar">
                             <i class="gg-menu-right"></i>
@@ -91,12 +92,12 @@
                     </button>
                 </div>
             </div>
-            <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" data-background-color="dark">
+            <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" data-background-color="white">
                 <div class="container-fluid">
                     <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
                         <li class="nav-item topbar-user dropdown hidden-caret">
                             <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-expanded="false">
-                                <div class="profile-username text-white">
+                                <div class="profile-username text-dark">
                                     <span class="op-7">Hi,</span>
                                     <span class="fw-bold">{{ Auth::user()->name }}</span>
                                 </div>
@@ -105,7 +106,7 @@
                                 <div class="dropdown-user-scroll scrollbar-outer">
                                     <li>
                                         <div class="user-box">
-                                            <div class="u-text text-white">
+                                            <div class="u-text text-dark">
                                                 <h4 class="text-uppercase">{{ ucfirst(str_replace('_', ' ', Auth::user()->role)) }}</h4>
                                                 <p>{{ Auth::user()->email }}</p>
                                             </div>

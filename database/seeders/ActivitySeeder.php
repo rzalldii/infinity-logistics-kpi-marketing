@@ -19,7 +19,7 @@ class ActivitySeeder extends Seeder
             'concept_type' => 'NEW SHIPPER',
             'shipper_id' => 1,
             'activity_type' => 'VISIT',
-            'visit_date' => Carbon::now()->subDays(3),
+            'visit_date' => Carbon::now(),
             'status' => 'PENDING',
             'status_detail' => 'Waiting for client decision on quotation',
             'prospect' => 'Interested in export services to Korea',
