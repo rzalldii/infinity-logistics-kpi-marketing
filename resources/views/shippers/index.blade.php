@@ -39,7 +39,18 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="shipper_name">Shipper Name <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="shipper_name" id="shipper_name" required/>
+                                                        <div class="input-group">
+                                                            <select class="form-select" id="shipper_prefix" style="max-width: 60px;" required>
+                                                                <option value="PT">PT</option>
+                                                                <option value="CV">CV</option>
+                                                                <option value="UD">UD</option>
+                                                                <option value="PAK">PAK</option>
+                                                                <option value="IBU">IBU</option>
+                                                                <option value=""></option>
+                                                            </select>
+                                                            <input type="text" class="form-control" id="shipper_name_input" placeholder="e.g. AJINOMOTO INDONESIA (AJI)" autocomplete="off" required/>
+                                                            <input type="hidden" name="shipper_name" id="shipper_name_final">
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -57,61 +68,61 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="shipper_city">Shipper City <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="shipper_city" id="shipper_city" required/>
+                                                        <input type="text" class="form-control" name="shipper_city" id="shipper_city" placeholder="e.g. MOJOKERTO" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="shipper_address">Shipper Address</label>
-                                                        <input type="text" class="form-control" name="shipper_address" id="shipper_address"/>
+                                                        <input type="text" class="form-control" name="shipper_address" id="shipper_address" placeholder="e.g. Jl. Raya Mlirip No.110, Mlirip, Kec. Jetis, Kabupaten Mojokerto" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="contact_person">Contact Person</label>
-                                                        <input type="text" class="form-control" name="contact_person" id="contact_person"/>
+                                                        <input type="text" class="form-control" name="contact_person" id="contact_person" placeholder="e.g. PAK YUDHA" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="phone_number">Phone Number</label>
-                                                        <input type="text" class="form-control" name="phone_number" id="phone_number"/>
+                                                        <input type="text" class="form-control" name="phone_number" id="phone_number" placeholder="e.g. +62 812-3456-7891" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="email_address">Email Address</label>
-                                                        <input type="email" class="form-control" name="email_address" id="email_address"/>
+                                                        <input type="email" class="form-control" name="email_address" id="email_address" placeholder="e.g. yudha@ajinomoto.co.id" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="export">Export</label>
-                                                        <input type="text" class="form-control" name="export" id="export"/>
+                                                        <input type="text" class="form-control" name="export" id="export" placeholder="e.g. THAILAND" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="import">Import</label>
-                                                        <input type="text" class="form-control" name="import" id="import"/>
+                                                        <input type="text" class="form-control" name="import" id="import" placeholder="e.g. SINGAPORE" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="domestic">Domestic</label>
-                                                        <input type="text" class="form-control" name="domestic" id="domestic"/>
+                                                        <input type="text" class="form-control" name="domestic" id="domestic" placeholder="e.g. KARAWANG" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="commodity">Commodity <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="commodity" id="commodity" required/>
+                                                        <input type="text" class="form-control" name="commodity" id="commodity" placeholder="e.g. RAW MATERIALS" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="notes">Notes</label>
-                                                        <textarea class="form-control" name="notes" id="notes" rows="1"></textarea>
+                                                        <textarea class="form-control" name="notes" id="notes" rows="1" placeholder="e.g. Add any specific handling or crane here ..." autocomplete="off"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -385,6 +396,18 @@ $(document).ready(function () {
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
     var currentUserId = {{ Auth::id() }};
+    function updateShipperName() {
+        var prefix = $('#shipper_prefix').val();
+        var nameInput = $('#shipper_name_input').val();
+        var fullName = '';
+        if (prefix === '') {
+            fullName = nameInput;
+        } else {
+            fullName = prefix + '. ' + nameInput;
+        }
+        $('#shipper_name_final').val(fullName);
+    }
+    $('#shipper_prefix, #shipper_name_input').on('change keyup', updateShipperName);
     try {
         var notOrderableColumns;
         if (isAdmin) {
@@ -538,10 +561,14 @@ $(document).ready(function () {
             $('#saveBtn').val("create-shipper");
             $('#shipper_id').val('');
             $('#shipperForm').trigger("reset");
+            $('#shipper_prefix').val('PT');
+            $('#shipper_name_input').val('');
+            $('#shipper_name_final').val('');
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Shipper</span>');
             $('#shipperModal').modal('show');
         });
         $('#saveBtn').click(function (e) {
+            updateShipperName();
             e.preventDefault();
             var formData = new FormData($('#shipperForm')[0]);
             var shipper_id = $('#shipper_id').val();
@@ -638,7 +665,26 @@ $(document).ready(function () {
                 $('#saveBtn').val("edit-shipper");
                 $('#shipperModal').modal('show');
                 $('#shipper_id').val(data.id);
-                $('#shipper_name').val(data.shipper_name);
+                $('#shipper_name_final').val(data.shipper_name);
+                var existingName = data.shipper_name || '';
+                var parts = existingName.split('. ');
+                var prefixFound = false;
+                if (parts.length > 1) {
+                    var potentialPrefix = parts[0];
+                    $("#shipper_prefix option").each(function() {
+                        if ($(this).val() === potentialPrefix) {
+                            $('#shipper_prefix').val(potentialPrefix);
+                            parts.shift();
+                            $('#shipper_name_input').val(parts.join('. '));
+                            prefixFound = true;
+                            return false;
+                        }
+                    });
+                }
+                if (!prefixFound) {
+                    $('#shipper_prefix').val('');
+                    $('#shipper_name_input').val(existingName);
+                }
                 $('#shipper_type').val(data.shipper_type);
                 $('#shipper_city').val(data.shipper_city);
                 $('#shipper_address').val(data.shipper_address);

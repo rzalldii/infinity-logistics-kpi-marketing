@@ -17,7 +17,7 @@ class RateController extends Controller
             return response()->json($rates);
         }
         $rates = Rate::latest()->get();
-        $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['marketing'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('rates.index', compact('rates', 'users'));
     }
 

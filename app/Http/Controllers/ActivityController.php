@@ -27,7 +27,7 @@ class ActivityController extends Controller
         }
         $activities = $query->get();
         $shippers = Shipper::orderBy('shipper_name')->get();
-        $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['marketing'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         $dailyReport = $this->getDailyReport();
         $weeklyReport = $this->getWeeklyReport();
         $monthlyReport = $this->getMonthlyReport();

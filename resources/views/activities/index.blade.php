@@ -149,13 +149,13 @@ Report Activities | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default" id="status_detail_group" style="display: none;">
                                                         <label class="form-label" for="status_detail">Status Detail</label>
-                                                        <input type="text" class="form-control" name="status_detail" id="status_detail">
+                                                        <input type="text" class="form-control" name="status_detail" id="status_detail" placeholder="e.g. Waiting for approval, Price too high, etc." autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="prospect">Prospect</label>
-                                                        <textarea class="form-control" name="prospect" id="prospect" rows="1"></textarea>
+                                                        <textarea class="form-control" name="prospect" id="prospect" rows="1" placeholder="e.g. Potential for 20 TEUs/month next quarter..." autocomplete="off"></textarea>
                                                     </div>
                                                 </div>
                                             </div>

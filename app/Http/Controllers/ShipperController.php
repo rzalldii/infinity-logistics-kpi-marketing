@@ -17,7 +17,7 @@ class ShipperController extends Controller
             return response()->json($shippers);
         }
         $shippers = Shipper::latest()->get();
-        $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['marketing'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('shippers.index', compact('shippers', 'users'));
     }
 

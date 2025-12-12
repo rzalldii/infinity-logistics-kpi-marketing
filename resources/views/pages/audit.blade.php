@@ -95,10 +95,11 @@ Audit Logs | Admin Infinity Logistics Indonesia
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header border-0">
-                                    <h5 class="modal-title" id="modalTitle">
+                                    <h5 class="modal-title">
                                         <span class="fw-mediumbold">Detail</span>
                                         <span class="fw-light">Audit</span>
                                     </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="table-responsive">
@@ -114,11 +115,6 @@ Audit Logs | Admin Infinity Logistics Indonesia
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
-                                <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                                        <i class="fas fa-window-close"></i> Close
-                                    </button>
                                 </div>
                             </div>
                         </div>

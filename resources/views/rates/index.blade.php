@@ -39,13 +39,13 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="pol">Port Of Loading <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="pol" id="pol" required/>
+                                                        <input type="text" class="form-control" name="pol" id="pol" placeholder="e.g. SURABAYA" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="pod">Port Of Destination <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="pod" id="pod" required/>
+                                                        <input type="text" class="form-control" name="pod" id="pod" placeholder="e.g. PORT KLANG" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -62,25 +62,25 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="container_20">Container 20FT</label>
-                                                        <input type="text" class="form-control" name="container_20" id="container_20"/>
+                                                        <input type="text" class="form-control" name="container_20" id="container_20" placeholder="e.g. 150" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="container_40">Container 40FT</label>
-                                                        <input type="text" class="form-control" name="container_40" id="container_40"/>
+                                                        <input type="text" class="form-control" name="container_40" id="container_40" placeholder="e.g. 250" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="liner">Liner / Forwarding <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="liner" id="liner" required/>
+                                                        <input type="text" class="form-control" name="liner" id="liner" placeholder="e.g. INFINITY" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="free_time">Free Time</label>
-                                                        <input type="text" class="form-control" name="free_time" id="free_time"/>
+                                                        <input type="text" class="form-control" name="free_time" id="free_time" placeholder="e.g. 14 Days + DET/DEM" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -92,7 +92,7 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="notes">Notes</label>
-                                                        <textarea class="form-control" name="notes" id="notes" rows="6"></textarea>
+                                                        <textarea class="form-control" name="notes" id="notes" rows="6" placeholder="Add any specific conditions, incoterms, or internal remarks here..." autocomplete="off"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
