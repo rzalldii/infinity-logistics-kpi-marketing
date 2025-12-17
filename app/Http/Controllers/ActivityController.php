@@ -67,6 +67,7 @@ class ActivityController extends Controller
             'status'        => 'nullable|in:CLOSING,PENDING,FAILED',
             'status_detail' => 'nullable|string',
             'prospect'      => 'nullable|string',
+            'created_date'  => 'nullable|date',
         ]);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $activity->user_id !== Auth::id()) {
@@ -79,6 +80,14 @@ class ActivityController extends Controller
             }
         }
         $activity->update($validated);
+        $activity->fill(collect($validated)->except(['created_date'])->toArray());
+        if ((Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) && $request->filled('created_date')) {
+            $originalTimestamp = $activity->getOriginal('created_at'); 
+            $originalTime = Carbon::parse($originalTimestamp)->format('H:i:s');
+            $newTimestamp = $request->created_date . ' ' . $originalTime;
+            $activity->created_at = $newTimestamp;
+        }
+        $activity->save();
         return response()->json($activity, 200);
     }
 

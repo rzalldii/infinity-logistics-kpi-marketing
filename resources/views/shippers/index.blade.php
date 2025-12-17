@@ -122,7 +122,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="notes">Notes</label>
-                                                        <textarea class="form-control" name="notes" id="notes" rows="1" placeholder="e.g. Add any specific handling or crane here ..." autocomplete="off"></textarea>
+                                                        <textarea class="form-control" name="notes" id="notes" rows="1" placeholder="e.g. Add any specific handling or crane here..."></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -392,7 +392,7 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    var userRole = "{{ Auth::user()->role }}";
+    var userRole = '{{ Auth::user()->role }}';
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
     var currentUserId = {{ Auth::id() }};
@@ -433,7 +433,7 @@ $(document).ready(function () {
         } else {
             hiddenColumns = [3, 4, 5, 6, 7, 8, 9];
         }
-        var table = $("#multi-filter-select").DataTable({
+        var table = $('#multi-filter-select').DataTable({
             pageLength: 10,
             autoWidth: false,
             order: [[0, 'asc']],
@@ -449,16 +449,16 @@ $(document).ready(function () {
             },
             ],
             language: {
-                emptyTable: "No data available in table",
-                zeroRecords: "No matching records found",
-                loadingRecords: "Loading Data...",
-                processing: "Processing your request...",
-                search: "Search:",
+                emptyTable: 'No data available in table',
+                zeroRecords: 'No matching records found',
+                loadingRecords: 'Loading Data...',
+                processing: 'Processing your request...',
+                search: 'Search:',
                 paginate: {
-                    first: "First",
-                    last: "Last",
-                    next: "Next",
-                    previous: "Previous"
+                    first: 'First',
+                    last: 'Last',
+                    next: 'Next',
+                    previous: 'Previous'
                 }
             },
             initComplete: function () {
@@ -471,10 +471,10 @@ $(document).ready(function () {
                     }
                     var select = $('<select class="form-select"><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
-                    .on("change", function () {
+                    .on('change', function () {
                         var val = $.fn.dataTable.util.escapeRegex($(this).val());
                         column
-                        .search(val ? "^" + val + "$" : "", true, false)
+                        .search(val ? '^' + val + '$' : '', true, false)
                         .draw();
                     });
                     var uniqueValues = [];
@@ -558,9 +558,9 @@ $(document).ready(function () {
     });
     if (hasActionColumn) {
         $('#createNewShipper').click(function () {
-            $('#saveBtn').val("create-shipper");
+            $('#saveBtn').val('create-shipper');
             $('#shipper_id').val('');
-            $('#shipperForm').trigger("reset");
+            $('#shipperForm').trigger('reset');
             $('#shipper_prefix').val('PT');
             $('#shipper_name_input').val('');
             $('#shipper_name_final').val('');
@@ -585,7 +585,7 @@ $(document).ready(function () {
                 processData: false,
                 success: function(response) {
                     $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
-                    $('#shipperForm').trigger("reset");
+                    $('#shipperForm').trigger('reset');
                     $('#shipperModal').modal('hide');
                     Swal.fire({
                         icon: 'success',
@@ -640,7 +640,7 @@ $(document).ready(function () {
                 reverseButtons: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $('#shipperForm').trigger("reset");
+                    $('#shipperForm').trigger('reset');
                     Swal.fire({
                         icon: 'success',
                         title: 'Form Cleared Successfully!',
@@ -662,7 +662,7 @@ $(document).ready(function () {
             $.get("{{ route('shippers.index') }}" + '/' + shipper_id + '/edit', function (data) {
                 Swal.close();
                 $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">Shipper</span>');
-                $('#saveBtn').val("edit-shipper");
+                $('#saveBtn').val('edit-shipper');
                 $('#shipperModal').modal('show');
                 $('#shipper_id').val(data.id);
                 $('#shipper_name_final').val(data.shipper_name);
@@ -671,7 +671,7 @@ $(document).ready(function () {
                 var prefixFound = false;
                 if (parts.length > 1) {
                     var potentialPrefix = parts[0];
-                    $("#shipper_prefix option").each(function() {
+                    $('#shipper_prefix option').each(function() {
                         if ($(this).val() === potentialPrefix) {
                             $('#shipper_prefix').val(potentialPrefix);
                             parts.shift();
@@ -705,7 +705,7 @@ $(document).ready(function () {
             });
         });
         $('body').on('click', '.deleteShipper', function () {
-            var shipper_id = $(this).data("id");
+            var shipper_id = $(this).data('id');
             var row = $('#row-' + shipper_id);
             Swal.fire({
                 title: 'Delete This Data?',
@@ -727,7 +727,7 @@ $(document).ready(function () {
                         }
                     });
                     $.ajax({
-                        type: "DELETE",
+                        type: 'DELETE',
                         url: "{{ route('shippers.index') }}" + '/' + shipper_id,
                         success: function (response) {
                             row.fadeOut(300, function() {

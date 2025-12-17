@@ -34,13 +34,13 @@ User Management | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
                                                         <label>Name <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="name" id="name" required/>
+                                                        <input type="text" class="form-control" name="name" id="name" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
                                                         <label>Email <span class="text-danger">*</span></label>
-                                                        <input type="email" class="form-control" name="email" id="email" required/>
+                                                        <input type="email" class="form-control" name="email" id="email" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -153,23 +153,23 @@ $(document).ready(function () {
     try {
         var notOrderableColumns = [1, 3];
         var skipColumns = [0, 1, 3];
-        var table = $("#multi-filter-select").DataTable({
+        var table = $('#multi-filter-select').DataTable({
             pageLength: 10,
             order: [[0, 'asc']],
             columnDefs: [
                 { orderable: false, targets: notOrderableColumns }
             ],
             language: {
-                emptyTable: "No data available in table",
-                zeroRecords: "No matching records found",
-                loadingRecords: "Loading Data...",
-                processing: "Processing your request...",
-                search: "Search:",
+                emptyTable: 'No data available in table',
+                zeroRecords: 'No matching records found',
+                loadingRecords: 'Loading Data...',
+                processing: 'Processing your request...',
+                search: 'Search:',
                 paginate: {
-                    first: "First",
-                    last: "Last",
-                    next: "Next",
-                    previous: "Previous"
+                    first: 'First',
+                    last: 'Last',
+                    next: 'Next',
+                    previous: 'Previous'
                 }
             },
             initComplete: function () {
@@ -182,10 +182,10 @@ $(document).ready(function () {
                     }
                     var select = $('<select class="form-select"><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
-                    .on("change", function () {
+                    .on('change', function () {
                         var val = $.fn.dataTable.util.escapeRegex($(this).val());
                         column
-                        .search(val ? "^" + val + "$" : "", true, false)
+                        .search(val ? '^' + val + '$' : '', true, false)
                         .draw();
                     });
                     var uniqueValues = [];
@@ -216,9 +216,9 @@ $(document).ready(function () {
         }
     });
     $('#createNewUser').click(function () {
-        $('#saveBtn').val("create-user");
+        $('#saveBtn').val('create-user');
         $('#user_id').val('');
-        $('#userForm').trigger("reset");
+        $('#userForm').trigger('reset');
         $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">User</span>');
         $('#password').prop('required', true).attr('type', 'password');
         $('#passwordRequired').show();
@@ -244,7 +244,7 @@ $(document).ready(function () {
             processData: false,
             success: function(response) {
                 $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
-                $('#userForm').trigger("reset");
+                $('#userForm').trigger('reset');
                 $('#userModal').modal('hide');
                 Swal.fire({
                     icon: 'success',
@@ -299,7 +299,7 @@ $(document).ready(function () {
             reverseButtons: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $('#userForm').trigger("reset");
+                $('#userForm').trigger('reset');
                 $('#container').val('');
                 Swal.fire({
                     icon: 'success',
@@ -322,7 +322,7 @@ $(document).ready(function () {
         $.get("{{ route('users.index') }}" + '/' + user_id + '/edit', function (data) {
             Swal.close();
             $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">User</span>');
-            $('#saveBtn').val("edit-user");
+            $('#saveBtn').val('edit-user');
             $('#userModal').modal('show');
             $('#user_id').val(data.id);
             $('#name').val(data.name);
@@ -343,7 +343,7 @@ $(document).ready(function () {
         });
     });
     $('body').on('click', '.deleteUser', function () {
-        var user_id = $(this).data("id");
+        var user_id = $(this).data('id');
         var row = $('#row-' + user_id);        
         Swal.fire({
             title: 'Delete This Data?',
@@ -365,7 +365,7 @@ $(document).ready(function () {
                     }
                 });
                 $.ajax({
-                    type: "DELETE",
+                    type: 'DELETE',
                     url: "{{ route('users.index') }}" + '/' + user_id,
                     success: function (response) {
                         row.fadeOut(300, function() {

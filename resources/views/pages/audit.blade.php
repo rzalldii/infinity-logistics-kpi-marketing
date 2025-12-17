@@ -5,14 +5,14 @@ Audit Logs | Admin Infinity Logistics Indonesia
 @section('content')
 <div class="container">
     <div class="page-inner">
-        <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-            <div>
-                <h3 class="fw-bold mb-3">Audit Logs</h3>
-            </div>
-        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center">
+                            <h1 class="card-title">Audit Logs</h1>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-md-4">
@@ -55,9 +55,9 @@ Audit Logs | Admin Infinity Logistics Indonesia
                             </thead>
                             <tbody class="text-center">
                                 @forelse($logs as $log)
-                                <tr data-user-id="{{ $log['user']->id }}" data-type="{{ $log['type'] }}" data-action="{{ $log['action'] }}">
+                                <tr data-user-id="{{ optional($log['user'])->id }}" data-type="{{ $log['type'] }}" data-action="{{ $log['action'] }}">
                                     <td>{{ $log['created_at'] ? $log['created_at']->format('d M Y H:i') : '—' }}</td>
-                                    <td>{{ $log['user']->name }}</td>
+                                    <td>{{ optional($log['user'])->name ?? 'System' }}</td>
                                     <td>
                                         @if($log['type'] == 'Checking Rates')
                                             <span class="badge bg-info">Checking Rates</span>

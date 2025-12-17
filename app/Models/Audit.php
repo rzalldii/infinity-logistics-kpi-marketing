@@ -4,11 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Prunable;
 
 class Audit extends Model
 {
     use HasFactory;
     protected $table = "audit_logs";
+    use Prunable;
+
+    public function prunable()
+    {
+        return static::where('created_at', '<=', now()->subMonth());
+    }
 
     protected $fillable = [
         'auditable_type',

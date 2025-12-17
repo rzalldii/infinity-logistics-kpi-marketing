@@ -84,6 +84,14 @@ Report Activities | Admin Infinity Logistics Indonesia
                                             @csrf
                                             <input type="hidden" name="activity_id" id="activity_id">
                                             <div class="row">
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                                <div class="col-md-12">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="created_date">Date</label>
+                                                        <input type="date" class="form-control" name="created_date" id="created_date">
+                                                    </div>
+                                                </div>
+                                                @endif
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="concept_type">Concept Type <span class="text-danger">*</span></label>
@@ -155,7 +163,7 @@ Report Activities | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="prospect">Prospect</label>
-                                                        <textarea class="form-control" name="prospect" id="prospect" rows="1" placeholder="e.g. Potential for 20 TEUs/month next quarter..." autocomplete="off"></textarea>
+                                                        <textarea class="form-control" name="prospect" id="prospect" rows="1" placeholder="e.g. Potential for 20 TEUs/month next quarter..."></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -498,7 +506,7 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    var userRole = "{{ Auth::user()->role }}";
+    var userRole = '{{ Auth::user()->role }}';
     var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
     var activitiesData = @json($activities);
     var table;
@@ -692,7 +700,7 @@ $(document).ready(function () {
         } else {
             hiddenColumns = [3, 4, 6];
         }
-        table = $("#multi-filter-select").DataTable({
+        table = $('#multi-filter-select').DataTable({
             pageLength: 10,
             autoWidth: false,
             order: [[0, 'desc']],
@@ -708,16 +716,16 @@ $(document).ready(function () {
             },
             ],
             language: {
-                emptyTable: "No data available in table",
-                zeroRecords: "No matching records found",
-                loadingRecords: "Loading Data...",
-                processing: "Processing your request...",
-                search: "Search:",
+                emptyTable: 'No data available in table',
+                zeroRecords: 'No matching records found',
+                loadingRecords: 'Loading Data...',
+                processing: 'Processing your request...',
+                search: 'Search:',
                 paginate: {
-                    first: "First",
-                    last: "Last",
-                    next: "Next",
-                    previous: "Previous"
+                    first: 'First',
+                    last: 'Last',
+                    next: 'Next',
+                    previous: 'Previous'
                 }
             },
             initComplete: function () {
@@ -732,10 +740,10 @@ $(document).ready(function () {
                     }
                     var select = $('<select class="form-select"><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
-                    .on("change", function () {
+                    .on('change', function () {
                         var val = $.fn.dataTable.util.escapeRegex($(this).val());
                         column
-                        .search(val ? "^" + val + "$" : "", true, false)
+                        .search(val ? '^' + val + '$' : '', true, false)
                         .draw();
                     });
                     var uniqueValues = [];
@@ -763,7 +771,7 @@ $(document).ready(function () {
         }
         var userName = this.value;
         if (isAdmin) {
-            var searchValue = userName ? "^" + userName + "$" : "";
+            var searchValue = userName ? '^' + userName + '$' : '';
             table.column(9).search(searchValue, true, false).draw();
             calculateSummaryFromFiltered(userName);
         }
@@ -860,7 +868,7 @@ $(document).ready(function () {
         );
         return $state;
     }
-    if (!$('#shipper_id').hasClass("select2-hidden-accessible")) {
+    if (!$('#shipper_id').hasClass('select2-hidden-accessible')) {
         $('#shipper_id').select2({
             theme: 'bootstrap-5',
             width: '100%',
@@ -868,7 +876,7 @@ $(document).ready(function () {
             templateResult: formatShipper,
             language: {
                 noResults: function() {
-                    return "No data found";
+                    return 'No data found';
                 }
             },
         });
@@ -912,9 +920,10 @@ $(document).ready(function () {
         }
     });
     $('#createNewActivity').click(function () {
-        $('#saveBtn').val("create-activity");
+        $('#saveBtn').val('create-activity');
         $('#activity_id').val('');
-        $('#activityForm').trigger("reset");
+        $('#activityForm').trigger('reset');
+        $('#created_date').val(new Date().toISOString().split('T')[0]);
         $('#shipper_id').val(null).trigger('change');
         $('#shipper_type_group').hide();
         $('#commodity_group').hide();
@@ -940,7 +949,7 @@ $(document).ready(function () {
             processData: false,
             success: function(response) {
                 $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
-                $('#activityForm').trigger("reset");
+                $('#activityForm').trigger('reset');
                 $('#activityModal').modal('hide');
                 Swal.fire({
                     icon: 'success',
@@ -995,7 +1004,7 @@ $(document).ready(function () {
             reverseButtons: false
         }).then((result) => {
             if (result.isConfirmed) {
-                $('#activityForm').trigger("reset");
+                $('#activityForm').trigger('reset');
                 $('#shipper_id').val(null).trigger('change');
                 $('#shipper_type_group').hide();
                 $('#commodity_group').hide();
@@ -1012,7 +1021,7 @@ $(document).ready(function () {
     });
     $('body').on('click', '.editActivity', function () {
         var activity_id = $(this).data('id');
-        var reportDate = $(this).data('created_at');
+        var reportDate = $(this).data('report-date');
         if (userRole === 'marketing') {
             var activityDate = new Date(reportDate);
             var today = new Date();
@@ -1035,9 +1044,16 @@ $(document).ready(function () {
         $.get("{{ route('activities.index') }}" + '/' + activity_id + '/edit', function (data) {
             Swal.close();
             $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">Activity</span>');
-            $('#saveBtn').val("edit-activity");
+            $('#saveBtn').val('edit-activity');
             $('#activityModal').modal('show');
             $('#activity_id').val(data.id);
+            if (data.created_at) {
+                var createdDate = new Date(data.created_at);
+                var formattedCreatedDate = createdDate.getFullYear() + '-' + 
+                                        String(createdDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                        String(createdDate.getDate()).padStart(2, '0');
+                $('#created_date').val(formattedCreatedDate);
+            }
             $('#concept_type').val(data.concept_type);
             $('#shipper_id').val(data.shipper_id).trigger('change');
             $('#activity_type').val(data.activity_type).trigger('change');
@@ -1060,8 +1076,8 @@ $(document).ready(function () {
         });
     });
     $('body').on('click', '.deleteActivity', function () {
-        var activity_id = $(this).data("id");
-        var reportDate = $(this).data('created_at');
+        var activity_id = $(this).data('id');
+        var reportDate = $(this).data('report-date');
         if (userRole === 'marketing') {
             var activityDate = new Date(reportDate);
             var today = new Date();
@@ -1096,7 +1112,7 @@ $(document).ready(function () {
                     }
                 });
                 $.ajax({
-                    type: "DELETE",
+                    type: 'DELETE',
                     url: "{{ route('activities.index') }}" + '/' + activity_id,
                     success: function (response) {
                         if (isTableReady && table) {
