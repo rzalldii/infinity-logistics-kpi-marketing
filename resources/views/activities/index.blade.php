@@ -870,7 +870,6 @@ $(document).ready(function () {
     }
     if (!$('#shipper_id').hasClass('select2-hidden-accessible')) {
         $('#shipper_id').select2({
-            theme: 'bootstrap-5',
             width: '100%',
             dropdownParent: $('#activityModal'),
             templateResult: formatShipper,
