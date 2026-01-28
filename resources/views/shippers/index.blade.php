@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Touch Shippers | Admin Infinity Logistics Indonesia
+Touch Shippers | Key Perfomance Indicator Marketing
 @endsection('title')
 @section('content')
 <div class="container">
@@ -12,12 +12,15 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Touch Shippers</h1>
                             <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
-                                <i class="fas fa-eye"></i> Toggle Columns
+                                <i class="fas fa-toggle-on"></i> Toggle Columns
                             </button>
                             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                <button class="btn btn-primary btn-round ms-2" id="createNewShipper">
-                                    <i class="fas fa-plus"></i> Add Data
-                                </button>
+                            <button class="btn btn-success btn-round ms-2" id="ExportExcel">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </button>
+                            <button class="btn btn-primary btn-round ms-2" id="createNewShipper">
+                                <i class="fas fa-plus"></i> Add Data
+                            </button>
                             @endif
                         </div>
                     </div>
@@ -44,8 +47,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                                 <option value="PT">PT</option>
                                                                 <option value="CV">CV</option>
                                                                 <option value="UD">UD</option>
-                                                                <option value="PAK">PAK</option>
-                                                                <option value="IBU">IBU</option>
+                                                                <option value="PS">PS</option>
                                                                 <option value=""></option>
                                                             </select>
                                                             <input type="text" class="form-control" id="shipper_name_input" placeholder="e.g. AJINOMOTO INDONESIA (AJI)" autocomplete="off" required/>
@@ -55,26 +57,36 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group form-group-default">
+                                                        <label class="form-label" for="shipper_address">Shipper Address</label>
+                                                        <input type="text" class="form-control" name="shipper_address" id="shipper_address" placeholder="e.g. Jl. Raya Mlirip No.110, Mlirip, Kec. Jetis, Kabupaten Mojokerto" autocomplete="off"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group form-group-default">
+                                                        <label class="form-label" for="shipper_concept">Shipper Concept <span class="text-danger">*</span></label>
+                                                        <select class="form-select" name="shipper_concept" id="shipper_concept" required>
+                                                            <option value="" disabled selected>Select Shipper Concept</option>
+                                                            <option value="NEW SHIPPER">NEW SHIPPER</option>
+                                                            <option value="EXISTING SHIPPER">EXISTING SHIPPER</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group form-group-default">
                                                         <label class="form-label" for="shipper_type">Shipper Type <span class="text-danger">*</span></label>
                                                         <select class="form-select" name="shipper_type" id="shipper_type" required>
                                                             <option value="" disabled selected>Select Shipper Type</option>
                                                             <option value="DIRECT SHIPPER">DIRECT SHIPPER</option>
                                                             <option value="FORWARDING">FORWARDING</option>
+                                                            <option value="VENDORING">VENDORING</option>
                                                             <option value="TRADING">TRADING</option>
-                                                            <option value="EMKL">EMKL</option>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="shipper_city">Shipper City <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="shipper_city" id="shipper_city" placeholder="e.g. MOJOKERTO" autocomplete="off" required/>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group form-group-default">
-                                                        <label class="form-label" for="shipper_address">Shipper Address</label>
-                                                        <input type="text" class="form-control" name="shipper_address" id="shipper_address" placeholder="e.g. Jl. Raya Mlirip No.110, Mlirip, Kec. Jetis, Kabupaten Mojokerto" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -161,20 +173,26 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_shipper_address">Shipper Address</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_address" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
+                                                    <label class="form-label" for="view_shipper_concept">Shipper Concept</label>
+                                                    <input type="text" class="form-control-plaintext" id="view_shipper_concept" readonly/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-default">
                                                     <label class="form-label" for="view_shipper_type">Shipper Type</label>
                                                     <input type="text" class="form-control-plaintext" id="view_shipper_type" readonly/>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <div class="form-group form-group-default">
                                                     <label class="form-label" for="view_shipper_city">Shipper City</label>
                                                     <input type="text" class="form-control-plaintext" id="view_shipper_city" readonly/>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group form-group-default">
-                                                    <label class="form-label" for="view_shipper_address">Shipper Address</label>
-                                                    <input type="text" class="form-control-plaintext" id="view_shipper_address" readonly/>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -236,18 +254,57 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                             </div>
                         </div>
                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <select class="form-select" id="filterData">
-                                        <option value="">All Data</option>
-                                        <option value="mine">My Data</option>
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        @foreach($users as $user)
-                                        <option value="{{ $user->id }}">Data {{ $user->name }}</option>
-                                        @endforeach
-                                        @endif
-                                    </select>
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-body p-3">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-0">
+                                            <select class="form-select" id="filterData">
+                                                <option value="">All Data</option>
+                                                @if(Auth::user()->isAdmin() || Auth::user()->isMarketing())
+                                                <option value="mine">My Data</option>
+                                                @endif
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                                    @foreach($users as $user)
+                                                    <option value="{{ $user->id }}">Data {{ $user->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-0">
+                                            <select class="form-select" id="filterSort">
+                                                <option value="">Sort Default</option>
+                                                <option value="latest">Latest Input</option>
+                                                <option value="oldest">Oldest Input</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <select class="form-select form-select-sm" id="filterCONCEPT">
+                                            <option value="">Filter CONCEPT</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-select form-select-sm" id="filterTYPE">
+                                            <option value="">Filter TYPE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-select form-select-sm" id="filterCITY">
+                                            <option value="">Filter CITY</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-2" id="clearFilterRow" style="display: none;">
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn btn-link text-danger btn-sm text-decoration-none" id="clearFilters">
+                                            <i class="fas fa-times-circle"></i> Clear All Filters
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -257,6 +314,7 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                 <thead class="text-center">
                                     <tr>
                                         <th>SHIPPER</th>
+                                        <th>CONCEPT</th>
                                         <th>TYPE</th>
                                         <th>CITY</th>
                                         <th>ADDRESS</th>
@@ -267,110 +325,93 @@ Touch Shippers | Admin Infinity Logistics Indonesia
                                         <th>IMPORT</th>
                                         <th>DOMESTIC</th>
                                         <th>COMMODITY</th>
+                                        <th>CREATED AT</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                            <th>CREATED</th>
+                                        <th>CREATED</th>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                            <th>ACTION</th>
+                                        <th>ACTION</th>
                                         @endif
                                     </tr>
                                 </thead>
-                                <tfoot class="text-center">
-                                    <tr>
-                                        <th>SHIPPER</th>
-                                        <th>TYPE</th>
-                                        <th>CITY</th>
-                                        <th>ADDRESS</th>
-                                        <th>CP</th>
-                                        <th>PHONE</th>
-                                        <th>EMAIL</th>
-                                        <th>EXPORT</th>
-                                        <th>IMPORT</th>
-                                        <th>DOMESTIC</th>
-                                        <th>COMMODITY</th>
-                                        <th>DETAIL</th>
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                            <th>CREATED</th>
-                                        @endif
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                            <th>ACTION</th>
-                                        @endif
-                                    </tr>
-                                </tfoot>
                                 <tbody class="text-center">
                                     @foreach($shippers as $shipper)
                                     <tr id="row-{{ $shipper->id }}" data-user-id="{{ $shipper->user_id }}">
                                         <td>{{ $shipper->shipper_name }}</td>
+                                        <td>{{ $shipper->shipper_concept }}</td>
                                         <td>{{ $shipper->shipper_type }}</td>
                                         <td>{{ $shipper->shipper_city }}</td>
                                         <td>{{ $shipper->shipper_address }}</td>
                                         <td>
                                             @if($shipper->contact_person)
-                                                {{ $shipper->contact_person }}
+                                            {{ $shipper->contact_person }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($shipper->phone_number)
-                                                {{ $shipper->phone_number }}
+                                            {{ $shipper->phone_number }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($shipper->email_address)
-                                                {{ $shipper->email_address }}
+                                            {{ $shipper->email_address }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($shipper->export)
-                                                {{ $shipper->export }}
+                                            {{ $shipper->export }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($shipper->import)
-                                                {{ $shipper->import }}
+                                            {{ $shipper->import }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($shipper->domestic)
-                                                {{ $shipper->domestic }}
+                                            {{ $shipper->domestic }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>{{ $shipper->commodity }}</td>
+                                        <td data-order="{{ $shipper->created_at }}">
+                                            {{ $shipper->created_at->format('d M Y') }}
+                                        </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info viewShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                            <td>{{ Str::upper($shipper->user->name) }}</td>
+                                        <td>{{ Str::upper($shipper->user->name) }}</td>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                            <td>
-                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $shipper->user_id == Auth::id()))
-                                                    <button type="button" class="btn btn-sm btn-warning text-white editShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-danger deleteShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
-                                                        <i class="fas fa-lock"></i>
-                                                    </button>
-                                                @endif
-                                            </td>
+                                        <td>
+                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $shipper->user_id == Auth::id()))
+                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            @else
+                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                <i class="fas fa-lock"></i>
+                                            </button>
+                                            @endif
+                                        </td>
                                         @endif
                                     </tr>
                                     @endforeach
@@ -393,45 +434,61 @@ $(document).ready(function () {
         }
     });
     var userRole = '{{ Auth::user()->role }}';
-    var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
-    var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
+    var isAdmin = (userRole === 'SUPER ADMIN' || userRole === 'ADMIN');
+    var hasActionColumn = (userRole === 'SUPER ADMIN' || userRole === 'ADMIN' || userRole === 'MARKETING');
     var currentUserId = {{ Auth::id() }};
-    function updateShipperName() {
-        var prefix = $('#shipper_prefix').val();
-        var nameInput = $('#shipper_name_input').val();
-        var fullName = '';
-        if (prefix === '') {
-            fullName = nameInput;
-        } else {
-            fullName = prefix + '. ' + nameInput;
-        }
-        $('#shipper_name_final').val(fullName);
-    }
-    $('#shipper_prefix, #shipper_name_input').on('change keyup', updateShipperName);
+    $('#ExportExcel').on('click', function() {
+        Swal.fire({
+            title: 'Export This Data?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#31ce36',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Export',
+            cancelButtonText: 'Cancel',
+            reverseButtons: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var url = "{{ route('shippers.export') }}";
+                Swal.fire({
+                    title: 'Preparing Excel...',
+                    html: 'Exporting data file...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                setTimeout(function() {
+                    window.location.href = url;
+                    Swal.close();
+                    setTimeout(function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Export Complete!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }, 500);
+                }, 1000);
+            }
+        });
+    });
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [1, 2, 3, 5, 6, 10, 11, 12, 13];
+            notOrderableColumns = [1, 2, 3, 4, 6, 7, 11, 12, 13, 14, 15];
         } else if (hasActionColumn) {
-            notOrderableColumns = [1, 2, 3, 5, 6, 10, 11, 12];
+            notOrderableColumns = [1, 2, 3, 4, 6, 7, 11, 12, 13, 14];
         } else {
-            notOrderableColumns = [1, 2, 3, 5, 6, 10, 11];
-        }
-        var skipColumns;
-        if (isAdmin) {
-            skipColumns = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-        } else if (hasActionColumn) {
-            skipColumns = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        } else {
-            skipColumns = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+            notOrderableColumns = [1, 2, 3, 4, 6, 7, 11, 12, 13];
         }
         var hiddenColumns;
         if (isAdmin) {
-            hiddenColumns = [3, 4, 5, 6, 7, 8, 9];
+            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 12];
         } else if (hasActionColumn) {
-            hiddenColumns = [3, 4, 5, 6, 7, 8, 9];
+            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 12];
         } else {
-            hiddenColumns = [3, 4, 5, 6, 7, 8, 9];
+            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 12];
         }
         var table = $('#multi-filter-select').DataTable({
             pageLength: 10,
@@ -462,34 +519,40 @@ $(document).ready(function () {
                 }
             },
             initComplete: function () {
-                this.api().columns().every(function () {
-                    var column = this;
-                    var columnIndex = column.index();
-                    if (skipColumns.includes(columnIndex)) {
-                        $(column.footer()).empty();
-                        return;
+                var api = this.api();
+                api.column(1).data().unique().sort().each(function (d, j) {
+                    if (d) {
+                        $('#filterCONCEPT').append('<option value="' + d + '">' + d + '</option>');
                     }
-                    var select = $('<select class="form-select"><option value=""></option></select>')
-                    .appendTo($(column.footer()).empty())
-                    .on('change', function () {
-                        var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                        column
-                        .search(val ? '^' + val + '$' : '', true, false)
-                        .draw();
-                    });
-                    var uniqueValues = [];
-                    column.data().unique().sort().each(function (d, j) {
-                        if (d && !uniqueValues.includes(d)) {
-                            uniqueValues.push(d);
-                            select.append('<option value="' + d + '">' + d + "</option>");
-                        }
-                    });
+                });
+                api.column(2).data().unique().sort().each(function (d, j) {
+                    if (d) {
+                        $('#filterTYPE').append('<option value="' + d + '">' + d + '</option>');
+                    }
+                });
+                api.column(3).data().unique().sort().each(function (d, j) {
+                    if (d) {
+                        $('#filterCITY').append('<option value="' + d + '">' + d + '</option>');
+                    }
                 });
             },
         });
         table.on('draw', function () {
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
+        function checkFilters() {
+            var hasFilter = 
+                $('#filterData').val() !== '' ||
+                $('#filterSort').val() !== '' ||
+                $('#filterCONCEPT').val() !== '' ||
+                $('#filterTYPE').val() !== '' ||
+                $('#filterCITY').val() !== '';
+            if (hasFilter) {
+                $('#clearFilterRow').fadeIn();
+            } else {
+                $('#clearFilterRow').fadeOut();
+            }
+        }
         $('#filterData').on('change', function() {
             var filterValue = $(this).val();
             $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
@@ -506,6 +569,43 @@ $(document).ready(function () {
                 $.fn.dataTable.ext.search.push(dataFilter);
             }
             table.draw();
+            checkFilters();
+        });
+        $('#filterSort').on('change', function() {
+            var val = $(this).val();
+            var createdAtIndex = 12;
+            if (val === 'latest') {
+                table.order([createdAtIndex, 'desc']).draw();
+            } else if (val === 'oldest') {
+                table.order([createdAtIndex, 'asc']).draw();
+            } else {
+                table.order([0, 'asc']).draw();
+            }
+            checkFilters();
+        });
+        $('#filterCONCEPT, #filterTYPE, #filterCITY').on('change', function () {
+            var mapIdToColumn = {
+                'filterCONCEPT': 1,
+                'filterTYPE': 2,
+                'filterCITY': 3
+            };
+            var colIndex = mapIdToColumn[this.id];
+            if (typeof colIndex !== 'undefined') {
+                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                table.column(colIndex).search(val ? '^' + val + '$' : '', true, false).draw();
+                checkFilters();
+            } else {
+                console.error('Column index not found for filter ID:', this.id);
+            }
+        });
+        $('#clearFilters').on('click', function() {
+            $('#filterData, #filterSort, #filterCONCEPT, #filterTYPE, #filterCITY').val('');
+            $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
+                return fn.name !== 'dataFilter';
+            });
+            table.order([0, 'asc']);
+            table.search('').columns().search('').draw();
+            checkFilters();
         });
     } catch (error) {
         console.error('DataTables initialization error:', error);
@@ -513,15 +613,27 @@ $(document).ready(function () {
     $('#ToggleColumns').on('click', function (e) {
         e.preventDefault();
         var $btn = $(this);
-        var isHidden = !table.column(4).visible();
-        table.columns([4, 7, 8, 9]).visible(isHidden);
+        var isHidden = !table.column(5).visible();
+        table.columns([5, 8, 9, 10]).visible(isHidden);
         if (isHidden) {
-            $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-off"></i> Toggle Columns');
         } else {
-            $btn.html('<i class="fas fa-eye"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-on"></i> Toggle Columns');
         }
         table.columns.adjust().draw();
     });
+    function updateShipperName() {
+        var prefix = $('#shipper_prefix').val();
+        var nameInput = $('#shipper_name_input').val();
+        var fullName = '';
+        if (prefix === '') {
+            fullName = nameInput;
+        } else {
+            fullName = prefix + '. ' + nameInput;
+        }
+        $('#shipper_name_final').val(fullName);
+    }
+    $('#shipper_prefix, #shipper_name_input').on('change keyup', updateShipperName);
     $('body').on('click', '.viewShipper', function () {
         var shipper_id = $(this).data('id');
         Swal.fire({
@@ -534,6 +646,7 @@ $(document).ready(function () {
         $.get("{{ route('shippers.index') }}" + '/' + shipper_id + '/edit', function (data) {
             Swal.close();
             $('#view_shipper_name').val(data.shipper_name || '—');
+            $('#view_shipper_concept').val(data.shipper_concept || '—');
             $('#view_shipper_type').val(data.shipper_type || '—');
             $('#view_shipper_city').val(data.shipper_city || '—');
             $('#view_shipper_address').val(data.shipper_address || '—');
@@ -645,12 +758,12 @@ $(document).ready(function () {
                         icon: 'success',
                         title: 'Form Cleared Successfully!',
                         showConfirmButton: false,
-                        timer: 1000
+                        timer: 1500
                     });
                 }
             });
         });
-        $('body').on('click', '.editShipper', function () {
+        $('body').on('click', '.editBtn', function () {
             var shipper_id = $(this).data('id');
             Swal.fire({
                 title: 'Loading Data...',
@@ -685,6 +798,7 @@ $(document).ready(function () {
                     $('#shipper_prefix').val('');
                     $('#shipper_name_input').val(existingName);
                 }
+                $('#shipper_concept').val(data.shipper_concept);
                 $('#shipper_type').val(data.shipper_type);
                 $('#shipper_city').val(data.shipper_city);
                 $('#shipper_address').val(data.shipper_address);
@@ -704,7 +818,7 @@ $(document).ready(function () {
                 });
             });
         });
-        $('body').on('click', '.deleteShipper', function () {
+        $('body').on('click', '.deleteBtn', function () {
             var shipper_id = $(this).data('id');
             var row = $('#row-' + shipper_id);
             Swal.fire({

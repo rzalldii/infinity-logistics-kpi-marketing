@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
             'name' => 'Bagas',
             'email' => 'marketing1@infinity-sby.com',
             'password' => Hash::make('admin'),
-            'role' => 'super_admin',
+            'role' => 'SUPER ADMIN',
             'is_primary' => true,
         ]);
 
@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'superadmin@infinity-sby.com',
             'password' => Hash::make('admin'),
-            'role' => 'super_admin',
+            'role' => 'SUPER ADMIN',
             'is_primary' => false,
         ]);
 
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@infinity-sby.com',
             'password' => Hash::make('admin'),
-            'role' => 'admin',
+            'role' => 'ADMIN',
             'is_primary' => false,
         ]);
 
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
             'name' => 'Guest Marketing',
             'email' => 'guestmarketing@infinity-sby.com',
             'password' => Hash::make('guest'),
-            'role' => 'marketing',
+            'role' => 'MARKETING',
             'is_primary' => false,
         ]);
 
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
             'name' => 'Guest Marketing 1',
             'email' => 'guestmarketing1@infinity-sby.com',
             'password' => Hash::make('guest'),
-            'role' => 'marketing',
+            'role' => 'MARKETING',
             'is_primary' => false,
         ]);
 
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
             'name' => 'Guest',
             'email' => 'guest@infinity-sby.com',
             'password' => Hash::make('guest'),
-            'role' => 'guest',
+            'role' => 'GUEST',
             'is_primary' => false,
         ]);
     }

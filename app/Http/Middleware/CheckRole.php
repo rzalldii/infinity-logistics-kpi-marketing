@@ -12,7 +12,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return redirect('login')->withError('You must login first!');
+            return redirect('login');
         }
         $user = Auth::user();
         if ($user->isSuperAdmin()) {
@@ -23,6 +23,6 @@ class CheckRole
                 return $next($request);
             }
         }
-        abort(403, 'Unauthorized action.');
+        abort(403);
     }
 }

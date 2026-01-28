@@ -6,9 +6,11 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\Rate;
 use App\Models\Shipper;
 use App\Models\Activity;
+use App\Models\User;
 use App\Observers\RateObserver;
 use App\Observers\ShipperObserver;
 use App\Observers\ActivityObserver;
+use App\Observers\UserObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +30,6 @@ class AppServiceProvider extends ServiceProvider
         Rate::observe(RateObserver::class);
         Shipper::observe(ShipperObserver::class);
         Activity::observe(ActivityObserver::class);
+        User::observe(UserObserver::class);
     }
 }

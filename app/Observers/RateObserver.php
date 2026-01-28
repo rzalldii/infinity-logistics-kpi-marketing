@@ -14,7 +14,7 @@ class RateObserver
             'auditable_id' => $rate->id,
             'event' => 'created',
             'user_id' => Auth::id(),
-            'description' => strtoupper($rate->pol) . ' - ' . strtoupper($rate->pod),
+            'description' => $rate->pol . ' - ' . $rate->pod,
             'new_values' => $rate->toArray(),
         ]);
     }
@@ -26,7 +26,7 @@ class RateObserver
             'auditable_id' => $rate->id,
             'event' => 'updated',
             'user_id' => Auth::id(),
-            'description' => strtoupper($rate->pol) . ' - ' . strtoupper($rate->pod),
+            'description' => $rate->pol . ' - ' . $rate->pod,
             'old_values' => $rate->getOriginal(),
             'new_values' => $rate->getAttributes(),
         ]);
@@ -39,7 +39,7 @@ class RateObserver
             'auditable_id' => $rate->id,
             'event' => 'deleted',
             'user_id' => Auth::id(),
-            'description' => strtoupper($rate->pol) . ' - ' . strtoupper($rate->pod),
+            'description' => $rate->pol . ' - ' . $rate->pod,
             'old_values' => $rate->toArray(),
         ]);
     }

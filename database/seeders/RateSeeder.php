@@ -22,7 +22,7 @@ class RateSeeder extends Seeder
             'container_20' => '450',
             'container_40' => '850',
             'liner' => 'Maersk',
-            'free_time' => '7 days',
+            'free_time' => '7 Days DEM',
             'valid_date' => Carbon::now(),
             'notes' => 'Test',
         ]);
@@ -35,7 +35,7 @@ class RateSeeder extends Seeder
             'container_20' => '150',
             'container_40' => '250',
             'liner' => 'Infinity',
-            'free_time' => '5 days',
+            'free_time' => '5 Days DET',
             'valid_date' => Carbon::now(),
             'notes' => 'Test1',
         ]);

@@ -17,8 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['super_admin', 'admin', 'marketing', 'guest'])->default('guest');
+            $table->enum('role', ['SUPER ADMIN', 'ADMIN', 'MARKETING', 'GUEST'])->default('GUEST');
             $table->boolean('is_primary')->default(false);
+            $table->string('target_activity')->nullable();
+            $table->string('target_volume')->nullable();
+            $table->string('target_profit')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

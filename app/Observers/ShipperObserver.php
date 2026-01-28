@@ -14,7 +14,7 @@ class ShipperObserver
             'auditable_id' => $shipper->id,
             'event' => 'created',
             'user_id' => Auth::id(),
-            'description' => strtoupper($shipper->shipper_name),
+            'description' => $shipper->shipper_name,
             'new_values' => $shipper->toArray(),
         ]);
     }
@@ -26,7 +26,7 @@ class ShipperObserver
             'auditable_id' => $shipper->id,
             'event' => 'updated',
             'user_id' => Auth::id(),
-            'description' => strtoupper($shipper->shipper_name),
+            'description' => $shipper->shipper_name,
             'old_values' => $shipper->getOriginal(),
             'new_values' => $shipper->getAttributes(),
         ]);
@@ -39,7 +39,7 @@ class ShipperObserver
             'auditable_id' => $shipper->id,
             'event' => 'deleted',
             'user_id' => Auth::id(),
-            'description' => strtoupper($shipper->shipper_name),
+            'description' => $shipper->shipper_name,
             'old_values' => $shipper->toArray(),
         ]);
     }

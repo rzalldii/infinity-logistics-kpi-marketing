@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Rate;
 use App\Models\User;
+use App\Models\Audit;
+use App\Exports\RatesExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +20,7 @@ class RateController extends Controller
             return response()->json($rates);
         }
         $rates = Rate::latest()->get();
-        $users = User::whereIn('role', ['marketing'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('rates.index', compact('rates', 'users'));
     }
 
@@ -34,36 +37,38 @@ class RateController extends Controller
             'valid_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
+        $pols = array_map('trim', explode(',', $validated['pol']));
         $pods = array_map('trim', explode(',', $validated['pod']));
-        $pods = array_filter($pods, function($pod) {
-            return !empty($pod);
-        });
+        $pols = array_filter($pols, fn($item) => !empty($item));
+        $pods = array_filter($pods, fn($item) => !empty($item));
         $createdRates = [];
         $duplicateCount = 0;
-        foreach ($pods as $pod) {
-            $exists = Rate::where('pol', $validated['pol'])
-                ->where('pod', $pod)
-                ->where('container_type', $validated['container_type'])
-                ->where('liner', $validated['liner'])
-                ->where('valid_date', $validated['valid_date'])
-                ->exists();
-            if ($exists) {
-                $duplicateCount++;
-                continue;
+        foreach ($pols as $pol) {
+            foreach ($pods as $pod) {
+                $exists = Rate::where('pol', $pol)
+                    ->where('pod', $pod)
+                    ->where('container_type', $validated['container_type'])
+                    ->where('liner', $validated['liner'])
+                    ->where('valid_date', $validated['valid_date'])
+                    ->exists();
+                if ($exists) {
+                    $duplicateCount++;
+                    continue;
+                }
+                $rate = Rate::create([
+                    'pol' => $pol,
+                    'pod' => $pod,
+                    'container_type' => $validated['container_type'],
+                    'container_20' => $validated['container_20'],
+                    'container_40' => $validated['container_40'],
+                    'liner' => $validated['liner'],
+                    'free_time' => $validated['free_time'],
+                    'valid_date' => $validated['valid_date'],
+                    'notes' => $validated['notes'],
+                    'user_id' => Auth::id(),
+                ]);
+                $createdRates[] = $rate;
             }
-            $rate = Rate::create([
-                'pol' => $validated['pol'],
-                'pod' => $pod,
-                'container_type' => $validated['container_type'],
-                'container_20' => $validated['container_20'],
-                'container_40' => $validated['container_40'],
-                'liner' => $validated['liner'],
-                'free_time' => $validated['free_time'],
-                'valid_date' => $validated['valid_date'],
-                'notes' => $validated['notes'],
-                'user_id' => Auth::id(),
-            ]);
-            $createdRates[] = $rate;
         }
         if (empty($createdRates) && $duplicateCount > 0) {
             return response()->json([
@@ -110,85 +115,6 @@ class RateController extends Controller
         }
         $rate->update($validated);
         return response()->json($rate, 200);
-        // $rate = Rate::findOrFail($id);
-        // $validated = $request->validate([
-        //     'pol' => 'required|string',
-        //     'pod' => 'required|string',
-        //     'container_type' => 'required|in:GP,RF,OT',
-        //     'container_20' => 'nullable|string|max:10',
-        //     'container_40' => 'nullable|string|max:10',
-        //     'liner' => 'required|string',
-        //     'free_time' => 'nullable|string',
-        //     'valid_date' => 'required|date',
-        //     'notes' => 'nullable|string',
-        // ]);
-        // if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-        //     if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
-        //         return response()->json(null, 403);
-        //     }
-        // }
-        // if (strpos($validated['pod'], ',') !== false) {
-        //     $pods = array_map('trim', explode(',', $validated['pod']));
-        //     $pods = array_filter($pods, function($pod) {
-        //         return !empty($pod);
-        //     });
-        //     $exists = Rate::where('pol', $validated['pol'])
-        //         ->where('pod', $pods[0])
-        //         ->where('container_type', $validated['container_type'])
-        //         ->where('liner', $validated['liner'])
-        //         ->where('valid_date', $validated['valid_date'])
-        //         ->where('id', '!=', $id)
-        //         ->exists();
-        //     if (!$exists) {
-        //         $rate->update([
-        //             'pol' => $validated['pol'],
-        //             'pod' => $pods[0],
-        //             'container_type' => $validated['container_type'],
-        //             'container_20' => $validated['container_20'],
-        //             'container_40' => $validated['container_40'],
-        //             'liner' => $validated['liner'],
-        //             'free_time' => $validated['free_time'],
-        //             'valid_date' => $validated['valid_date'],
-        //             'notes' => $validated['notes'],
-        //         ]);
-        //     }
-        //     for ($i = 1; $i < count($pods); $i++) {
-        //         $existsNew = Rate::where('pol', $validated['pol'])
-        //             ->where('pod', $pods[$i])
-        //             ->where('container_type', $validated['container_type'])
-        //             ->where('liner', $validated['liner'])
-        //             ->where('valid_date', $validated['valid_date'])
-        //             ->exists();
-        //         if ($existsNew) {
-        //             continue;
-        //         }
-        //         Rate::create([
-        //             'pol' => $validated['pol'],
-        //             'pod' => $pods[$i],
-        //             'container_type' => $validated['container_type'],
-        //             'container_20' => $validated['container_20'],
-        //             'container_40' => $validated['container_40'],
-        //             'liner' => $validated['liner'],
-        //             'free_time' => $validated['free_time'],
-        //             'valid_date' => $validated['valid_date'],
-        //             'notes' => $validated['notes'],
-        //             'user_id' => Auth::id(),
-        //         ]);
-        //     }
-        //     return response()->json($rate, 200);
-        // }
-        // $exists = Rate::where('pol', $validated['pol'])
-        //     ->where('pod', $validated['pod'])
-        //     ->where('container_type', $validated['container_type'])
-        //     ->where('liner', $validated['liner'])
-        //     ->where('valid_date', $validated['valid_date'])
-        //     ->where('id', '!=', $id)
-        //     ->exists();
-        // if ($exists) {
-        //     return response()->json(['data' => []], 422);
-        // }
-        // $rate->update($validated);
-        // return response()->json($rate, 200);
     }
 
     public function destroy($id): JsonResponse
@@ -201,5 +127,21 @@ class RateController extends Controller
         }
         $rate->delete();
         return response()->json(null, 204);
+    }
+
+    public function export()
+    {
+        $rates = Rate::latest()->get();
+        $fileName = 'Checking Rates ' . date('Y-m-d') . '.xlsx';
+        Audit::create([
+            'auditable_type' => 'Rate',
+            'auditable_id' => 0,
+            'event' => 'exported',
+            'user_id' => Auth::id(),
+            'description' => 'Exported ' . $rates->count(),
+            'old_values' => null,
+            'new_values' => request()->all(),
+        ]);
+        return Excel::download(new RatesExport($rates), $fileName);
     }
 }

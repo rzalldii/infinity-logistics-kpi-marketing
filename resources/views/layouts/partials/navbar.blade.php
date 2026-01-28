@@ -32,7 +32,7 @@
                         <span class="sidebar-mini-icon">
                             <i class="fa fa-ellipsis-h"></i>
                         </span>
-                        <h4 class="text-section">Sections</h4>
+                        <h4 class="text-section">Marketing</h4>
                     </li>
                     <li class="nav-item">
                         <a href="/rates">
@@ -42,7 +42,7 @@
                     </li>
                     <li class="nav-item">
                         <a href="/shippers">
-                            <i class="fas fa-list-ul"></i>
+                            <i class="fas fa-ship"></i>
                             <p>Touch Shippers</p>
                         </a>
                     </li>
@@ -54,7 +54,21 @@
                         </a>
                     </li>
                     @endif
+                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                    <li class="nav-item">
+                        <a href="/summaries">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Summary Activities</p>
+                        </a>
+                    </li>
+                    @endif
                     @if(Auth::user()->isSuperAdmin())
+                    <li class="nav-section">
+                        <span class="sidebar-mini-icon">
+                            <i class="fa fa-ellipsis-h"></i>
+                        </span>
+                        <h4 class="text-section">Admin</h4>
+                    </li>
                     <li class="nav-item">
                         <a href="/audit">
                             <i class="fas fa-history"></i>
@@ -107,7 +121,7 @@
                                     <li>
                                         <div class="user-box">
                                             <div class="u-text text-dark">
-                                                <h4 class="text-uppercase">{{ ucfirst(str_replace('_', ' ', Auth::user()->role)) }}</h4>
+                                                <h4>{{ Auth::user()->role }}</h4>
                                                 <p>{{ Auth::user()->email }}</p>
                                             </div>
                                         </div>

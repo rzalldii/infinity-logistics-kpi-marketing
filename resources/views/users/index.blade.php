@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-User Management | Admin Infinity Logistics Indonesia
+User Management | Key Perfomance Indicator Marketing
 @endsection('title')
 @section('content')
 <div class="container">
@@ -33,19 +33,19 @@ User Management | Admin Infinity Logistics Indonesia
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label>Name <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="name">Name <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="name" id="name" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label>Email <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
                                                         <input type="email" class="form-control" name="email" id="email" autocomplete="off" required/>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label>Password <span class="text-danger" id="passwordRequired">*</span></label>
+                                                        <label class="form-label" for="password">Password <span class="text-danger" id="passwordRequired">*</span></label>
                                                         <div class="position-relative">
                                                             <input type="password" class="form-control" name="password" id="password" required/>
                                                             <button type="button" class="btn btn-sm position-absolute end-0 top-50 translate-middle-y me-2" id="togglePassword" style="display: none; background: transparent; border: none; padding: 0; z-index: 10;">
@@ -57,13 +57,13 @@ User Management | Admin Infinity Logistics Indonesia
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group form-group-default">
-                                                        <label>Role <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="role">Role <span class="text-danger">*</span></label>
                                                         <select class="form-select" name="role" id="role" required>
                                                             <option value="" disabled selected>Select Role</option>
-                                                            <option value="super_admin">SUPER ADMIN</option>
-                                                            <option value="admin">ADMIN</option>
-                                                            <option value="marketing">MARKETING</option>
-                                                            <option value="guest">GUEST</option>
+                                                            <option value="SUPER ADMIN">SUPER ADMIN</option>
+                                                            <option value="ADMIN">ADMIN</option>
+                                                            <option value="MARKETING">MARKETING</option>
+                                                            <option value="GUEST">GUEST</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -85,7 +85,7 @@ User Management | Admin Infinity Logistics Indonesia
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table id="multi-filter-select" class="display table table-striped table-hover">
+                            <table id="multi-filter-select" class="display table table-striped table-hover table-bordered">
                                 <thead class="text-center">
                                     <tr>
                                         <th>NAME</th>
@@ -94,40 +94,32 @@ User Management | Admin Infinity Logistics Indonesia
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
-                                <tfoot class="text-center">
-                                    <tr>
-                                        <th>NAME</th>
-                                        <th>EMAIL</th>
-                                        <th>ROLE</th>
-                                        <th>ACTION</th>
-                                    </tr>
-                                </tfoot>
                                 <tbody class="text-center">
                                     @foreach($users as $user)
-                                    <tr id="row-{{ $user->id }}">
-                                        <td>{{ Str::upper($user->name) }}</td>
+                                    <tr>
+                                        <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
-                                        <td>{{ Str::upper(str_replace('_', ' ',$user->role)) }}</td>
+                                        <td>{{ $user->role }}</td>
                                         <td>
                                             @if($user->id !== Auth::id())
-                                                @if(!$user->is_primary || $user->id === Auth::id())
-                                                    <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                @endif
-                                                @if(!$user->is_primary)
-                                                    <button type="button" class="btn btn-sm btn-danger deleteUser" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Protected">
-                                                        <i class="fas fa-shield-alt"></i>
-                                                    </button>
-                                                @endif
+                                            @if(!$user->is_primary || $user->id === Auth::id())
+                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            @endif
+                                            @if(!$user->is_primary)
+                                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                             @else
-                                                <button type="button" class="btn btn-sm btn-warning text-white editUser" data-id="{{ $user->id }}" data-primary="{{ $user->is_primary ? 'true' : 'false' }}" data-bs-toggle="tooltip" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
+                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Protected">
+                                                <i class="fas fa-shield-alt"></i>
+                                            </button>
+                                            @endif
+                                            @else
+                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-primary="{{ $user->is_primary ? 'true' : 'false' }}" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
                                             @endif
                                         </td>
                                     </tr>
@@ -150,60 +142,6 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    try {
-        var notOrderableColumns = [1, 3];
-        var skipColumns = [0, 1, 3];
-        var table = $('#multi-filter-select').DataTable({
-            pageLength: 10,
-            order: [[0, 'asc']],
-            columnDefs: [
-                { orderable: false, targets: notOrderableColumns }
-            ],
-            language: {
-                emptyTable: 'No data available in table',
-                zeroRecords: 'No matching records found',
-                loadingRecords: 'Loading Data...',
-                processing: 'Processing your request...',
-                search: 'Search:',
-                paginate: {
-                    first: 'First',
-                    last: 'Last',
-                    next: 'Next',
-                    previous: 'Previous'
-                }
-            },
-            initComplete: function () {
-                this.api().columns().every(function () {
-                    var column = this;
-                    var columnIndex = column.index();
-                    if (skipColumns.includes(columnIndex)) {
-                        $(column.footer()).empty();
-                        return;
-                    }
-                    var select = $('<select class="form-select"><option value=""></option></select>')
-                    .appendTo($(column.footer()).empty())
-                    .on('change', function () {
-                        var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                        column
-                        .search(val ? '^' + val + '$' : '', true, false)
-                        .draw();
-                    });
-                    var uniqueValues = [];
-                    column.data().unique().sort().each(function (d, j) {
-                        if (d && !uniqueValues.includes(d)) {
-                            uniqueValues.push(d);
-                            select.append('<option value="' + d + '">' + d + "</option>");
-                        }
-                    });
-                });
-            },
-        });
-        table.on('draw', function () {
-            $('[data-bs-toggle="tooltip"]').tooltip();
-        });
-    } catch (error) {
-        console.error('DataTables initialization error:', error);
-    }
     $('#togglePassword').click(function() {
         const passwordField = $('#password');
         const toggleIcon = $('#toggleIcon');
@@ -305,12 +243,12 @@ $(document).ready(function () {
                     icon: 'success',
                     title: 'Form Cleared Successfully!',
                     showConfirmButton: false,
-                    timer: 1000
+                    timer: 1500
                 });
             }
         });
     });
-    $('body').on('click', '.editUser', function () {
+    $('body').on('click', '.editBtn', function () {
         var user_id = $(this).data('id');
         Swal.fire({
             title: 'Loading Data...',
@@ -342,7 +280,7 @@ $(document).ready(function () {
             });
         });
     });
-    $('body').on('click', '.deleteUser', function () {
+    $('body').on('click', '.deleteBtn', function () {
         var user_id = $(this).data('id');
         var row = $('#row-' + user_id);        
         Swal.fire({
@@ -359,7 +297,6 @@ $(document).ready(function () {
                 Swal.fire({
                     title: 'Deleting Data...',
                     allowOutsideClick: false,
-                    allowEscapeKey: false,
                     didOpen: () => {
                         Swal.showLoading();
                     }

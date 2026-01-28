@@ -16,6 +16,9 @@ class User extends Authenticatable
         'password',
         'role',
         'is_primary',
+        'target_activity',
+        'target_volume',
+        'target_profit',
     ];
 
     protected $hidden = [
@@ -33,32 +36,32 @@ class User extends Authenticatable
 
     public function isPrimaryAdmin(): bool
     {
-        return $this->is_primary && $this->role === 'super_admin';
+        return $this->is_primary && $this->role === 'SUPER ADMIN';
     }
 
     public function isSuperAdmin(): bool
     {
-        return $this->role === 'super_admin';
+        return $this->role === 'SUPER ADMIN';
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'ADMIN';
     }
 
     public function isMarketing(): bool
     {
-        return $this->role === 'marketing';
+        return $this->role === 'MARKETING';
     }
 
     public function isGuest(): bool
     {
-        return $this->role === 'guest';
+        return $this->role === 'GUEST';
     }
 
     public function hasAdminAccess(): bool
     {
-        return in_array($this->role, ['super_admin', 'admin']);
+        return in_array($this->role, ['SUPER ADMIN', 'ADMIN']);
     }
 
     public function rates()

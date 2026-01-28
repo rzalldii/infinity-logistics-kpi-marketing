@@ -13,6 +13,7 @@ class Shipper extends Model
     protected $fillable = [
         'user_id',
         'shipper_name',
+        'shipper_concept',
         'shipper_type',
         'shipper_city',
         'shipper_address',

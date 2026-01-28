@@ -4,28 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Prunable;
 
 class Activity extends Model
 {
     use HasFactory;
     protected $table = "activities";
-    use Prunable;
-
-    public function prunable()
-    {
-        return static::where('created_at', '<=', now()->subMonths(3));
-    }
 
     protected $fillable = [
+        'parent_id',
+        'sequence',    
         'user_id',
-        'concept_type',
         'shipper_id',
         'activity_type',
         'visit_date',
-        'status',
-        'status_detail',
-        'prospect',
+        'status_type',
+        'volume_20',
+        'volume_40',
+        'other_volume',
+        'profit',
+        'remarks',
     ];
 
     protected $casts = [
@@ -40,5 +37,15 @@ class Activity extends Model
     public function shipper()
     {
         return $this->belongsTo(Shipper::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Activity::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Activity::class, 'parent_id');
     }
 }

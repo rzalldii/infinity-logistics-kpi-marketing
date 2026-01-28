@@ -14,7 +14,7 @@ class ActivityObserver
             'auditable_id' => $activity->id,
             'event' => 'created',
             'user_id' => Auth::id(),
-            'description' => $activity->concept_type . ' - ' . $activity->activity_type,
+            'description' => $activity->activity_type . ' - ' . $activity->status_type,
             'new_values' => $activity->toArray(),
         ]);
     }
@@ -26,7 +26,7 @@ class ActivityObserver
             'auditable_id' => $activity->id,
             'event' => 'updated',
             'user_id' => Auth::id(),
-            'description' => $activity->concept_type . ' - ' . $activity->activity_type,
+            'description' => $activity->activity_type . ' - ' . $activity->status_type,
             'old_values' => $activity->getOriginal(),
             'new_values' => $activity->getAttributes(),
         ]);
@@ -39,7 +39,7 @@ class ActivityObserver
             'auditable_id' => $activity->id,
             'event' => 'deleted',
             'user_id' => Auth::id(),
-            'description' => $activity->concept_type . ' - ' . $activity->activity_type,
+            'description' => $activity->activity_type . ' - ' . $activity->status_type,
             'old_values' => $activity->toArray(),
         ]);
     }

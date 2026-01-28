@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Shipper;
 use App\Models\User;
+use App\Models\Audit;
+use App\Exports\ShippersExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +20,7 @@ class ShipperController extends Controller
             return response()->json($shippers);
         }
         $shippers = Shipper::latest()->get();
-        $users = User::whereIn('role', ['marketing'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('shippers.index', compact('shippers', 'users'));
     }
 
@@ -25,7 +28,8 @@ class ShipperController extends Controller
     {
         $validated = $request->validate([
             'shipper_name' => 'required|string',
-            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL',
+            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,VENDORING,TRADING',
+            'shipper_concept'  => 'required|in:NEW SHIPPER,EXISTING SHIPPER',
             'shipper_city' => 'required|string',
             'shipper_address' => 'nullable|string',
             'contact_person' => 'nullable|string',
@@ -39,6 +43,7 @@ class ShipperController extends Controller
         ]);
         $exists = Shipper::where('shipper_name', $validated['shipper_name'])
             ->where('shipper_type', $validated['shipper_type'])
+            ->where('shipper_concept', $validated['shipper_concept'])
             ->where('shipper_city', $validated['shipper_city'])
             ->exists();
         if ($exists) {
@@ -60,7 +65,8 @@ class ShipperController extends Controller
         $shipper = Shipper::findOrFail($id);
         $validated = $request->validate([
             'shipper_name' => 'required|string',
-            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,TRADING,EMKL',
+            'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,VENDORING,TRADING',
+            'shipper_concept'  => 'required|in:NEW SHIPPER,EXISTING SHIPPER',
             'shipper_city' => 'required|string',
             'shipper_address' => 'nullable|string',
             'contact_person' => 'nullable|string',
@@ -79,6 +85,7 @@ class ShipperController extends Controller
         }
         $exists = Shipper::where('shipper_name', $validated['shipper_name'])
             ->where('shipper_type', $validated['shipper_type'])
+            ->where('shipper_concept', $validated['shipper_concept'])
             ->where('shipper_city', $validated['shipper_city'])
             ->where('id', '!=', $id)
             ->exists();
@@ -99,5 +106,21 @@ class ShipperController extends Controller
         }
         $shipper->delete();
         return response()->json(null, 204);
+    }
+
+    public function export()
+    {
+        $shippers = Shipper::latest()->get();
+        $fileName = 'Touch Shippers ' . date('Y-m-d') . '.xlsx';
+        Audit::create([
+            'auditable_type' => 'Shipper',
+            'auditable_id' => 0,
+            'event' => 'exported',
+            'user_id' => Auth::id(),
+            'description' => 'Exported ' . $shippers->count(),
+            'old_values' => null,
+            'new_values' => request()->all(),
+        ]);
+        return Excel::download(new ShippersExport($shippers), $fileName);
     }
 }

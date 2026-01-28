@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Audit;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuditController extends Controller
@@ -22,6 +21,7 @@ class AuditController extends Controller
                 'Rate' => 'Checking Rates',
                 'Shipper' => 'Touch Shippers',
                 'Activity' => 'Report Activities',
+                'User' => 'User Management',
                 default => $log->auditable_type
             };
             return [
@@ -37,7 +37,7 @@ class AuditController extends Controller
                 'new_values' => $log->new_values,
             ];
         });
-        $users = User::whereIn('role', ['marketing', 'admin', 'super_admin'])
+        $users = User::whereIn('role', ['MARKETING', 'ADMIN', 'SUPER ADMIN'])
             ->where('id', '!=', Auth::id())
             ->orderBy('name')
             ->get();

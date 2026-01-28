@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Sign In | Admin Infinity Logistics Indonesia</title>
+    <title>Sign In | Key Perfomance Indicator Marketing</title>
 
     <meta name="theme-color" content="#6777ef">
     <link rel="apple-touch-icon" href="{{ url('/') }}/img/favicon.ico">
@@ -56,7 +56,7 @@
                         <form id="loginForm" method="POST" action="{{ route('login.post') }}">
                             @csrf
                             @if(session('error'))
-                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            <div class="alert alert-danger">{{ session('error') }}</div>
                             @endif
                             <div class="mb-3">
                                 <label for="login" class="form-label">Name or Email</label>

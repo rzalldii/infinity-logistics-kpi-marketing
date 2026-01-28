@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Checking Rates | Admin Infinity Logistics Indonesia
+Checking Rates | Key Perfomance Indicator Marketing
 @endsection('title')
 @section('content')
 <div class="container">
@@ -12,12 +12,15 @@ Checking Rates | Admin Infinity Logistics Indonesia
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Checking Rates</h1>
                             <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
-                                <i class="fas fa-eye"></i> Toggle Columns
+                                <i class="fas fa-toggle-on"></i> Toggle Columns
                             </button>
                             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                <button class="btn btn-primary btn-round ms-2" id="createNewRate">
-                                    <i class="fas fa-plus"></i> Add Data
-                                </button>
+                            <button class="btn btn-success btn-round ms-2" id="ExportExcel">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </button>
+                            <button class="btn btn-primary btn-round ms-2" id="createNewRate">
+                                <i class="fas fa-plus"></i> Add Data
+                            </button>
                             @endif
                         </div>
                     </div>
@@ -62,13 +65,15 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="container_20">Container 20FT</label>
-                                                        <input type="text" class="form-control" name="container_20" id="container_20" placeholder="e.g. 150" autocomplete="off"/>
+                                                        <input type="text" class="form-control" name="container_20_display" id="container_20" placeholder="e.g. 150" autocomplete="off">
+                                                        <input type="hidden" name="container_20" id="container_20_real">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="container_40">Container 40FT</label>
-                                                        <input type="text" class="form-control" name="container_40" id="container_40" placeholder="e.g. 250" autocomplete="off"/>
+                                                        <input type="text" class="form-control" name="container_40_display" id="container_40" placeholder="e.g. 250" autocomplete="off"/>
+                                                        <input type="hidden" name="container_40" id="container_40_real">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -188,18 +193,62 @@ Checking Rates | Admin Infinity Logistics Indonesia
                             </div>
                         </div>
                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <select class="form-select" id="filterData">
-                                        <option value="">All Data</option>
-                                        <option value="mine">My Data</option>
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        @foreach($users as $user)
-                                        <option value="{{ $user->id }}">Data {{ $user->name }}</option>
-                                        @endforeach
-                                        @endif
-                                    </select>
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-body p-3">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-0">
+                                            <select class="form-select" id="filterData">
+                                                <option value="">All Data</option>
+                                                @if(Auth::user()->isAdmin() || Auth::user()->isMarketing())
+                                                <option value="mine">My Data</option>
+                                                @endif
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                                    @foreach($users as $user)
+                                                    <option value="{{ $user->id }}">Data {{ $user->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-0">
+                                            <select class="form-select" id="filterSort">
+                                                <option value="">Sort Default</option>
+                                                <option value="latest">Latest Input</option>
+                                                <option value="oldest">Oldest Input</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-md-3">
+                                        <select class="form-select form-select-sm" id="filterPOL">
+                                            <option value="">Filter POL</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select form-select-sm" id="filterPOD">
+                                            <option value="">Filter POD</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select form-select-sm" id="filterLINER">
+                                            <option value="">Filter LINER</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select form-select-sm" id="filterVALID">
+                                            <option value="">Filter VALID</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-2" id="clearFilterRow" style="display: none;">
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn btn-link text-danger btn-sm text-decoration-none" id="clearFilters">
+                                            <i class="fas fa-times-circle"></i> Clear All Filters
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -216,34 +265,16 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                         <th>LINER</th>
                                         <th>FT</th>
                                         <th>VALID</th>
+                                        <th>CREATED AT</th>
                                         <th>DETAIL</th>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                            <th>CREATED</th>
+                                        <th>CREATED</th>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                            <th>ACTION</th>
+                                        <th>ACTION</th>
                                         @endif
                                     </tr>
                                 </thead>
-                                <tfoot class="text-center">
-                                    <tr>
-                                        <th>POL</th>
-                                        <th>POD</th>
-                                        <th>CT</th>
-                                        <th>20'</th>
-                                        <th>40'</th>
-                                        <th>LINER</th>
-                                        <th>FT</th>
-                                        <th>VALID</th>
-                                        <th>DETAIL</th>
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                            <th>CREATED</th>
-                                        @endif
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                            <th>ACTION</th>
-                                        @endif
-                                    </tr>
-                                </tfoot>
                                 <tbody class="text-center">
                                     @foreach($rates as $rate)
                                     <tr id="row-{{ $rate->id }}" data-user-id="{{ $rate->user_id }}">
@@ -252,50 +283,55 @@ Checking Rates | Admin Infinity Logistics Indonesia
                                         <td>{{ $rate->container_type }}</td>
                                         <td>
                                             @if($rate->container_20)
-                                                {{ number_format((float)$rate->container_20) }}
+                                            {{ number_format($rate->container_20, 0, ',', '.') }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($rate->container_40)
-                                                {{ number_format((float)$rate->container_40) }}
+                                            {{ number_format($rate->container_40, 0, ',', '.') }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>{{ $rate->liner }}</td>
                                         <td>
                                             @if($rate->free_time)
-                                                {{ $rate->free_time }}
+                                            {{ $rate->free_time }}
                                             @else
-                                                <span class="text-muted">—</span>
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
-                                        <td>{{ Str::upper(\Carbon\Carbon::parse($rate->valid_date)->format("M y")) }}</td>
+                                        <td data-order="{{ $rate->valid_date->format('Y-m-d') }}">
+                                            {{ Str::upper(\Carbon\Carbon::parse($rate->valid_date)->format("M y")) }}
+                                        </td>
+                                        <td data-order="{{ $rate->created_at }}">
+                                            {{ $rate->created_at->format('d M Y') }}
+                                        </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info viewRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                            <td>{{ Str::upper($rate->user->name) }}</td>
+                                        <td>{{ Str::upper($rate->user->name) }}</td>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                                            <td>
-                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $rate->user_id == Auth::id()))
-                                                    <button type="button" class="btn btn-sm btn-warning text-white editRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-danger deleteRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
-                                                        <i class="fas fa-lock"></i>
-                                                    </button>
-                                                @endif
-                                            </td>
+                                        <td>
+                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $rate->user_id == Auth::id()))
+                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            @else
+                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                <i class="fas fa-lock"></i>
+                                            </button>
+                                            @endif
+                                        </td>
                                         @endif
                                     </tr>
                                     @endforeach
@@ -318,33 +354,61 @@ $(document).ready(function () {
         }
     });
     var userRole = '{{ Auth::user()->role }}';
-    var isAdmin = (userRole === 'super_admin' || userRole === 'admin');
-    var hasActionColumn = (userRole === 'super_admin' || userRole === 'admin' || userRole === 'marketing');
+    var isAdmin = (userRole === 'SUPER ADMIN' || userRole === 'ADMIN');
+    var hasActionColumn = (userRole === 'SUPER ADMIN' || userRole === 'ADMIN' || userRole === 'MARKETING');
     var currentUserId = {{ Auth::id() }};
+    $('#ExportExcel').on('click', function() {
+        Swal.fire({
+            title: 'Export This Data?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#31ce36',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Export',
+            cancelButtonText: 'Cancel',
+            reverseButtons: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var url = "{{ route('rates.export') }}";
+                Swal.fire({
+                    title: 'Preparing Excel...',
+                    html: 'Exporting data file...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                setTimeout(function() {
+                    window.location.href = url;
+                    Swal.close();
+                    setTimeout(function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Export Complete!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }, 500);
+                }, 1000);
+            }
+        });
+    });
     try {
         var notOrderableColumns;
         if (isAdmin) {
-            notOrderableColumns = [0, 1, 2, 5, 6, 8, 9, 10];
+            notOrderableColumns = [0, 1, 5, 6, 8, 9, 10, 11];
         } else if (hasActionColumn) {
-            notOrderableColumns = [0, 1, 2, 5, 6, 8, 9];
+            notOrderableColumns = [0, 1, 5, 6, 8, 9, 10];
         } else {
-            notOrderableColumns = [0, 1, 2, 5, 6, 8];
-        }
-        var skipColumns;
-        if (isAdmin) {
-            skipColumns = [3, 4, 6, 8, 9, 10];
-        } else if (hasActionColumn) {
-            skipColumns = [3, 4, 6, 8, 10];
-        } else {
-            skipColumns = [3, 4, 6, 8];
+            notOrderableColumns = [0, 1, 5, 6, 8, 9];
         }
         var hiddenColumns;
         if (isAdmin) {
-            hiddenColumns = [0, 2, 6];
+            hiddenColumns = [2, 6, 8];
         } else if (hasActionColumn) {
-            hiddenColumns = [0, 2, 6];
+            hiddenColumns = [2, 6, 8];
         } else {
-            hiddenColumns = [0, 2, 6];
+            hiddenColumns = [2, 6, 8];
         }
         var table = $('#multi-filter-select').DataTable({
             pageLength: 10,
@@ -375,34 +439,64 @@ $(document).ready(function () {
                 }
             },
             initComplete: function () {
-                this.api().columns().every(function () {
-                    var column = this;
-                    var columnIndex = column.index();
-                    if (skipColumns.includes(columnIndex)) {
-                        $(column.footer()).empty();
-                        return;
+                var api = this.api();
+                api.column(0).data().unique().sort().each(function (d, j) {
+                    if (d) {
+                        $('#filterPOL').append('<option value="' + d + '">' + d + '</option>');
                     }
-                    var select = $('<select class="form-select"><option value=""></option></select>')
-                    .appendTo($(column.footer()).empty())
-                    .on('change', function () {
-                        var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                        column
-                        .search(val ? '^' + val + '$' : '', true, false)
-                        .draw();
-                    });
-                    var uniqueValues = [];
-                    column.data().unique().sort().each(function (d, j) {
-                        if (d && !uniqueValues.includes(d)) {
-                            uniqueValues.push(d);
-                            select.append('<option value="' + d + '">' + d + "</option>");
-                        }
-                    });
+                });
+                api.column(1).data().unique().sort().each(function (d, j) {
+                    if (d) {
+                        $('#filterPOD').append('<option value="' + d + '">' + d + '</option>');
+                    }
+                });
+                api.column(5).data().unique().sort().each(function (d, j) {
+                    if (d) {
+                        $('#filterLINER').append('<option value="' + d + '">' + d + '</option>');
+                    }
+                });
+                var validDates = [];
+                api.column(7).nodes().each(function(cell, i) {
+                    var displayValue = $(cell).text().trim();
+                    var orderValue = $(cell).attr('data-order');
+                    if (displayValue && orderValue) {
+                        validDates.push({
+                            display: displayValue,
+                            order: orderValue
+                        });
+                    }
+                });
+                var uniqueValidDates = {};
+                validDates.forEach(function(item) {
+                    if (!uniqueValidDates[item.display]) {
+                        uniqueValidDates[item.display] = item.order;
+                    }
+                });
+                var sortedValidDates = Object.keys(uniqueValidDates).sort(function(a, b) {
+                    return uniqueValidDates[b].localeCompare(uniqueValidDates[a]);
+                });
+                sortedValidDates.forEach(function(display) {
+                    $('#filterVALID').append('<option value="' + display + '">' + display + '</option>');
                 });
             },
         });
         table.on('draw', function () {
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
+        function checkFilters() {
+            var hasFilter = 
+                $('#filterData').val() !== '' ||
+                $('#filterSort').val() !== '' ||
+                $('#filterPOL').val() !== '' ||
+                $('#filterPOD').val() !== '' ||
+                $('#filterLINER').val() !== '' ||
+                $('#filterVALID').val() !== '';
+            if (hasFilter) {
+                $('#clearFilterRow').fadeIn();
+            } else {
+                $('#clearFilterRow').fadeOut();
+            }
+        }
         $('#filterData').on('change', function() {
             var filterValue = $(this).val();
             $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
@@ -419,6 +513,44 @@ $(document).ready(function () {
                 $.fn.dataTable.ext.search.push(dataFilter);
             }
             table.draw();
+            checkFilters();
+        });
+        $('#filterSort').on('change', function() {
+            var val = $(this).val();
+            var createdAtIndex = 8;
+            if (val === 'latest') {
+                table.order([createdAtIndex, 'desc']).draw();
+            } else if (val === 'oldest') {
+                table.order([createdAtIndex, 'asc']).draw();
+            } else {
+                table.order([7, 'desc']).draw();
+            }
+            checkFilters();
+        });
+        $('#filterPOL, #filterPOD, #filterLINER, #filterVALID').on('change', function () {
+            var mapIdToColumn = {
+                'filterPOL': 0,
+                'filterPOD': 1,
+                'filterLINER': 5,
+                'filterVALID': 7
+            };
+            var colIndex = mapIdToColumn[this.id];
+            if (typeof colIndex !== 'undefined') {
+                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                table.column(colIndex).search(val ? '^' + val + '$' : '', true, false).draw();
+                checkFilters();
+            } else {
+                console.error('Column index not found for filter ID:', this.id);
+            }
+        });
+        $('#clearFilters').on('click', function() {
+            $('#filterData, #filterSort, #filterPOL, #filterPOD, #filterLINER, #filterVALID').val('');
+            $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
+                return fn.name !== 'dataFilter';
+            });
+            table.order([7, 'desc']);
+            table.search('').columns().search('').draw();
+            checkFilters();
         });
     } catch (error) {
         console.error('DataTables initialization error:', error);
@@ -426,14 +558,42 @@ $(document).ready(function () {
     $('#ToggleColumns').on('click', function (e) {
         e.preventDefault();
         var $btn = $(this);
-        var isHidden = !table.column(0).visible();
-        table.columns([0, 2, 6]).visible(isHidden);
+        var isHidden = !table.column(2).visible();
+        table.columns([2, 6]).visible(isHidden);
         if (isHidden) {
-            $btn.html('<i class="fas fa-eye-slash"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-off"></i> Toggle Columns');
         } else {
-            $btn.html('<i class="fas fa-eye"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-on"></i> Toggle Columns');
         }
         table.columns.adjust().draw();
+    });
+    function formatRupiah(angka) {
+        if (!angka) return '';
+        var number_string = angka.toString().replace(/[^,\d]/g, ''),
+            split   = number_string.split(','),
+            sisa    = split[0].length % 3,
+            rupiah  = split[0].substr(0, sisa),
+            ribuan  = split[0].substr(sisa).match(/\d{3}/gi);
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return rupiah;
+    }
+    $('#container_20, #container_40').on('keyup', function(e) {
+        var value = $(this).val();
+        var hiddenInputId = '#' + $(this).attr('id') + '_real';
+        var cleanValue = value.replace(/\./g, ''); 
+        $(hiddenInputId).val(cleanValue);
+        $(this).val(formatRupiah(value));
+    });
+    $('#container_20_real, #container_40_real').each(function() {
+        var realValue = $(this).val();
+        if (realValue) {
+            var displayInputId = '#' + $(this).attr('id').replace('_real', '');
+            $(displayInputId).val(formatRupiah(realValue));
+        }
     });
     $('body').on('click', '.viewRate', function () {
         var rate_id = $(this).data('id');
@@ -449,8 +609,8 @@ $(document).ready(function () {
             $('#view_pol').val(data.pol || '—');
             $('#view_pod').val(data.pod || '—');
             $('#view_container_type').val(data.container_type || '—');
-            $('#view_container_20').val(data.container_20 || '—');
-            $('#view_container_40').val(data.container_40 || '—');
+            $('#view_container_20').val(formatRupiah(data.container_20 || '—'));
+            $('#view_container_40').val(formatRupiah(data.container_40 || '—'));
             $('#view_liner').val(data.liner || '—');
             $('#view_free_time').val(data.free_time || '—');
             if (data.valid_date) {
@@ -482,8 +642,33 @@ $(document).ready(function () {
             $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Rate</span>');
             $('#rateModal').modal('show');
         });
+        function showErrorAlert(htmlContent) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                html: htmlContent,
+                confirmButtonColor: '#d33'
+            });
+        }
         $('#saveBtn').click(function (e) {
             e.preventDefault();
+            var errorMessages = [];
+            var val20 = $('#container_20_real').val();
+            var val40 = $('#container_40_real').val();
+            if (!val20) val20 = $('#container_20').val().replace(/\./g, '').trim();
+            if (!val40) val40 = $('#container_40').val().replace(/\./g, '').trim();
+            if ((!val20 || val20 == 0) && (!val40 || val40 == 0)) {
+                errorMessages.push('The container 20ft / 40ft field is required.');
+            }
+            if (errorMessages.length > 0) {
+                var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
+                $.each(errorMessages, function(index, value) {
+                    errorList += '<li>' + value + '</li>';
+                });
+                errorList += '</ul>';
+                showErrorAlert(errorList);
+                return;
+            }
             var formData = new FormData($('#rateForm')[0]);
             var rate_id = $('#rate_id').val();
             var url = rate_id ? "{{ route('rates.index') }}" + '/' + rate_id : "{{ route('rates.store') }}";
@@ -519,12 +704,7 @@ $(document).ready(function () {
                             errorList += '<li>' + value[0] + '</li>';
                         });
                         errorList += '</ul>';
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Validation Error',
-                            html: errorList,
-                            confirmButtonColor: '#d33'
-                        });
+                        showErrorAlert(errorList);
                     } else if (response.status === 403) {
                         Swal.fire({
                             icon: 'error',
@@ -559,12 +739,12 @@ $(document).ready(function () {
                         icon: 'success',
                         title: 'Form Cleared Successfully!',
                         showConfirmButton: false,
-                        timer: 1000
+                        timer: 1500
                     });
                 }
             });
         });
-        $('body').on('click', '.editRate', function () {
+        $('body').on('click', '.editBtn', function () {
             var rate_id = $(this).data('id');
             Swal.fire({
                 title: 'Loading Data...',
@@ -582,8 +762,10 @@ $(document).ready(function () {
                 $('#pol').val(data.pol);
                 $('#pod').val(data.pod);
                 $('#container_type').val(data.container_type);
-                $('#container_20').val(data.container_20);
-                $('#container_40').val(data.container_40);
+                $('#container_20_real').val(data.container_20);
+                $('#container_20').val(formatRupiah(data.container_20));
+                $('#container_40_real').val(data.container_40);
+                $('#container_40').val(formatRupiah(data.container_40));
                 $('#liner').val(data.liner);
                 $('#free_time').val(data.free_time);
                 if (data.valid_date) {
@@ -602,7 +784,7 @@ $(document).ready(function () {
                 });
             });
         });
-        $('body').on('click', '.deleteRate', function () {
+        $('body').on('click', '.deleteBtn', function () {
             var rate_id = $(this).data('id');
             var row = $('#row-' + rate_id);
             Swal.fire({
@@ -619,7 +801,6 @@ $(document).ready(function () {
                     Swal.fire({
                         title: 'Deleting Data...',
                         allowOutsideClick: false,
-                        allowEscapeKey: false,
                         didOpen: () => {
                             Swal.showLoading();
                         }

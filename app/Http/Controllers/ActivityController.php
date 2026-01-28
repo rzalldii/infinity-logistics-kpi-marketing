@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Activity;
 use App\Models\Shipper;
 use App\Models\User;
+use App\Models\Audit;
 use App\Exports\ActivitiesExport;
+use App\Exports\MarketingExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -22,31 +24,69 @@ class ActivityController extends Controller
                 $query->where('user_id', Auth::id());
             }
         }
+        $closedActivitiesIds = Activity::select('id', 'parent_id', 'status_type')
+            ->whereIn('status_type', ['CLOSING', 'FAILED'])
+            ->get()
+            ->map(function ($item) {
+                return $item->parent_id ?? $item->id;
+            })
+            ->unique()->toArray();
+        $allUserActivities = Activity::select('id', 'parent_id', 'sequence')
+            ->when(Auth::user()->isMarketing(), function($q) {
+                $q->where('user_id', Auth::id());
+            })
+            ->get();
+        $latestActivityIds = $allUserActivities
+            ->groupBy(function ($item) {
+                return $item->parent_id ?? $item->id;
+            })
+            ->map(function ($group) {
+                return $group->sortByDesc('sequence')->first()->id;
+            })
+            ->values()
+            ->toArray();
         if ($request->ajax()) {
             return response()->json($query->get());
         }
         $activities = $query->get();
         $shippers = Shipper::orderBy('shipper_name')->get();
-        $users = User::whereIn('role', ['marketing'])->where('id', '!=', Auth::id())->orderBy('name')->get();
-        $dailyReport = $this->getDailyReport();
-        $weeklyReport = $this->getWeeklyReport();
-        $monthlyReport = $this->getMonthlyReport();
-        return view('activities.index', compact('activities', 'shippers', 'dailyReport', 'weeklyReport', 'monthlyReport', 'users'));
+        $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        return view('activities.index', compact('activities', 'shippers', 'users', 'closedActivitiesIds', 'latestActivityIds'));
     }
 
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'concept_type'  => 'required|in:NEW SHIPPER,FOLLOW UP',
-            'shipper_id'    => 'required|exists:shippers,id',
+            'parent_id' => 'nullable|exists:activities,id',
+            'shipper_id' => 'required|exists:shippers,id',
             'activity_type' => 'required|in:VISIT,CALL',
-            'visit_date'    => 'nullable|date',
-            'status'        => 'nullable|in:CLOSING,PENDING,FAILED',
-            'status_detail' => 'nullable|string',
-            'prospect'      => 'nullable|string',
+            'visit_date' => 'nullable|date',
+            'status_type' => 'required|in:CLOSING,PENDING,FAILED',
+            'volume_20' => 'nullable|string|max:5',
+            'volume_40' => 'nullable|string|max:5',
+            'other_volume' => 'nullable|in:AIR FREIGHT,RAIL FREIGHT,ROAD FREIGHT,EMKL,LCL,OTHER BUSINESS',
+            'profit' => 'nullable|string',
+            'remarks' => 'nullable|string',
         ]);
         $validated['user_id'] = Auth::id();
+        if (empty($request->parent_id)) {
+            $validated['parent_id'] = null;
+            $validated['sequence']  = 1;
+        } else {
+            $refActivity = Activity::findOrFail($request->parent_id);
+            $rootId = $refActivity->parent_id ?? $refActivity->id;
+            $lastChildSequence = Activity::where('parent_id', $rootId)->max('sequence');
+            $nextSequence = ($lastChildSequence ?? 1) + 1;
+            $validated['parent_id'] = $rootId;
+            $validated['sequence']  = $nextSequence;
+        }
         $activity = Activity::create($validated);
+        if ($activity->status_type === 'CLOSING') {
+            $shipper = Shipper::find($validated['shipper_id']);
+            if ($shipper && $shipper->shipper_concept === 'NEW SHIPPER') {
+                $shipper->update(['shipper_concept' => 'EXISTING SHIPPER']);
+            }
+        }
         return response()->json($activity, 201);
     }
 
@@ -60,26 +100,48 @@ class ActivityController extends Controller
     {
         $activity = Activity::findOrFail($id);
         $validated = $request->validate([
-            'concept_type'  => 'required|in:NEW SHIPPER,FOLLOW UP',
-            'shipper_id'    => 'required|exists:shippers,id',
+            'shipper_id' => 'required|exists:shippers,id',
             'activity_type' => 'required|in:VISIT,CALL',
-            'visit_date'    => 'nullable|date',
-            'status'        => 'nullable|in:CLOSING,PENDING,FAILED',
-            'status_detail' => 'nullable|string',
-            'prospect'      => 'nullable|string',
-            'created_date'  => 'nullable|date',
+            'visit_date' => 'nullable|date',
+            'status_type' => 'required|in:CLOSING,PENDING,FAILED',
+            'volume_20' => 'nullable|string|max:5',
+            'volume_40' => 'nullable|string|max:5',
+            'other_volume' => 'nullable|in:AIR FREIGHT,RAIL FREIGHT,ROAD FREIGHT,EMKL,LCL,OTHER BUSINESS',
+            'profit' => 'nullable|string',
+            'remarks' => 'nullable|string',
+            'created_date' => 'nullable|date',
         ]);
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             if (Auth::user()->isMarketing() && $activity->user_id !== Auth::id()) {
                 return response()->json(null, 403);
             }
-            $date = $activity->created_at->format('Y-m-d');
-            $today = Carbon::now()->format('Y-m-d');
-            if ($date !== $today) {
-                return response()->json(null, 403);
+            $createdDate = Carbon::parse($activity->created_at)->startOfDay(); 
+            $today = Carbon::now()->startOfDay();
+            $isDifferentDay = !$createdDate->equalTo($today);
+            $reqStatus = $request->status_type;
+            $dbStatus = $activity->status_type;
+            $isClosingCase = ($dbStatus === 'CLOSING' || $reqStatus === 'CLOSING');
+            if ($request->has('shipper_id') && $request->shipper_id != $activity->shipper_id) {
+                if ($dbStatus === 'CLOSING' && $isDifferentDay) {
+                    return response()->json(null, 403);
+                }
+            }
+            if ($isClosingCase) {
+                $diff = $createdDate->diffInDays($today);
+                if ($diff > 14) {
+                     return response()->json(null, 403);
+                }
+                if ($createdDate->format('Y-m') !== $today->format('Y-m')) {
+                     return response()->json(null, 403);
+                }
+            } else {
+                if (!$createdDate->equalTo($today)) {
+                    return response()->json(null, 403);
+                }
             }
         }
-        $activity->update($validated);
+        $oldStatus = $activity->status_type;
+        $oldShipperId = $activity->shipper_id;
         $activity->fill(collect($validated)->except(['created_date'])->toArray());
         if ((Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) && $request->filled('created_date')) {
             $originalTimestamp = $activity->getOriginal('created_at'); 
@@ -88,6 +150,33 @@ class ActivityController extends Controller
             $activity->created_at = $newTimestamp;
         }
         $activity->save();
+        $currentShipper = $activity->shipper;
+        if ($activity->status_type === 'CLOSING' && $currentShipper->shipper_concept === 'NEW SHIPPER') {
+            $currentShipper->update(['shipper_concept' => 'EXISTING SHIPPER']);
+        }
+        if ($oldStatus === 'CLOSING' && $activity->status_type !== 'CLOSING') {
+            $hasOtherClosings = Activity::where('shipper_id', $currentShipper->id)
+                ->where('id', '!=', $id) 
+                ->where('status_type', 'CLOSING')
+                ->exists();
+            if (!$hasOtherClosings) {
+                $currentShipper->update(['shipper_concept' => 'NEW SHIPPER']);
+            }
+        }
+        if ($oldShipperId != $activity->shipper_id) {
+             $oldShipper = Shipper::find($oldShipperId);
+             if ($oldShipper && $oldStatus === 'CLOSING') {
+                 $hasOtherClosingsOld = Activity::where('shipper_id', $oldShipper->id)
+                    ->where('status_type', 'CLOSING')
+                    ->exists();
+                 if (!$hasOtherClosingsOld) {
+                    $oldShipper->update(['shipper_concept' => 'NEW SHIPPER']);
+                 }
+             }
+             if ($activity->status_type === 'CLOSING' && $currentShipper->shipper_concept === 'NEW SHIPPER') {
+                $currentShipper->update(['shipper_concept' => 'EXISTING SHIPPER']);
+            }
+        }
         return response()->json($activity, 200);
     }
 
@@ -104,130 +193,50 @@ class ActivityController extends Controller
                 return response()->json(null, 403);
             }
         }
+        $shipperId = $activity->shipper_id;
+        $wasClosing = ($activity->status_type === 'CLOSING');
         $activity->delete();
+        if ($wasClosing) {
+            $hasOtherClosings = Activity::where('shipper_id', $shipperId)
+                ->where('status_type', 'CLOSING')
+                ->exists();
+            if (!$hasOtherClosings) {
+                Shipper::where('id', $shipperId)
+                       ->update(['shipper_concept' => 'NEW SHIPPER']);
+            }
+        }
         return response()->json(null, 204);
     }
 
-    private function getDailyReport()
-    {
-        $query = Activity::with('shipper')
-            ->whereDate('created_at', now()->toDateString());
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing()) {
-                $query->where('user_id', Auth::id());
-            }
-        }
-        $baseStats = $query->selectRaw("
-            SUM(CASE WHEN concept_type = 'NEW SHIPPER' THEN 1 ELSE 0 END) as new_shipper_count,
-            SUM(CASE WHEN concept_type = 'FOLLOW UP' THEN 1 ELSE 0 END) as follow_up_count,
-            SUM(CASE WHEN activity_type = 'VISIT' THEN 1 ELSE 0 END) as visit_count,
-            SUM(CASE WHEN activity_type = 'CALL' THEN 1 ELSE 0 END) as call_count,
-            SUM(CASE WHEN status = 'CLOSING' THEN 1 ELSE 0 END) as closing_count,
-            SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as pending_count,
-            SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) as failed_count
-        ")->first();
-        $shipperTypeCounts = $this->getShipperTypeCount('today');
-        return (object) array_merge(
-            (array) $baseStats,
-            $shipperTypeCounts
-        );
-    }
-
-    private function getWeeklyReport()
-    {
-        $query = Activity::with('shipper')
-            ->whereBetween('created_at', [
-                now()->startOfWeek(),
-                now()->endOfWeek(),
-            ]);
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing()) {
-                $query->where('user_id', Auth::id());
-            }
-        }
-        $baseStats = $query->selectRaw("
-            SUM(CASE WHEN concept_type = 'NEW SHIPPER' THEN 1 ELSE 0 END) as new_shipper_count,
-            SUM(CASE WHEN concept_type = 'FOLLOW UP' THEN 1 ELSE 0 END) as follow_up_count,
-            SUM(CASE WHEN activity_type = 'VISIT' THEN 1 ELSE 0 END) as visit_count,
-            SUM(CASE WHEN activity_type = 'CALL' THEN 1 ELSE 0 END) as call_count,
-            SUM(CASE WHEN status = 'CLOSING' THEN 1 ELSE 0 END) as closing_count,
-            SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as pending_count,
-            SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) as failed_count
-        ")->first();
-        $shipperTypeCounts = $this->getShipperTypeCount('week');
-        return (object) array_merge(
-            (array) $baseStats,
-            $shipperTypeCounts
-        );
-    }
-
-    private function getMonthlyReport()
-    {
-        $query = Activity::with('shipper')
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month);
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing()) {
-                $query->where('user_id', Auth::id());
-            }
-        }
-        $baseStats = $query->selectRaw("
-            SUM(CASE WHEN concept_type = 'NEW SHIPPER' THEN 1 ELSE 0 END) as new_shipper_count,
-            SUM(CASE WHEN concept_type = 'FOLLOW UP' THEN 1 ELSE 0 END) as follow_up_count,
-            SUM(CASE WHEN activity_type = 'VISIT' THEN 1 ELSE 0 END) as visit_count,
-            SUM(CASE WHEN activity_type = 'CALL' THEN 1 ELSE 0 END) as call_count,
-            SUM(CASE WHEN status = 'CLOSING' THEN 1 ELSE 0 END) as closing_count,
-            SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as pending_count,
-            SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) as failed_count
-        ")->first();
-        $shipperTypeCounts = $this->getShipperTypeCount('month');
-        return (object) array_merge(
-            (array) $baseStats,
-            $shipperTypeCounts
-        );
-    }
-
-    private function getShipperTypeCount($period = 'today')
-    {
-        $query = Activity::join('shippers', 'activities.shipper_id', '=', 'shippers.id');
-        if ($period === 'today') {
-            $query->whereDate('activities.created_at', now()->toDateString());
-        } elseif ($period === 'week') {
-            $query->whereBetween('activities.created_at', [
-                now()->startOfWeek(),
-                now()->endOfWeek(),
-            ]);
-        } elseif ($period === 'month') {
-            $query->whereYear('activities.created_at', now()->year)
-                  ->whereMonth('activities.created_at', now()->month);
-        }
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing()) {
-                $query->where('activities.user_id', Auth::id());
-            }
-        }
-        $result = $query->selectRaw("
-            SUM(CASE WHEN shippers.shipper_type = 'DIRECT SHIPPER' THEN 1 ELSE 0 END) as direct_shipper_count,
-            SUM(CASE WHEN shippers.shipper_type = 'FORWARDING' THEN 1 ELSE 0 END) as forwarding_count,
-            SUM(CASE WHEN shippers.shipper_type = 'TRADING' THEN 1 ELSE 0 END) as trading_count,
-            SUM(CASE WHEN shippers.shipper_type = 'EMKL' THEN 1 ELSE 0 END) as emkl_count
-        ")->first();
-        return [
-            'direct_shipper_count' => $result->direct_shipper_count ?? 0,
-            'forwarding_count' => $result->forwarding_count ?? 0,
-            'trading_count' => $result->trading_count ?? 0,
-            'emkl_count' => $result->emkl_count ?? 0,
-        ];
-    }
-
-    public function exportExcel(Request $request)
+    public function export(Request $request)
     {
         $dateFrom = $request->query('date_from');
         $dateTo = $request->query('date_to');
-        $fileName = 'activities_' 
-                . Carbon::parse($dateFrom)->format('Y-m-d') 
-                . '_to_' 
-                . Carbon::parse($dateTo)->format('Y-m-d') 
+        Audit::create([
+            'auditable_type' => 'Activity',
+            'auditable_id' => 0,
+            'event' => 'exported',
+            'user_id' => Auth::id(),
+            'description' => $dateFrom . ' to ' . $dateTo,
+            'old_values' => null,
+            'new_values' => request()->all(),
+        ]);
+        if (Auth::user()->isMarketing()) {
+            $fileName = 'Activities '
+                . Carbon::parse($dateFrom)->format('Y-m-d')
+                . ' to '
+                . Carbon::parse($dateTo)->format('Y-m-d')
+                . '.xlsx';
+            
+            return Excel::download(
+                new MarketingExport($dateFrom, $dateTo, Auth::id()),
+                $fileName
+            );
+        }
+        $fileName = 'Activities '
+                . Carbon::parse($dateFrom)->format('Y-m-d')
+                . ' to '
+                . Carbon::parse($dateTo)->format('Y-m-d')
                 . '.xlsx';
         return Excel::download(
             new ActivitiesExport($dateFrom, $dateTo),

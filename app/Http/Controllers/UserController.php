@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Hash;
 
 class UserController extends Controller
@@ -13,10 +12,10 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $users = User::latest()->get();
+            $users = User::orderBy('name', 'asc')->get();
             return response()->json($users);
         }
-        $users = User::latest()->get();
+        $users = User::orderBy('name', 'asc')->get();
         return view('users.index', compact('users'));
     }
 
@@ -26,7 +25,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:5',
-            'role' => 'required|in:super_admin,admin,marketing,guest',
+            'role' => 'required|in:SUPER ADMIN,ADMIN,MARKETING,GUEST',
         ]);
         $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
@@ -46,7 +45,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$id,
             'password' => 'nullable|min:5',
-            'role' => 'required|in:super_admin,admin,marketing,guest',
+            'role' => 'required|in:SUPER ADMIN,ADMIN,MARKETING,GUEST',
         ]);
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);

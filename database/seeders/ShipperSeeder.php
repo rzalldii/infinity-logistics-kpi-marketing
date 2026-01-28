@@ -17,6 +17,7 @@ class ShipperSeeder extends Seeder
         Shipper::create([
             'user_id' => 4,
             'shipper_name' => 'PT. Maju Jaya Shipping',
+            'shipper_concept' => 'NEW SHIPPER',
             'shipper_type' => 'DIRECT SHIPPER',
             'shipper_city' => 'Jakarta',
             'shipper_address' => 'Jl. Industri No. 123, Jakarta Utara',
@@ -33,6 +34,7 @@ class ShipperSeeder extends Seeder
         Shipper::create([
             'user_id' => 5,
             'shipper_name' => 'CV. Berkah Logistik',
+            'shipper_concept' => 'EXISTING SHIPPER',
             'shipper_type' => 'FORWARDING',
             'shipper_city' => 'Surabaya',
             'shipper_address' => 'Jl. Tanjung Perak No. 45, Surabaya',

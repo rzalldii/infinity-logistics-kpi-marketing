@@ -18,22 +18,25 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithColumnFormatting, WithTitle, WithEvents
+class MarketingExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithColumnFormatting, WithTitle, WithEvents
 {
     private $dateFrom;
     private $dateTo;
+    private $userId;
 
-    public function __construct($dateFrom, $dateTo)
+    public function __construct($dateFrom, $dateTo, $userId)
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
+        $this->userId = $userId;
     }
 
     public function collection()
     {
         $endDate = Carbon::parse($this->dateTo)->endOfDay(); 
         $startDate = Carbon::parse($this->dateFrom)->startOfDay();
-        $activities = Activity::with('shipper', 'user')
+        $activities = Activity::with('shipper')
+            ->where('user_id', $this->userId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -60,7 +63,6 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
                 $activity->other_volume ?? '—',
                 $activity->profit ?? '—',
                 $activity->remarks ?? '—',
-                $activity->user->name,
             ];
         });
     }
@@ -82,7 +84,6 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
             'OTHER',
             'PROFIT',
             'REMARKS',
-            'CREATED BY',
         ];
     }
 
@@ -103,7 +104,6 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
             'L' => 20,
             'M' => 15,
             'N' => 25,
-            'O' => 20,
         ];
     }
 
@@ -239,11 +239,11 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
                     $dateRange = 'Period: ' . Carbon::parse($this->dateFrom)->format('d M Y') 
                                . ' - ' . Carbon::parse($this->dateTo)->format('d M Y');
                     $sheet->setCellValue('A' . $footerRow, $dateRange);
-                    $sheet->mergeCells('A' . $footerRow . ':G' . $footerRow);
+                    $sheet->mergeCells('A' . $footerRow . ':F' . $footerRow);
                 }
                 $exportInfo = 'Exported by: ' . Auth::user()->name . ' on ' . now()->format('d M Y H:i');
-                $sheet->setCellValue('H' . $footerRow, $exportInfo);
-                $sheet->mergeCells('H' . $footerRow . ':' . $highestCol . $footerRow);
+                $sheet->setCellValue('G' . $footerRow, $exportInfo);
+                $sheet->mergeCells('G' . $footerRow . ':' . $highestCol . $footerRow);
                 $sheet->getStyle('A' . $footerRow . ':' . $highestCol . $footerRow)->applyFromArray([
                     'font' => [
                         'italic' => true,

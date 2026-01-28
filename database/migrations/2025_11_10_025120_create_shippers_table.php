@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('shippers', function (Blueprint $table) {
             $table->id();
             $table->string('shipper_name');
-            $table->enum('shipper_type', ['DIRECT SHIPPER', 'FORWARDING', 'TRADING', 'EMKL']);
+            $table->enum('shipper_concept', ['NEW SHIPPER', 'EXISTING SHIPPER']);
+            $table->enum('shipper_type', ['DIRECT SHIPPER', 'FORWARDING', 'VENDORING', 'TRADING']);
             $table->string('shipper_city');
             $table->string('shipper_address')->nullable();
             $table->string('contact_person')->nullable();
