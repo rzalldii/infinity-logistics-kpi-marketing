@@ -438,8 +438,27 @@ $(document).ready(function () {
     var hasActionColumn = (userRole === 'SUPER ADMIN' || userRole === 'ADMIN' || userRole === 'MARKETING');
     var currentUserId = {{ Auth::id() }};
     $('#ExportExcel').on('click', function() {
+        var filterData = $('#filterData').val();
+        var filterCONCEPT = $('#filterCONCEPT').val();
+        var filterTYPE = $('#filterTYPE').val();
+        var filterCITY = $('#filterCITY').val();
+        var activeFilters = [];
+        if (filterData && filterData !== '') {
+            var dataText = $('#filterData option:selected').text();
+            activeFilters.push('SCOPE : <b>' + dataText + '</b>');
+        }
+        if (filterCONCEPT) activeFilters.push('CONCEPT : <b>' + filterCONCEPT + '</b>');
+        if (filterTYPE) activeFilters.push('TYPE : <b>' + filterTYPE + '</b>');
+        if (filterCITY) activeFilters.push('CITY : <b>' + filterCITY + '</b>');
+        var messageHTML = '';
+        if (activeFilters.length > 0) {
+            messageHTML = 'Filters : <br>' + activeFilters.join('<br>');
+        } else {
+            messageHTML = 'All Data';
+        }
         Swal.fire({
-            title: 'Export This Data?',
+            title: 'Export Data?',
+            html: messageHTML,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#31ce36',
@@ -449,7 +468,13 @@ $(document).ready(function () {
             reverseButtons: false
         }).then((result) => {
             if (result.isConfirmed) {
-                var url = "{{ route('shippers.export') }}";
+                var params = new URLSearchParams({
+                    data: filterData,
+                    shipper_concept: filterCONCEPT,
+                    shipper_type: filterTYPE,
+                    shipper_city: filterCITY
+                });
+                var url = "{{ route('shippers.export') }}?" + params.toString();
                 Swal.fire({
                     title: 'Preparing Excel...',
                     html: 'Exporting data file...',

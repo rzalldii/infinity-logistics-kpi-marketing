@@ -22,7 +22,7 @@ Summary Activities | Key Perfomance Indicator Marketing
                                 <div class="form-group">
                                     <select class="form-select" id="filterMonth">
                                         @for ($i = 0; $i < 3; $i++)
-                                            <option value="{{ $i }}">
+                                            <option value="{{ $i }}" {{ request('month_offset') == $i ? 'selected' : '' }}>
                                                 {{ now()->subMonths($i)->format('F Y') }}
                                             </option>
                                         @endfor
@@ -179,8 +179,7 @@ $(document).ready(function () {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                var url = "{{ route('activities.summaries.export') }}";
-                url += '?month_offset=' + monthOffset;
+                var url = "{{ route('activities.summaries.export') }}?month_offset=" + monthOffset;
                 Swal.fire({
                     title: 'Preparing Excel...',
                     html: 'Exporting data <b>' + monthName + '</b>',

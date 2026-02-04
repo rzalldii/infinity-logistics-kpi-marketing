@@ -210,37 +210,55 @@ class ActivityController extends Controller
 
     public function export(Request $request)
     {
-        $dateFrom = $request->query('date_from');
-        $dateTo = $request->query('date_to');
+        $query = Activity::query();
+        $filterInfo = [];
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $query->whereDate('created_at', '>=', $request->date_from)
+                ->whereDate('created_at', '<=', $request->date_to);
+            $filterInfo[] = "DATE : {$request->date_from} To {$request->date_to}";
+        }
+        if ($request->filled('data')) {
+            if ($request->data === 'mine') {
+                $query->where('user_id', Auth::id());
+                $filterInfo[] = "SCOPE : My Data";
+            } elseif (is_numeric($request->data)) {
+                $query->where('user_id', $request->data);
+                $user = User::find($request->data);
+                $userName = $user ? $user->name : $request->data;
+                $filterInfo[] = "SCOPE : Data {$userName}";
+            }
+        }
+        if (Auth::user()->isMarketing()) {
+            $query->where('user_id', Auth::id());
+            if (!in_array("SCOPE : My Data", $filterInfo)) {
+                $filterInfo = array_filter($filterInfo, fn($v) => !str_contains($v, 'SCOPE'));
+                $filterInfo[] = "SCOPE : My Data";
+            }
+        }
+        if ($request->filled('activity_type')) {
+            $query->where('activity_type', $request->activity_type);
+            $filterInfo[] = "ACTIVITY : {$request->activity_type}";
+        }
+        if ($request->filled('status_type')) {
+            $query->where('status_type', $request->status_type);
+            $filterInfo[] = "STATUS : {$request->status_type}";
+        }
+        $activities = $query->latest()->get();
+        $filterString = empty($filterInfo) ? 'All Data' : implode(', ', $filterInfo);
+        $description = "Filters : [ {$filterString} ]";
+        $dFrom = $request->date_from ?? date('Y-m-d');
+        $dTo = $request->date_to ?? date('Y-m-d');
+        $fileName = 'Activities ' . $dFrom . ' to ' . $dTo . '.xlsx';
         Audit::create([
             'auditable_type' => 'Activity',
             'auditable_id' => 0,
             'event' => 'exported',
             'user_id' => Auth::id(),
-            'description' => $dateFrom . ' to ' . $dateTo,
-            'old_values' => null,
-            'new_values' => request()->all(),
+            'description' => $description,
         ]);
         if (Auth::user()->isMarketing()) {
-            $fileName = 'Activities '
-                . Carbon::parse($dateFrom)->format('Y-m-d')
-                . ' to '
-                . Carbon::parse($dateTo)->format('Y-m-d')
-                . '.xlsx';
-            
-            return Excel::download(
-                new MarketingExport($dateFrom, $dateTo, Auth::id()),
-                $fileName
-            );
+            return Excel::download(new MarketingExport($activities, $dFrom, $dTo), $fileName);
         }
-        $fileName = 'Activities '
-                . Carbon::parse($dateFrom)->format('Y-m-d')
-                . ' to '
-                . Carbon::parse($dateTo)->format('Y-m-d')
-                . '.xlsx';
-        return Excel::download(
-            new ActivitiesExport($dateFrom, $dateTo),
-            $fileName
-        );
+        return Excel::download(new ActivitiesExport($activities, $dFrom, $dTo), $fileName);
     }
 }

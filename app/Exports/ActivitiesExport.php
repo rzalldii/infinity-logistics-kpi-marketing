@@ -20,24 +20,20 @@ use Carbon\Carbon;
 
 class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithColumnFormatting, WithTitle, WithEvents
 {
-    private $dateFrom;
-    private $dateTo;
+    protected $activities; 
+    protected $dateFrom;
+    protected $dateTo;
 
-    public function __construct($dateFrom, $dateTo)
+    public function __construct($activities, $dateFrom, $dateTo)
     {
+        $this->activities = $activities;
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
     }
 
     public function collection()
     {
-        $endDate = Carbon::parse($this->dateTo)->endOfDay(); 
-        $startDate = Carbon::parse($this->dateFrom)->startOfDay();
-        $activities = Activity::with('shipper', 'user')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return $activities->map(function ($activity) {
+        return $this->activities->map(function ($activity) {
             $rootId = $activity->parent_id ?? $activity->id;
             $suffix = match ($activity->status_type) {
                 'CLOSING' => 'CLS',
@@ -53,7 +49,7 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
                 $activity->shipper->shipper_type ?? '—',
                 $activity->shipper->commodity ?? '—',
                 $activity->activity_type,
-                $activity->visit_date ? Carbon::parse($activity->visit_date)->format('d M Y') : '—',
+                $activity->visit_date ? $activity->visit_date->format('d M Y') : '—',
                 $activity->status_type ?? '—',
                 $activity->volume_20 ?? '—',
                 $activity->volume_40 ?? '—',

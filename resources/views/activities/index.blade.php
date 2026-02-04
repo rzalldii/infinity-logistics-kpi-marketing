@@ -35,6 +35,33 @@ Report Activities | Key Perfomance Indicator Marketing
                                     <div class="modal-body">
                                         <form id="exportForm">
                                             <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="form-label fw-bold">Quick Select Range</label>
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm btn-shortcut" data-range="today">
+                                                                Today
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm btn-shortcut" data-range="yesterday">
+                                                                Yesterday
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm btn-shortcut" data-range="this_week">
+                                                                This Week
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm btn-shortcut" data-range="last_week">
+                                                                Last Week
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-primary btn-sm btn-shortcut active" data-range="this_month">
+                                                                This Month
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-primary btn-sm btn-shortcut" data-range="last_month">
+                                                                Last Month
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="form-label fw-bold" for="export_date_from">From Date <span class="text-danger">*</span></label>
@@ -386,7 +413,7 @@ Report Activities | Key Perfomance Indicator Marketing
                                     @foreach($activities as $activity)
                                     <tr data-user-id="{{ $activity->user_id }}">
                                         <td data-order="{{ $activity->created_at->format('Y-m-d') }}">
-                                            {{ $activity->created_at->format("d M Y") }}
+                                            {{ Str::upper($activity->created_at->format("d M")) }}
                                         </td>
                                         <td>
                                             @php
@@ -408,7 +435,7 @@ Report Activities | Key Perfomance Indicator Marketing
                                         <td>{{ $activity->activity_type }}</td>
                                         <td>
                                             @if($activity->visit_date)
-                                            {{ Str::upper(\Carbon\Carbon::parse($activity->visit_date)->format("d M")) }}
+                                            {{ Str::upper(($activity->visit_date)->format("d M")) }}
                                             @else
                                             <span class="text-muted">—</span>
                                             @endif
@@ -542,72 +569,141 @@ $(document).ready(function () {
                date1.getMonth() === date2.getMonth() &&
                date1.getDate() === date2.getDate();
     }
-    $('#ExportExcel').on('click', function() {
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+        return [year, month, day].join('-');
+    }
+    $('.btn-shortcut').on('click', function() {
+        $('.btn-shortcut').removeClass('active').removeClass('btn-outline-primary').addClass('btn-outline-secondary');
+        $(this).addClass('active').removeClass('btn-outline-secondary').addClass('btn-outline-primary');
+        var range = $(this).data('range');
         var today = new Date();
-        var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        $('#export_date_from').val(formatDateForInput(firstDayOfMonth));
-        $('#export_date_to').val(formatDateForInput(today));
+        var fromDate, toDate;
+        today.setHours(0,0,0,0);
+        switch (range) {
+            case 'today':
+                fromDate = new Date(today);
+                toDate = new Date(today);
+                break;
+            case 'yesterday':
+                var yest = new Date(today);
+                yest.setDate(yest.getDate() - 1);
+                fromDate = yest;
+                toDate = yest;
+                break;
+            case 'this_week':
+                var currentDay = today.getDay() || 7;
+                var monday = new Date(today);
+                monday.setDate(today.getDate() - (currentDay - 1));
+                fromDate = monday;
+                toDate = new Date();
+                break;
+            case 'last_week':
+                var lastWeekMonday = new Date(today);
+                var day = lastWeekMonday.getDay() || 7;
+                lastWeekMonday.setDate(lastWeekMonday.getDate() - day - 6);
+                var lastWeekSunday = new Date(lastWeekMonday);
+                lastWeekSunday.setDate(lastWeekMonday.getDate() + 6);
+                fromDate = lastWeekMonday;
+                toDate = lastWeekSunday;
+                break;
+            case 'this_month':
+                fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                toDate = new Date();
+                break;
+            case 'last_month':
+                fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                toDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
+            default:
+                fromDate = new Date();
+                toDate = new Date();
+        }
+        $('#export_date_from').val(formatDate(fromDate));
+        $('#export_date_to').val(formatDate(toDate));
+    });
+    $('#ExportExcel').on('click', function() {
+        $('.btn-shortcut[data-range="this_month"]').trigger('click');
         $('#exportModal').modal('show');
     });
-    function formatDateForInput(date) {
-        var year = date.getFullYear();
-        var month = String(date.getMonth() + 1).padStart(2, '0');
-        var day = String(date.getDate()).padStart(2, '0');
-        return year + '-' + month + '-' + day;
-    }
     $('#confirmExport').on('click', function() {
         var dateFrom = $('#export_date_from').val();
         var dateTo = $('#export_date_to').val();
         if (!dateFrom || !dateTo) {
             Swal.fire({
                 icon: 'error',
-                title: 'Invalid Date Range',
+                title: 'Invalid Date Range'
             });
             return;
         }
         if (new Date(dateFrom) > new Date(dateTo)) {
             Swal.fire({
                 icon: 'error',
-                title: 'Start Date Cannot Exceed End Date!',
+                title: 'Start Date cannot be greater than End Date'
             });
             return;
         }
-        var url = "{{ route('activities.export') }}";
-        url += '?date_from=' + dateFrom;
-        url += '&date_to=' + dateTo;
-        $('#confirmExport').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        var filterUser = $('#filterUser').val(); 
+        var filterACTIVITY = $('#filterACTIVITY').val();
+        var filterSTATUS = $('#filterSTATUS').val();
+        var activeFilters = [];
+        activeFilters.push('DATE : <b>' + dateFrom + '</b> To <b>' + dateTo + '</b>');
+        if (filterUser && filterUser !== '') {
+            var userText = $('#filterUser option:selected').text();
+            activeFilters.push('SCOPE : <b>' + userText + '</b>');
+        }
+        if (filterACTIVITY) activeFilters.push('ACTIVITY : <b>' + filterACTIVITY + '</b>');
+        if (filterSTATUS) activeFilters.push('STATUS : <b>' + filterSTATUS + '</b>');
+        var messageHTML = 'Filters : <br>' + activeFilters.join('<br>');
         $('#exportModal').modal('hide');
         Swal.fire({
-            title: 'Preparing Excel...',
-            html: 'Exporting data from <b>' + dateFrom + '</b> to <b>' + dateTo + '</b>',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
+            title: 'Export Data?',
+            html: messageHTML,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#31ce36',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Export',
+            cancelButtonText: 'Cancel',
+            reverseButtons: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var params = new URLSearchParams({
+                    date_from: dateFrom,
+                    date_to: dateTo,
+                    data: filterUser,
+                    activity_type: filterACTIVITY,
+                    status_type: filterSTATUS
+                });
+                var url = "{{ route('activities.export') }}?" + params.toString();
+                Swal.fire({
+                    title: 'Preparing Excel...',
+                    html: 'Exporting data file...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                setTimeout(function() {
+                    window.location.href = url;
+                    Swal.close();
+                    setTimeout(() => {
+                        Swal.fire({ 
+                            icon: 'success',
+                            title: 'Export Complete!',
+                            showConfirmButton: false,
+                            timer: 1500 });
+                    }, 500);
+                }, 1000);
+            } else {
+                $('#exportModal').modal('show');
             }
         });
-        setTimeout(function() {
-            window.location.href = url;
-            Swal.close();
-            $('#confirmExport').prop('disabled', false).html('<i class="fas fa-download"></i> Download Excel');
-            setTimeout(function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Export Complete!',
-                    showConfirmButton: false,
-		            timer: 1500
-                });
-            }, 500);
-        }, 1000);
-    });
-    $('#export_date_from').on('change', function() {
-        var dateFrom = new Date($(this).val());
-        var dateTo = $('#export_date_to').val();
-        if (dateTo) {
-            var dateToObj = new Date(dateTo);
-            if (dateFrom > dateToObj) {
-                $('#export_date_to').val($(this).val());
-            }
-        }
     });
     try {
         var notOrderableColumns;

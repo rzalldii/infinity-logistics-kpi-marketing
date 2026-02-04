@@ -304,7 +304,7 @@ Checking Rates | Key Perfomance Indicator Marketing
                                             @endif
                                         </td>
                                         <td data-order="{{ $rate->valid_date->format('Y-m-d') }}">
-                                            {{ Str::upper(\Carbon\Carbon::parse($rate->valid_date)->format("M y")) }}
+                                            {{ Str::upper(($rate->valid_date)->format("M y")) }}
                                         </td>
                                         <td data-order="{{ $rate->created_at }}">
                                             {{ $rate->created_at->format('d M Y') }}
@@ -358,8 +358,29 @@ $(document).ready(function () {
     var hasActionColumn = (userRole === 'SUPER ADMIN' || userRole === 'ADMIN' || userRole === 'MARKETING');
     var currentUserId = {{ Auth::id() }};
     $('#ExportExcel').on('click', function() {
+        var filterData = $('#filterData').val();
+        var filterPOL = $('#filterPOL').val();
+        var filterPOD = $('#filterPOD').val();
+        var filterLINER = $('#filterLINER').val();
+        var filterVALID = $('#filterVALID').val();
+        var activeFilters = [];
+        if (filterData && filterData !== '') {
+            var dataText = $('#filterData option:selected').text();
+            activeFilters.push('SCOPE : <b>' + dataText + '</b>');
+        }
+        if (filterPOL) activeFilters.push('POL : <b>' + filterPOL + '</b>');
+        if (filterPOD) activeFilters.push('POD : <b>' + filterPOD + '</b>');
+        if (filterLINER) activeFilters.push('LINER : <b>' + filterLINER + '</b>');
+        if (filterVALID) activeFilters.push('VALID : <b>' + filterVALID + '</b>');
+        var messageHTML = '';
+        if (activeFilters.length > 0) {
+            messageHTML = 'Filters : <br>' + activeFilters.join('<br>');
+        } else {
+            messageHTML = 'All Data';
+        }
         Swal.fire({
-            title: 'Export This Data?',
+            title: 'Export Data?',
+            html: messageHTML,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#31ce36',
@@ -369,7 +390,14 @@ $(document).ready(function () {
             reverseButtons: false
         }).then((result) => {
             if (result.isConfirmed) {
-                var url = "{{ route('rates.export') }}";
+                var params = new URLSearchParams({
+                    data: filterData,
+                    pol: filterPOL,
+                    pod: filterPOD,
+                    liner: filterLINER,
+                    valid_date: filterVALID
+                });
+                var url = "{{ route('rates.export') }}?" + params.toString();
                 Swal.fire({
                     title: 'Preparing Excel...',
                     html: 'Exporting data file...',

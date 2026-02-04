@@ -28,8 +28,8 @@ class ShipperController extends Controller
     {
         $validated = $request->validate([
             'shipper_name' => 'required|string',
+            'shipper_concept' => 'required|in:NEW SHIPPER,EXISTING SHIPPER',
             'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,VENDORING,TRADING',
-            'shipper_concept'  => 'required|in:NEW SHIPPER,EXISTING SHIPPER',
             'shipper_city' => 'required|string',
             'shipper_address' => 'nullable|string',
             'contact_person' => 'nullable|string',
@@ -65,8 +65,8 @@ class ShipperController extends Controller
         $shipper = Shipper::findOrFail($id);
         $validated = $request->validate([
             'shipper_name' => 'required|string',
+            'shipper_concept' => 'required|in:NEW SHIPPER,EXISTING SHIPPER',
             'shipper_type' => 'required|in:DIRECT SHIPPER,FORWARDING,VENDORING,TRADING',
-            'shipper_concept'  => 'required|in:NEW SHIPPER,EXISTING SHIPPER',
             'shipper_city' => 'required|string',
             'shipper_address' => 'nullable|string',
             'contact_person' => 'nullable|string',
@@ -108,18 +108,43 @@ class ShipperController extends Controller
         return response()->json(null, 204);
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        $shippers = Shipper::latest()->get();
+        $query = Shipper::query();
+        $filterInfo = [];
+        if ($request->filled('data')) {
+            if ($request->data === 'mine') {
+                $query->where('user_id', Auth::id());
+                $filterInfo[] = "SCOPE : My Data";
+            } elseif (is_numeric($request->data)) {
+                $query->where('user_id', $request->data);
+                $user = User::find($request->data);
+                $userName = $user ? $user->name : $request->data;
+                $filterInfo[] = "SCOPE : Data {$userName}";
+            }
+        }
+        if ($request->filled('shipper_concept')) {
+            $query->where('shipper_concept', $request->shipper_concept);
+            $filterInfo[] = "CONCEPT : {$request->shipper_concept}";
+        }
+        if ($request->filled('shipper_type')) {
+            $query->where('shipper_type', $request->shipper_type);
+            $filterInfo[] = "TYPE : {$request->shipper_type}";
+        }
+        if ($request->filled('shipper_city')) {
+            $query->where('shipper_city', $request->shipper_city);
+            $filterInfo[] = "CITY : {$request->shipper_city}";
+        }
+        $shippers = $query->get();
+        $filterString = empty($filterInfo) ? 'All Data' : implode(', ', $filterInfo);
+        $description = "Filters : [ {$filterString} ]";
         $fileName = 'Touch Shippers ' . date('Y-m-d') . '.xlsx';
         Audit::create([
             'auditable_type' => 'Shipper',
             'auditable_id' => 0,
             'event' => 'exported',
             'user_id' => Auth::id(),
-            'description' => 'Exported ' . $shippers->count(),
-            'old_values' => null,
-            'new_values' => request()->all(),
+            'description' => $description,
         ]);
         return Excel::download(new ShippersExport($shippers), $fileName);
     }
