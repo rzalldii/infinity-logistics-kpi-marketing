@@ -464,7 +464,7 @@ Report Activities | Key Perfomance Indicator Marketing
                                         </td>
                                         <td>
                                             @if($activity->profit)
-                                            {{ number_format($activity->profit, 0, ',', '.') }}
+                                            {{ number_format((float)$activity->profit, 0, ',', '.') }}
                                             @else
                                             <span class="text-muted">—</span>
                                             @endif

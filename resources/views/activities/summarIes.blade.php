@@ -77,10 +77,10 @@ Summary Activities | Key Perfomance Indicator Marketing
                                             {{ min($data['volume']['performance']['percentage'], 100) }}%
                                         </td>
                                         <td class="text-end">
-                                            {{ number_format($data['profit']['performance']['actual'], 0, ',', '.') }}
+                                            {{ number_format((float)$data['profit']['performance']['actual'], 0, ',', '.') }}
                                         </td>
                                         <td class="text-end">
-                                            {{ number_format($data['profit']['performance']['remaining'], 0, ',', '.') }}
+                                            {{ number_format((float)$data['profit']['performance']['remaining'], 0, ',', '.') }}
                                         </td>
                                         <td class="text-center fw-bold">
                                             {{ min($data['profit']['performance']['percentage'], 100) }}%

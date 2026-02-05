@@ -155,9 +155,9 @@ Dashboard | Key Perfomance Indicator Marketing
                     </div>
                     <div class="card-body">
                         <div>
-                            <p class="text-muted">Target : Rp {{ number_format($performance['profit']['performance']['target'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Actual : Rp {{ number_format($performance['profit']['performance']['actual'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Remaining : Rp {{ number_format($performance['profit']['performance']['remaining'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Target : Rp {{ number_format((float)$performance['profit']['performance']['target'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Actual : Rp {{ number_format((float)$performance['profit']['performance']['actual'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Remaining : Rp {{ number_format((float)$performance['profit']['performance']['remaining'], 0, ',', '.') }}</p>
                         </div>
                         @php
                             $profPercent = $performance['profit']['performance']['percentage'];

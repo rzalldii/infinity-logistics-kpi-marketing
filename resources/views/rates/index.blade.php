@@ -283,14 +283,14 @@ Checking Rates | Key Perfomance Indicator Marketing
                                         <td>{{ $rate->container_type }}</td>
                                         <td>
                                             @if($rate->container_20)
-                                            {{ number_format($rate->container_20, 0, ',', '.') }}
+                                            {{ number_format((float)$rate->container_20, 0, ',', '.') }}
                                             @else
                                             <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($rate->container_40)
-                                            {{ number_format($rate->container_40, 0, ',', '.') }}
+                                            {{ number_format((float)$rate->container_40, 0, ',', '.') }}
                                             @else
                                             <span class="text-muted">—</span>
                                             @endif
