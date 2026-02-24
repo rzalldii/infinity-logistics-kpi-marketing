@@ -127,10 +127,6 @@ class ActivityController extends Controller
                 }
             }
             if ($isClosingCase) {
-                $diff = $createdDate->diffInDays($today);
-                if ($diff > 14) {
-                     return response()->json(null, 403);
-                }
                 if ($createdDate->format('Y-m') !== $today->format('Y-m')) {
                      return response()->json(null, 403);
                 }

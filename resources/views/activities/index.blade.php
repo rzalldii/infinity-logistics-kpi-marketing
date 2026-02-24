@@ -487,12 +487,11 @@ Report Activities | Key Perfomance Indicator Marketing
                                                 $createdAt = \Carbon\Carbon::parse($activity->created_at);
                                                 $now = \Carbon\Carbon::now();
                                                 $isToday = $createdAt->isToday();
-                                                $isWithin14Days = $createdAt->diffInDays($now) <= 14;
                                                 $isSameMonth = $createdAt->format('Y-m') === $now->format('Y-m');
                                                 $isClosing = ($activity->status_type === 'CLOSING');
                                                 $canDelete = $isToday;
                                                 if ($isClosing) {
-                                                    $canEdit = ($isWithin14Days && $isSameMonth);
+                                                    $canEdit = $isSameMonth;
                                                 } else {
                                                     $canEdit = $isToday;
                                                 }
