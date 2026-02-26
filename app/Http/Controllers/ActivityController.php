@@ -59,7 +59,7 @@ class ActivityController extends Controller
         $validated = $request->validate([
             'parent_id' => 'nullable|exists:activities,id',
             'shipper_id' => 'required|exists:shippers,id',
-            'activity_type' => 'required|in:VISIT,CALL',
+            'activity_type' => 'required|in:QUOTE,CALL,VISIT',
             'visit_date' => 'nullable|date',
             'status_type' => 'required|in:CLOSING,PENDING,FAILED',
             'volume_20' => 'nullable|string|max:5',
@@ -101,7 +101,7 @@ class ActivityController extends Controller
         $activity = Activity::findOrFail($id);
         $validated = $request->validate([
             'shipper_id' => 'required|exists:shippers,id',
-            'activity_type' => 'required|in:VISIT,CALL',
+            'activity_type' => 'required|in:QUOTE,CALL,VISIT',
             'visit_date' => 'nullable|date',
             'status_type' => 'required|in:CLOSING,PENDING,FAILED',
             'volume_20' => 'nullable|string|max:5',

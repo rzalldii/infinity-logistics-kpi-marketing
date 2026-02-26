@@ -147,8 +147,9 @@ Report Activities | Key Perfomance Indicator Marketing
                                                         <label class="form-label" for="activity_type">Activity Type <span class="text-danger">*</span></label>
                                                         <select class="form-select" name="activity_type" id="activity_type" required>
                                                             <option value="" disabled selected>Select Activity Type</option>
-                                                            <option value="VISIT">VISIT</option>
+                                                            <option value="QUOTE">QUOTE</option>
                                                             <option value="CALL">CALL</option>
+                                                            <option value="VISIT">VISIT</option>
                                                         </select>
                                                     </div>
                                                 </div>

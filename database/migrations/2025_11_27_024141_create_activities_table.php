@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('parent_id')->nullable()->constrained('activities')->onDelete('cascade');
             $table->integer('sequence')->default(1);
-            $table->enum('activity_type', ['VISIT', 'CALL']);
+            $table->enum('activity_type', ['QUOTE', 'CALL', 'VISIT']);
             $table->date('visit_date')->nullable();
             $table->enum('status_type', ['CLOSING', 'PENDING', 'FAILED']);
             $table->string('volume_20', 5)->nullable();

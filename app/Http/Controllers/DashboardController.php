@@ -112,8 +112,9 @@ class DashboardController extends Controller
         $totalTargetActivity = 0;
         $totalTargetVolume = 0;
         $totalTargetProfit = 0;
-        $breakdownVisit = 0;
+        $breakdownQuote = 0;
         $breakdownCall = 0;
+        $breakdownVisit = 0;
         $breakdown20 = 0;
         $breakdown40 = 0;
         $breakdownOthers = 0;
@@ -124,22 +125,24 @@ class DashboardController extends Controller
             $stats = Activity::where('user_id', $user->id)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->selectRaw("
-                    SUM(CASE WHEN activity_type = 'VISIT' THEN 1 ELSE 0 END) as count_visit,
+                    SUM(CASE WHEN activity_type = 'QUOTE' THEN 1 ELSE 0 END) as count_quote,
                     SUM(CASE WHEN activity_type = 'CALL' THEN 1 ELSE 0 END) as count_call,
+                    SUM(CASE WHEN activity_type = 'VISIT' THEN 1 ELSE 0 END) as count_visit,
                     SUM(CAST(COALESCE(volume_20, 0) AS DECIMAL(10,2))) as sum_20,
                     SUM(CAST(COALESCE(volume_40, 0) AS DECIMAL(10,2))) as sum_40,
                     SUM(CASE WHEN other_volume IN ('AIR FREIGHT', 'RAIL FREIGHT', 'ROAD FREIGHT', 'EMKL', 'LCL', 'OTHER BUSINESS') THEN 1 ELSE 0 END) as count_others,
                     SUM(CAST(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9.-]', '') AS DECIMAL(15,2))) as total_profit
                 ")
                 ->first();
-            $userActivity = (int)$stats->count_visit + (int)$stats->count_call;
+            $userActivity = (int)$stats->count_quote + (int)$stats->count_call + (int)$stats->count_visit;
             $userVolume   = (float)$stats->sum_20 + (float)$stats->sum_40 + (int)$stats->count_others;
             $userProfit   = (float)$stats->total_profit;
             $totalActualActivity += $userActivity;
             $totalActualVolume   += $userVolume;
             $totalActualProfit   += $userProfit;
-            $breakdownVisit += (int)$stats->count_visit;
+            $breakdownQuote += (int)$stats->count_quote;
             $breakdownCall  += (int)$stats->count_call;
+            $breakdownVisit += (int)$stats->count_visit;
             $breakdown20    += (float)$stats->sum_20;
             $breakdown40    += (float)$stats->sum_40;
             $breakdownOthers += (int)$stats->count_others;
@@ -156,8 +159,9 @@ class DashboardController extends Controller
             'activities' => [
                 'performance' => $calcPerformance($totalActualActivity, $totalTargetActivity),
                 'breakdown' => [
-                    'visit' => $breakdownVisit,
-                    'call'  => $breakdownCall
+                    'quote' => $breakdownQuote,
+                    'call'  => $breakdownCall,
+                    'visit' => $breakdownVisit
                 ]
             ],
             'volume' => [

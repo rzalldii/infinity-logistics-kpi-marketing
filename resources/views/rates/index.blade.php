@@ -58,7 +58,6 @@ Checking Rates | Key Perfomance Indicator Marketing
                                                             <option value="" disabled selected>Select Container Type</option>
                                                             <option value="GP">GP</option>
                                                             <option value="RF">RF</option>
-                                                            <option value="OT">OT</option>
                                                         </select>
                                                     </div>
                                                 </div>

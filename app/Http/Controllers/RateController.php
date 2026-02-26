@@ -30,7 +30,7 @@ class RateController extends Controller
         $validated = $request->validate([
             'pol' => 'required|string',
             'pod' => 'required|string',
-            'container_type' => 'required|in:GP,RF,OT',
+            'container_type' => 'required|in:GP,RF',
             'container_20' => 'nullable|string|max:10',
             'container_40' => 'nullable|string|max:10',
             'liner' => 'required|string',
@@ -91,7 +91,7 @@ class RateController extends Controller
         $validated = $request->validate([
             'pol' => 'required|string',
             'pod' => 'required|string',
-            'container_type' => 'required|in:GP,RF,OT',
+            'container_type' => 'required|in:GP,RF',
             'container_20' => 'nullable|string|max:10',
             'container_40' => 'nullable|string|max:10',
             'liner' => 'required|string',

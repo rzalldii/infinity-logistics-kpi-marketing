@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('pol');
             $table->string('pod');
-            $table->enum('container_type', ['GP', 'RF','OT']);
+            $table->enum('container_type', ['GP', 'RF']);
             $table->string('container_20', 10)->nullable();
             $table->string('container_40', 10)->nullable();
             $table->string('liner');

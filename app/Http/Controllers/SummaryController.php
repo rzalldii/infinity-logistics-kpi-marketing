@@ -68,8 +68,9 @@ class SummaryController extends Controller
             $stats = Activity::where('user_id', $user->id)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->selectRaw("
-                    SUM(CASE WHEN activity_type = 'VISIT' THEN 1 ELSE 0 END) as count_visit,
+                    SUM(CASE WHEN activity_type = 'QUOTE' THEN 1 ELSE 0 END) as count_quote,
                     SUM(CASE WHEN activity_type = 'CALL' THEN 1 ELSE 0 END) as count_call,
+                    SUM(CASE WHEN activity_type = 'VISIT' THEN 1 ELSE 0 END) as count_visit,
                     SUM(CAST(COALESCE(volume_20, 0) AS DECIMAL(10,2))) as sum_20,
                     SUM(CAST(COALESCE(volume_40, 0) AS DECIMAL(10,2))) as sum_40,
                     SUM(CASE WHEN other_volume = 'AIR FREIGHT' THEN 1 ELSE 0 END) as count_air,
@@ -81,7 +82,7 @@ class SummaryController extends Controller
                     SUM(CAST(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9.-]', '') AS DECIMAL(15,2))) as total_profit
                 ")
                 ->first();
-            $actualActivity = (int)$stats->count_visit + (int)$stats->count_call;
+            $actualActivity = (int)$stats->count_quote + (int)$stats->count_call + (int)$stats->count_visit;
             $actualVolumeContainer = (float)$stats->sum_20 + (float)$stats->sum_40;
             $actualVolumeOthers = (int)$stats->count_air + (int)$stats->count_rail + 
                                   (int)$stats->count_road + (int)$stats->count_emkl + 
@@ -105,8 +106,9 @@ class SummaryController extends Controller
                 'activities' => [
                     'performance' => $calc($actualActivity, $targets['activity_total']),
                     'breakdown'   => [
-                        'visit' => (int)$stats->count_visit,
-                        'call'  => (int)$stats->count_call
+                        'quote' => (int)$stats->count_quote,
+                        'call'  => (int)$stats->count_call,
+                        'visit' => (int)$stats->count_visit
                     ]
                 ],
                 'volume' => [
