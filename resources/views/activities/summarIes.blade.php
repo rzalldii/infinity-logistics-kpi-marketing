@@ -20,12 +20,12 @@ Summary Activities | Key Perfomance Indicator Marketing
                         <div class="row mb-4">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <select class="form-select" id="filterMonth">
-                                        @for ($i = 0; $i < 3; $i++)
-                                            <option value="{{ $i }}" {{ request('month_offset') == $i ? 'selected' : '' }}>
-                                                {{ now()->subMonths($i)->format('F Y') }}
+                                    <select class="form-select" id="filterPeriod">
+                                        @foreach ($filterOptions as $val => $label)
+                                            <option value="{{ $val }}" {{ $period == $val ? 'selected' : '' }}>
+                                                {{ $label }}
                                             </option>
-                                        @endfor
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -166,8 +166,8 @@ Summary Activities | Key Perfomance Indicator Marketing
 <script>
 $(document).ready(function () {
     $('#ExportExcel').on('click', function() {
-        var monthOffset = $('#filterMonth').val();
-        var monthName = $('#filterMonth option:selected').text();
+        var period = $('#filterPeriod').val();
+        var monthName = $('#filterPeriod option:selected').text();
         Swal.fire({
             title: 'Export Data?',
             html: 'Export data for <b>' + monthName + '</b>?',
@@ -179,7 +179,7 @@ $(document).ready(function () {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                var url = "{{ route('activities.summaries.export') }}?month_offset=" + monthOffset;
+                var url = "{{ route('activities.summaries.export') }}?period=" + period;
                 Swal.fire({
                     title: 'Preparing Excel...',
                     html: 'Exporting data <b>' + monthName + '</b>',
@@ -203,17 +203,11 @@ $(document).ready(function () {
             }
         });
     });
-    $('#filterMonth').on('change', function() {
-        var monthOffset = $(this).val();
+    $('#filterPeriod').on('change', function() {
+        var period = $(this).val();
         var currentUrl = "{{ route('activities.summaries') }}";
-        window.location.href = currentUrl + "?month_offset=" + monthOffset;
+        window.location.href = currentUrl + "?period=" + period;
     });
-    var urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.has('month_offset')) {
-        $('#filterMonth').val(urlParams.get('month_offset'));
-    } else {
-        $('#filterMonth').val(0); 
-    }
     function formatRupiah(angka) {
         if (!angka) return '';
         var number_string = angka.toString().replace(/[^,\d]/g, ''),

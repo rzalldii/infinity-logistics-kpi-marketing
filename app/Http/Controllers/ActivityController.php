@@ -117,6 +117,10 @@ class ActivityController extends Controller
             }
             $createdDate = Carbon::parse($activity->created_at)->startOfDay(); 
             $today = Carbon::now()->startOfDay();
+            $currentMonthFormat = $today->format('Y-m');
+            $previousMonthFormat = clone $today;
+            $previousMonthFormat = $previousMonthFormat->subMonth()->format('Y-m');
+            $createdMonthFormat = $createdDate->format('Y-m');
             $isDifferentDay = !$createdDate->equalTo($today);
             $reqStatus = $request->status_type;
             $dbStatus = $activity->status_type;
@@ -127,7 +131,7 @@ class ActivityController extends Controller
                 }
             }
             if ($isClosingCase) {
-                if ($createdDate->format('Y-m') !== $today->format('Y-m')) {
+                if ($createdMonthFormat !== $currentMonthFormat && $createdMonthFormat !== $previousMonthFormat) {
                      return response()->json(null, 403);
                 }
             } else {

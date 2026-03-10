@@ -487,12 +487,15 @@ Report Activities | Key Perfomance Indicator Marketing
                                                 $isLatestSequence = in_array($activity->id, $latestIds);
                                                 $createdAt = \Carbon\Carbon::parse($activity->created_at);
                                                 $now = \Carbon\Carbon::now();
+                                                $currentMonth = $now->format('Y-m');
+                                                $previousMonth = $now->copy()->subMonth()->format('Y-m');
+                                                $activityMonth = $createdAt->format('Y-m');
                                                 $isToday = $createdAt->isToday();
-                                                $isSameMonth = $createdAt->format('Y-m') === $now->format('Y-m');
+                                                $isSameOrPreviousMonth = ($activityMonth === $currentMonth || $activityMonth === $previousMonth);
                                                 $isClosing = ($activity->status_type === 'CLOSING');
                                                 $canDelete = $isToday;
                                                 if ($isClosing) {
-                                                    $canEdit = $isSameMonth;
+                                                    $canEdit = $isSameOrPreviousMonth;
                                                 } else {
                                                     $canEdit = $isToday;
                                                 }
@@ -934,6 +937,23 @@ $(document).ready(function () {
             e.preventDefault();
         }
     });
+    function checkVolumeExclusivity() {
+        var val20 = $('#volume_20').val() ? $('#volume_20').val().trim() : '';
+        var val40 = $('#volume_40').val() ? $('#volume_40').val().trim() : '';
+        var valOther = $('#other_volume').val() ? $('#other_volume').val() : '';
+
+        if (val20 !== '' || val40 !== '') {
+            $('#other_volume').val('').prop('disabled', true);
+            $('#volume_20, #volume_40').prop('disabled', false);
+        } else if (valOther !== '') {
+            $('#volume_20, #volume_40').val('').prop('disabled', true);
+            $('#other_volume').prop('disabled', false);
+        } else {
+            $('#volume_20, #volume_40, #other_volume').prop('disabled', false);
+        }
+    }
+    $('#volume_20, #volume_40').on('input keyup', checkVolumeExclusivity);
+    $('#other_volume').on('change', checkVolumeExclusivity);
     function formatShipper(state) {
         if (!state.id) { return state.text; }
         var concept = $(state.element).data('concept') || '—';
@@ -1009,6 +1029,7 @@ $(document).ready(function () {
             $('#profit_group').show();
             $('#profit_real').prop('required', true);
             $('#profit').prop('required', true);
+            checkVolumeExclusivity();
         } else {
             $('#volume_20_group').hide();
             $('#volume_20').prop('required', false);
@@ -1024,6 +1045,7 @@ $(document).ready(function () {
             $('#profit').prop('required', false);
             $('#profit_real').val('');
             $('#profit').val('');
+            $('#volume_20, #volume_40, #other_volume').prop('disabled', false);
         }
     });
     $('body').on('click', '.viewActivity', function () {
@@ -1132,6 +1154,7 @@ $(document).ready(function () {
         $('#other_volume_group').hide();
         $('#profit_group').hide();
         $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">Activity</span>');
+        checkVolumeExclusivity();
         $('#activityModal').modal('show');
     });
     function showErrorAlert(htmlContent) {
@@ -1173,6 +1196,7 @@ $(document).ready(function () {
             showErrorAlert(errorList);
             return;
         }
+        $('#volume_20, #volume_40, #other_volume').prop('disabled', false);
         var formData = new FormData($('#activityForm')[0]);
         var activity_id = $('#activity_id').val();
         var url = activity_id ? "{{ route('activities.index') }}" + '/' + activity_id : "{{ route('activities.store') }}";
@@ -1199,6 +1223,7 @@ $(document).ready(function () {
             },
             error: function(response) {
                 $('#saveBtn').html('<i class="fas fa-save"></i> Save').prop('disabled', false);
+                checkVolumeExclusivity();
                 if (response.status === 422) {
                     var errors = response.responseJSON.errors;
                     var errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
@@ -1266,6 +1291,7 @@ $(document).ready(function () {
                 $('#volume_40_group').hide();
                 $('#other_volume_group').hide();
                 $('#profit_group').hide();
+                checkVolumeExclusivity();
                 Swal.fire({
                     icon: 'success',
                     title: 'Form Cleared Successfully!',
@@ -1320,6 +1346,7 @@ $(document).ready(function () {
             $('#other_volume').val('');
             $('#profit_real').val('');
             $('#profit').val('');
+            checkVolumeExclusivity();
         });
     });
     $('body').on('click', '.editBtn', function () {
@@ -1385,6 +1412,7 @@ $(document).ready(function () {
             $('#profit_real').val(data.profit);
             $('#profit').val(formatRupiah(data.profit));
             $('#remarks').val(data.remarks);
+            checkVolumeExclusivity();
         }).fail(function() {
             Swal.fire({
                 icon: 'error',

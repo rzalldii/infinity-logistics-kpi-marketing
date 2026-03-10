@@ -8,15 +8,50 @@ use App\Exports\SummariesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 class SummaryController extends Controller
 {
     public function index(Request $request)
     {
-        $monthOffset = (int) $request->get('month_offset', 0);
-        $performanceData = $this->getPerformance($monthOffset);
-        $selectedMonth = now()->subMonths($monthOffset)->format('F Y');
-        $isCurrentMonth = ($monthOffset === 0);
+        $currentYear = now()->year;
+        $dates = Activity::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month')
+            ->whereNotNull('created_at')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
+        $currentYearMonths = [];
+        $pastYears = [];
+        foreach ($dates as $d) {
+            if ($d->year == $currentYear) {
+                $val = $d->year . '-' . str_pad($d->month, 2, '0', STR_PAD_LEFT);
+                $label = Carbon::create()->month($d->month)->format('F');
+                $currentYearMonths[$val] = $label;
+            } else {
+                if (!isset($pastYears[(string)$d->year])) {
+                    $pastYears[(string)$d->year] = "Summary (" . $d->year . ")";
+                }
+            }
+        }
+        $currentMonthVal = now()->format('Y-m');
+        if (!isset($currentYearMonths[$currentMonthVal])) {
+            $currentYearMonths = [$currentMonthVal => now()->format('F')] + $currentYearMonths;
+        }
+        $filterOptions = $currentYearMonths;
+        $filterOptions[(string)$currentYear] = "Summary (" . $currentYear . ")";
+        foreach ($pastYears as $yearVal => $yearLabel) {
+            $filterOptions[$yearVal] = $yearLabel;
+        }
+        $period = $request->get('period', $currentMonthVal);
+        $performanceData = $this->getPerformance($period);
+        if (strlen($period) === 4) {
+            $selectedMonth = 'Year ' . $period;
+            $isCurrentMonth = false;
+        } else {
+            $selectedMonth = Carbon::createFromFormat('Y-m', $period)->format('F Y');
+            $isCurrentMonth = ($period === now()->format('Y-m'));
+        }
         if ($request->ajax()) {
             return response()->json([
                 'data' => $performanceData,
@@ -24,7 +59,7 @@ class SummaryController extends Controller
                 'is_current_month' => $isCurrentMonth
             ]);
         }
-        return view('activities.summaries', compact('performanceData', 'selectedMonth', 'isCurrentMonth'));
+        return view('activities.summaries', compact('performanceData', 'selectedMonth', 'isCurrentMonth', 'filterOptions', 'period'));
     }
 
     public function edit($id): JsonResponse
@@ -50,23 +85,29 @@ class SummaryController extends Controller
         return response()->json($user, 200);
     }
 
-    private function getPerformance($monthOffset = 0)
+    private function getPerformance($period)
     {
         $marketingUsers = User::whereIn('role', ['MARKETING', 'ADMIN'])
             ->orderBy('name')
             ->get();
-        $targetDate = now()->subMonths($monthOffset);
-        $startOfMonth = $targetDate->copy()->startOfMonth();
-        $endOfMonth = $targetDate->copy()->endOfMonth();
+        if (strlen($period) === 4) {
+            $startOfPeriod = Carbon::createFromFormat('Y', $period)->startOfYear();
+            $endOfPeriod = Carbon::createFromFormat('Y', $period)->endOfYear();
+            $multiplier = 12;
+        } else {
+            $startOfPeriod = Carbon::createFromFormat('Y-m', $period)->startOfMonth();
+            $endOfPeriod = Carbon::createFromFormat('Y-m', $period)->endOfMonth();
+            $multiplier = 1;
+        }
         $performanceData = [];
         foreach ($marketingUsers as $user) {
             $targets = [
-                'activity_total' => $user->target_activity,
-                'volume_total'   => $user->target_volume,
-                'profit_total'   => $user->target_profit,
+                'activity_total' => ((float)$user->target_activity) * $multiplier,
+                'volume_total'   => ((float)$user->target_volume) * $multiplier,
+                'profit_total'   => ((float)$user->target_profit) * $multiplier,
             ];
             $stats = Activity::where('user_id', $user->id)
-                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->whereBetween('created_at', [$startOfPeriod, $endOfPeriod])
                 ->selectRaw("
                     SUM(CASE WHEN activity_type = 'QUOTE' THEN 1 ELSE 0 END) as count_quote,
                     SUM(CASE WHEN activity_type = 'CALL' THEN 1 ELSE 0 END) as count_call,
@@ -129,9 +170,13 @@ class SummaryController extends Controller
 
     public function export(Request $request)
     {
-        $monthOffset = $request->get('month_offset', 0);
-        $performanceData = $this->getPerformance($monthOffset);
-        $selectedMonth = now()->subMonths($monthOffset)->format('F Y');
+        $period = $request->get('period', now()->format('Y-m'));
+        $performanceData = $this->getPerformance($period);
+        if (strlen($period) === 4) {
+            $selectedMonth = 'Year ' . $period;
+        } else {
+            $selectedMonth = Carbon::createFromFormat('Y-m', $period)->format('F Y');
+        }
         return Excel::download(
             new SummariesExport($performanceData, $selectedMonth),
             'Summary ' . $selectedMonth . '.xlsx'
