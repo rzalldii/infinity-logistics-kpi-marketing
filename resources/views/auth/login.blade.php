@@ -51,7 +51,7 @@
                 <div class="card smooth-shadow-md">
                     <div class="card-body p-6">
                         <div class="mb-4">
-                            <img src="{{ url('/') }}/img/logo.png" width="150" class="d-block mx-auto" alt="">
+                            <img src="{{ url('/') }}/img/logo.png" width="250" class="d-block mx-auto" alt=""/>
                         </div>
                         <form id="loginForm" method="POST" action="{{ route('login.post') }}">
                             @csrf

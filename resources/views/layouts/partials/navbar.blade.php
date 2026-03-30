@@ -2,10 +2,9 @@
     <div class="sidebar" data-background-color="white">
         <div class="sidebar-logo">
             <div class="logo-header" data-background-color="white">
-                <div class="logo">
-                    <img src="{{ url('/') }}/img/logo_light.svg" class="navbar-brand" height="100" alt=""/>
+                <div class="logo d-flex justify-content-center w-100">
+                    <img src="{{ url('/') }}/img/logo_light.png" class="navbar-brand" height="50" alt=""/>
                 </div>
-                
                 <div class="nav-toggle">
                     <button class="btn btn-toggle toggle-sidebar">
                         <i class="gg-menu-right"></i>
@@ -91,7 +90,7 @@
             <div class="main-header-logo">
                 <div class="logo-header" data-background-color="white">
                     <div class="logo">
-                        <img src="{{ url('/') }}/img/logo_light.svg" class="navbar-brand" alt=""/>
+                        <img src="{{ url('/') }}/img/logo_light.png" class="navbar-brand" height="40" alt=""/>
                     </div>
                     <div class="nav-toggle">
                         <button class="btn btn-toggle toggle-sidebar">
