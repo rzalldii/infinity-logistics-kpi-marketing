@@ -209,7 +209,7 @@ $(document).ready(function () {
         window.location.href = currentUrl + "?period=" + period;
     });
     function formatRupiah(angka) {
-        if (!angka) return '';
+        if (angka === null || angka === undefined || angka === '') return '';
         var number_string = angka.toString().replace(/[^,\d]/g, ''),
             split   = number_string.split(','),
             sisa    = split[0].length % 3,
@@ -227,13 +227,6 @@ $(document).ready(function () {
         var cleanValue = value.replace(/\./g, ''); 
         $('#target_profit_real').val(cleanValue);
         $(this).val(formatRupiah(value));
-    });
-    var initialValue = $('#target_profit_real').val();
-    if (initialValue) {
-        $('#target_profit').val(formatRupiah(initialValue));
-    }
-    $('#target_profit').on('input', function() {
-       this.value = this.value.replace(/[^0-9.]/g, '');
     });
     $('#saveBtn').click(function (e) {
         e.preventDefault();

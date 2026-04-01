@@ -122,7 +122,7 @@ class RatesExport implements FromCollection, WithHeadings, WithMapping, WithStyl
                 $sheet->setAutoFilter('A1:' . $lastColumn . $highestRow);
                 $sheet->freezePane('A2');
                 $footerRow = $highestRow + 2;
-                $totalData = $highestRow - 1; 
+                $totalData = $this->rates->count();
                 $sheet->setCellValue('A' . $footerRow, 'Total Data: ' . $totalData . ' Rates');
                 $sheet->mergeCells('A' . $footerRow . ':D' . $footerRow);
                 $userName = Auth::check() ? Auth::user()->name : 'System';

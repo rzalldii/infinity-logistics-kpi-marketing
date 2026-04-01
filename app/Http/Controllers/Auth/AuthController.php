@@ -26,9 +26,12 @@ class AuthController extends Controller
         $fieldType = filter_var($loginField, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
         if (Auth::attempt([$fieldType => $loginField, 'password' => $password])) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            return redirect()->intended(route('dashboard.index'))
+                ->with('toast_success', 'Logged in successfully.');
         }
-        return back()->withErrors(['login'])->withInput();
+        return back()
+            ->with('login_failed', true)
+            ->withInput();
     }
 
     public function logout(Request $request): RedirectResponse
@@ -36,6 +39,7 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('login');
+        return redirect()->route('login')
+            ->with('toast_success', 'Logged out successfully.');
     }
 }

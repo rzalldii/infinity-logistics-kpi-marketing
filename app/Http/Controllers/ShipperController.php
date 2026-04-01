@@ -15,11 +15,10 @@ class ShipperController extends Controller
 {
     public function index(Request $request)
     {
+        $shippers = Shipper::latest()->get();
         if ($request->ajax()) {
-            $shippers = Shipper::latest()->get();
             return response()->json($shippers);
         }
-        $shippers = Shipper::latest()->get();
         $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('shippers.index', compact('shippers', 'users'));
     }
@@ -63,6 +62,9 @@ class ShipperController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $shipper = Shipper::findOrFail($id);
+        if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
+            return response()->json(null, 403);
+        }
         $validated = $request->validate([
             'shipper_name' => 'required|string',
             'shipper_concept' => 'required|in:NEW SHIPPER,EXISTING SHIPPER',
@@ -78,11 +80,6 @@ class ShipperController extends Controller
             'commodity' => 'required|string',
             'notes' => 'nullable|string',
         ]);
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
-                return response()->json(null, 403);
-            }
-        }
         $exists = Shipper::where('shipper_name', $validated['shipper_name'])
             ->where('shipper_type', $validated['shipper_type'])
             ->where('shipper_concept', $validated['shipper_concept'])
@@ -99,10 +96,8 @@ class ShipperController extends Controller
     public function destroy($id): JsonResponse
     {
         $shipper = Shipper::findOrFail($id);
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
-                return response()->json(null, 403);
-            }
+        if (Auth::user()->isMarketing() && $shipper->user_id !== Auth::id()) {
+            return response()->json(null, 403);
         }
         $shipper->delete();
         return response()->json(null, 204);
@@ -117,6 +112,9 @@ class ShipperController extends Controller
                 $query->where('user_id', Auth::id());
                 $filterInfo[] = "SCOPE : My Data";
             } elseif (is_numeric($request->data)) {
+                if (Auth::user()->isMarketing() && $request->data != Auth::id()) {
+                    abort(403);
+                }
                 $query->where('user_id', $request->data);
                 $user = User::find($request->data);
                 $userName = $user ? $user->name : $request->data;

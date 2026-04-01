@@ -43,7 +43,7 @@ Touch Shippers | Key Perfomance Indicator Marketing
                                                     <div class="form-group form-group-default">
                                                         <label class="form-label" for="shipper_name">Shipper Name <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <select class="form-select" id="shipper_prefix" style="max-width: 60px;" required>
+                                                            <select class="form-select" id="shipper_prefix" style="max-width: 60px;">
                                                                 <option value="PT">PT</option>
                                                                 <option value="CV">CV</option>
                                                                 <option value="UD">UD</option>
@@ -158,7 +158,7 @@ Touch Shippers | Key Perfomance Indicator Marketing
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
-                                        <h5 class="modal-title" id="modalTitle">
+                                        <h5 class="modal-title">
                                             <span class="fw-mediumbold">Detail</span>
                                             <span class="fw-light">Shipper</span>
                                         </h5>
@@ -507,14 +507,7 @@ $(document).ready(function () {
         } else {
             notOrderableColumns = [1, 2, 3, 4, 6, 7, 11, 12, 13];
         }
-        var hiddenColumns;
-        if (isAdmin) {
-            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 12];
-        } else if (hasActionColumn) {
-            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 12];
-        } else {
-            hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 12];
-        }
+        var hiddenColumns = [4, 5, 6, 7, 8, 9, 10, 12];
         var table = $('#multi-filter-select').DataTable({
             pageLength: 10,
             autoWidth: false,
@@ -563,6 +556,7 @@ $(document).ready(function () {
             },
         });
         table.on('draw', function () {
+            $('[data-bs-toggle="tooltip"]').tooltip('dispose');
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
         function checkFilters() {
@@ -637,6 +631,7 @@ $(document).ready(function () {
     }
     $('#ToggleColumns').on('click', function (e) {
         e.preventDefault();
+        if (!table) return;
         var $btn = $(this);
         var isHidden = !table.column(5).visible();
         table.columns([5, 8, 9, 10]).visible(isHidden);

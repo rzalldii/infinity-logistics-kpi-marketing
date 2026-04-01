@@ -12,7 +12,7 @@
     <link rel="manifest" href="{{ url('/') }}/manifest.json">
 
     <!-- Favicons -->
-    <link href="{{ url('/') }}/img/favicon.ico" rel="icon" alt="Icon Infinity">
+    <link href="{{ url('/') }}/img/favicon.ico" rel="icon">
 
     <!-- Fonts and icons -->
     <script src="{{ url('/') }}/js/plugin/webfont/webfont.min.js"></script>
@@ -60,12 +60,12 @@
                             @endif
                             <div class="mb-3">
                                 <label for="login" class="form-label">Name or Email</label>
-                                <input type="text" name="login" class="form-control" value="{{ old('login') }}" required>
+                                <input type="text" id="login" name="login" class="form-control" value="{{ old('login') }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <div style="position: relative;">
-                                    <input type="password" name="password" class="form-control" required>
+                                    <input type="password" id="password" name="password" class="form-control" required>
                                     <i class="fa fa-eye" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
                                 </div>
                             </div>
@@ -79,7 +79,7 @@
                         </form>
                     </div>
                     <div class="card-footer bg-transparent text-center text-muted border-0">
-                        <small>Copyright © 2025 <strong>PT. INFINITY LOGISTICS INDONESIA</strong> All Rights Reserved.</small>
+                        <small>Copyright © {{ date('Y') }} <strong>PT. INFINITY LOGISTICS INDONESIA</strong> All Rights Reserved.</small>
                     </div>
                 </div>
             </div>
@@ -101,16 +101,34 @@
     <script src="{{ url('/') }}/js/plugin/select2/select2.full.min.js"></script>
     <script src="{{ url('/') }}/js/plugin/sweetalert2/sweetalert2.all.min.js"></script>
     <script src="{{ url('/') }}/js/kaiadmin.min.js"></script>
-    <script src="{{ url('/') }}/sw.js'"></script>
+    <script src="{{ url('/') }}/sw.js"></script>
     <script>
     if (!navigator.serviceWorker.controller) {
-        navigator.serviceWorker.register("/sw.js").then(function (reg) {
-            console.log("Service worker registered: " + reg.scope);
+        navigator.serviceWorker.register("/sw.js").then(function(reg) {
+            console.log("Service Worker Registered:", reg.scope);
         });
     }
     </script>
     <script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
     $(document).ready(function() {
+        @if(session('toast_success'))
+            Toast.fire({ icon: 'success', title: '{{ session('toast_success') }}' });
+        @endif
+        @if(session('login_failed'))
+            Swal.fire({
+                title: 'Invalid Credentials!',
+                text: 'Name/email or password is incorrect.',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+        @endif
         $('#togglePassword').on('click', function() {
             const passwordField = $('input[name="password"]');
             const eyeIcon = $(this);
@@ -122,16 +140,9 @@
                 eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
             }
         });
-    });
-    @if($errors->any())
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Credentials!',
-            confirmButtonColor: '#d33'
+        $('#loginForm').on('submit', function() {
+            $('#loginBtn').html('<i class="fas fa-spinner fa-spin"></i> Signing in...').prop('disabled', true);
         });
-    @endif
-    $('#loginForm').on('submit', function() {
-        $('#loginBtn').html('<i class="fas fa-spinner fa-spin"></i> Signing in...').prop('disabled', true);
     });
     </script>
 </body>

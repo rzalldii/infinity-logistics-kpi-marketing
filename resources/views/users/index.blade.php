@@ -48,7 +48,7 @@ User Management | Key Perfomance Indicator Marketing
                                                         <label class="form-label" for="password">Password <span class="text-danger" id="passwordRequired">*</span></label>
                                                         <div class="position-relative">
                                                             <input type="password" class="form-control" name="password" id="password" required/>
-                                                            <button type="button" class="btn btn-sm position-absolute end-0 top-50 translate-middle-y me-2" id="togglePassword" style="display: none; background: transparent; border: none; padding: 0; z-index: 10;">
+                                                            <button type="button" class="btn btn-sm position-absolute end-0 top-50 translate-middle-y me-2" id="togglePassword" style="background: transparent; border: none; padding: 0; z-index: 10;">
                                                                 <i class="fas fa-eye" id="toggleIcon"></i>
                                                             </button>
                                                         </div>
@@ -85,7 +85,7 @@ User Management | Key Perfomance Indicator Marketing
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table id="multi-filter-select" class="display table table-striped table-hover table-bordered">
+                            <table class="display table table-striped table-hover table-bordered">
                                 <thead class="text-center">
                                     <tr>
                                         <th>NAME</th>
@@ -102,7 +102,7 @@ User Management | Key Perfomance Indicator Marketing
                                         <td>{{ $user->role }}</td>
                                         <td>
                                             @if($user->id !== Auth::id())
-                                            @if(!$user->is_primary || $user->id === Auth::id())
+                                            @if(!$user->is_primary)
                                             <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
@@ -117,7 +117,7 @@ User Management | Key Perfomance Indicator Marketing
                                             </button>
                                             @endif
                                             @else
-                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-primary="{{ $user->is_primary ? 'true' : 'false' }}" data-bs-toggle="tooltip" title="Edit">
+                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             @endif
@@ -142,6 +142,7 @@ $(document).ready(function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+    $('[data-bs-toggle="tooltip"]').tooltip();
     $('#togglePassword').click(function() {
         const passwordField = $('#password');
         const toggleIcon = $('#toggleIcon');
@@ -154,7 +155,6 @@ $(document).ready(function () {
         }
     });
     $('#createNewUser').click(function () {
-        $('#saveBtn').val('create-user');
         $('#user_id').val('');
         $('#userForm').trigger('reset');
         $('#modalTitle').html('<span class="fw-mediumbold">New</span> <span class="fw-light">User</span>');
@@ -237,8 +237,18 @@ $(document).ready(function () {
             reverseButtons: false
         }).then((result) => {
             if (result.isConfirmed) {
+                var isEditMode = $('#user_id').val() !== '';
                 $('#userForm').trigger('reset');
-                $('#container').val('');
+                if (isEditMode) {
+                    $('#password').prop('required', false).attr('type', 'password');
+                    $('#passwordRequired').hide();
+                    $('#passwordHelp').show();
+                } else {
+                    $('#password').prop('required', true).attr('type', 'password');
+                    $('#passwordRequired').show();
+                    $('#passwordHelp').hide();
+                }
+                $('#toggleIcon').removeClass('fa-eye-slash').addClass('fa-eye');
                 Swal.fire({
                     icon: 'success',
                     title: 'Form Cleared Successfully!',
@@ -260,7 +270,6 @@ $(document).ready(function () {
         $.get("{{ route('users.index') }}" + '/' + user_id + '/edit', function (data) {
             Swal.close();
             $('#modalTitle').html('<span class="fw-mediumbold">Edit</span> <span class="fw-light">User</span>');
-            $('#saveBtn').val('edit-user');
             $('#userModal').modal('show');
             $('#user_id').val(data.id);
             $('#name').val(data.name);
@@ -282,7 +291,6 @@ $(document).ready(function () {
     });
     $('body').on('click', '.deleteBtn', function () {
         var user_id = $(this).data('id');
-        var row = $('#row-' + user_id);        
         Swal.fire({
             title: 'Delete This Data?',
             icon: 'warning',
@@ -305,14 +313,13 @@ $(document).ready(function () {
                     type: 'DELETE',
                     url: "{{ route('users.index') }}" + '/' + user_id,
                     success: function (response) {
-                        row.fadeOut(300, function() {
-                            table.row($(this)).remove().draw(false);
-                        });
                         Swal.fire({
                             icon: 'success',
                             title: 'Data Deleted Successfully!',
                             showConfirmButton: false,
                             timer: 1500
+                        }).then(function() {
+                            location.reload();
                         });
                     },
                     error: function (xhr) {

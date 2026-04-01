@@ -30,7 +30,7 @@ class SummaryController extends Controller
                 $currentYearMonths[$val] = $label;
             } else {
                 if (!isset($pastYears[(string)$d->year])) {
-                    $pastYears[(string)$d->year] = "Summary (" . $d->year . ")";
+                    $pastYears[(string)$d->year] = "Summary " . $d->year;
                 }
             }
         }
@@ -39,7 +39,7 @@ class SummaryController extends Controller
             $currentYearMonths = [$currentMonthVal => now()->format('F')] + $currentYearMonths;
         }
         $filterOptions = $currentYearMonths;
-        $filterOptions[(string)$currentYear] = "Summary (" . $currentYear . ")";
+        $filterOptions[(string)$currentYear] = "Summary " . $currentYear;
         foreach ($pastYears as $yearVal => $yearLabel) {
             $filterOptions[$yearVal] = $yearLabel;
         }
@@ -49,7 +49,7 @@ class SummaryController extends Controller
             $selectedMonth = 'Year ' . $period;
             $isCurrentMonth = false;
         } else {
-            $selectedMonth = Carbon::createFromFormat('Y-m', $period)->format('F Y');
+            $selectedMonth = Carbon::createFromFormat('Y-m-d', $period . '-01')->format('F Y');
             $isCurrentMonth = ($period === now()->format('Y-m'));
         }
         if ($request->ajax()) {
@@ -95,8 +95,8 @@ class SummaryController extends Controller
             $endOfPeriod = Carbon::createFromFormat('Y', $period)->endOfYear();
             $multiplier = 12;
         } else {
-            $startOfPeriod = Carbon::createFromFormat('Y-m', $period)->startOfMonth();
-            $endOfPeriod = Carbon::createFromFormat('Y-m', $period)->endOfMonth();
+            $startOfPeriod = Carbon::createFromFormat('Y-m-d', $period . '-01')->startOfMonth();
+            $endOfPeriod = Carbon::createFromFormat('Y-m-d', $period . '-01')->endOfMonth();
             $multiplier = 1;
         }
         $performanceData = [];
@@ -175,7 +175,7 @@ class SummaryController extends Controller
         if (strlen($period) === 4) {
             $selectedMonth = 'Year ' . $period;
         } else {
-            $selectedMonth = Carbon::createFromFormat('Y-m', $period)->format('F Y');
+            $selectedMonth = Carbon::createFromFormat('Y-m-d', $period . '-01')->format('F Y');
         }
         return Excel::download(
             new SummariesExport($performanceData, $selectedMonth),

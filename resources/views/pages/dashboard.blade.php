@@ -36,7 +36,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-sm-6 col-lg-4">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
-                        <a href="/rates">
+                        <a href="{{ route('rates.index') }}">
                             <span class="stamp stamp-md bg-info me-3">
                                 <i class="fas fa-dollar-sign"></i>
                             </span>
@@ -53,7 +53,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-sm-6 col-lg-4">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
-                        <a href="/shippers">
+                        <a href="{{ route('shippers.index') }}">
                             <span class="stamp stamp-md bg-primary me-3">
                                 <i class="fas fa-ship"></i>
                             </span>
@@ -70,7 +70,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-sm-6 col-lg-4">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
-                        <a href="/activities">
+                        <a href="{{ route('activities.index') }}">
                             <span class="stamp stamp-md bg-secondary me-3">
                                 <i class="fas fa-book-open"></i>
                             </span>
@@ -419,10 +419,10 @@ Dashboard | Key Perfomance Indicator Marketing
                         <h3 class="mb-3">Welcome to Key Perfomance Indicator Marketing</h3>
                         <p class="text-muted">You have view-only access to rates and shippers data.</p>
                         <div class="mt-4">
-                            <a href="/rates" class="btn btn-primary me-2">
+                            <a href="{{ route('rates.index') }}" class="btn btn-primary me-2">
                                 <i class="fas fa-dollar-sign"></i> View Checking Rates
                             </a>
-                            <a href="/shippers" class="btn btn-secondary">
+                            <a href="{{ route('shippers.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-ship"></i> View Touch Shippers
                             </a>
                         </div>

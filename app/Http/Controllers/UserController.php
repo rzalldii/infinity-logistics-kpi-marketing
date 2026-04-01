@@ -5,17 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Hash;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $users = User::orderBy('name', 'asc')->get();
         if ($request->ajax()) {
-            $users = User::orderBy('name', 'asc')->get();
             return response()->json($users);
         }
-        $users = User::orderBy('name', 'asc')->get();
         return view('users.index', compact('users'));
     }
 
@@ -35,7 +35,7 @@ class UserController extends Controller
     public function edit($id): JsonResponse
     {
         $user = User::findOrFail($id);
-        return response()->json($user);
+        return response()->json($user->makeHidden(['password']));
     }
 
     public function update(Request $request, $id): JsonResponse
@@ -59,6 +59,9 @@ class UserController extends Controller
     public function destroy($id): JsonResponse
     {
         $user = User::findOrFail($id);
+        if ($user->id === Auth::id()) {
+            return response()->json(null, 422);
+        }
         $user->delete();
         return response()->json(null, 204);
     }

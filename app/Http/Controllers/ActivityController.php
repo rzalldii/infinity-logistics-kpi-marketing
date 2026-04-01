@@ -24,12 +24,13 @@ class ActivityController extends Controller
                 $query->where('user_id', Auth::id());
             }
         }
-        $closedActivitiesIds = Activity::select('id', 'parent_id', 'status_type')
-            ->whereIn('status_type', ['CLOSING', 'FAILED'])
-            ->get()
-            ->map(function ($item) {
-                return $item->parent_id ?? $item->id;
-            })
+        $closedActivitiesQuery = Activity::select('id', 'parent_id', 'status_type')
+            ->whereIn('status_type', ['CLOSING', 'FAILED']);
+        if (Auth::user()->isMarketing()) {
+            $closedActivitiesQuery->where('user_id', Auth::id());
+        }
+        $closedActivitiesIds = $closedActivitiesQuery->get()
+            ->map(fn($item) => $item->parent_id ?? $item->id)
             ->unique()->toArray();
         $allUserActivities = Activity::select('id', 'parent_id', 'sequence')
             ->when(Auth::user()->isMarketing(), function($q) {
@@ -45,10 +46,10 @@ class ActivityController extends Controller
             })
             ->values()
             ->toArray();
-        if ($request->ajax()) {
-            return response()->json($query->get());
-        }
         $activities = $query->get();
+        if ($request->ajax()) {
+            return response()->json($activities);
+        }
         $shippers = Shipper::orderBy('shipper_name')->get();
         $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('activities.index', compact('activities', 'shippers', 'users', 'closedActivitiesIds', 'latestActivityIds'));
@@ -81,6 +82,10 @@ class ActivityController extends Controller
             $validated['sequence']  = $nextSequence;
         }
         $activity = Activity::create($validated);
+        if ((Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) && $request->filled('created_date')) {
+            $activity->created_at = Carbon::parse($request->created_date);
+            $activity->saveQuietly();
+        }
         if ($activity->status_type === 'CLOSING') {
             $shipper = Shipper::find($validated['shipper_id']);
             if ($shipper && $shipper->shipper_concept === 'NEW SHIPPER') {
@@ -164,17 +169,14 @@ class ActivityController extends Controller
             }
         }
         if ($oldShipperId != $activity->shipper_id) {
-             $oldShipper = Shipper::find($oldShipperId);
-             if ($oldShipper && $oldStatus === 'CLOSING') {
-                 $hasOtherClosingsOld = Activity::where('shipper_id', $oldShipper->id)
+            $oldShipper = Shipper::find($oldShipperId);
+            if ($oldShipper && $oldStatus === 'CLOSING') {
+                $hasOtherClosingsOld = Activity::where('shipper_id', $oldShipper->id)
                     ->where('status_type', 'CLOSING')
                     ->exists();
-                 if (!$hasOtherClosingsOld) {
+                if (!$hasOtherClosingsOld) {
                     $oldShipper->update(['shipper_concept' => 'NEW SHIPPER']);
-                 }
-             }
-             if ($activity->status_type === 'CLOSING' && $currentShipper->shipper_concept === 'NEW SHIPPER') {
-                $currentShipper->update(['shipper_concept' => 'EXISTING SHIPPER']);
+                }
             }
         }
         return response()->json($activity, 200);
@@ -211,6 +213,9 @@ class ActivityController extends Controller
     public function export(Request $request)
     {
         $query = Activity::query();
+        if (Auth::user()->isMarketing()) {
+            $query->where('user_id', Auth::id());
+        }
         $filterInfo = [];
         if ($request->filled('date_from') && $request->filled('date_to')) {
             $query->whereDate('created_at', '>=', $request->date_from)
@@ -229,7 +234,6 @@ class ActivityController extends Controller
             }
         }
         if (Auth::user()->isMarketing()) {
-            $query->where('user_id', Auth::id());
             if (!in_array("SCOPE : My Data", $filterInfo)) {
                 $filterInfo = array_filter($filterInfo, fn($v) => !str_contains($v, 'SCOPE'));
                 $filterInfo[] = "SCOPE : My Data";

@@ -230,7 +230,7 @@ Report Activities | Key Perfomance Indicator Marketing
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
-                                        <h5 class="modal-title" id="modalTitle">
+                                        <h5 class="modal-title">
                                             <span class="fw-mediumbold">Detail</span>
                                             <span class="fw-light">Activity</span>
                                         </h5>
@@ -567,11 +567,6 @@ $(document).ready(function () {
     var activitiesData = @json($activities);
     var table;
     var isTableReady = false;
-    function isSameDate(date1, date2) {
-        return date1.getFullYear() === date2.getFullYear() &&
-               date1.getMonth() === date2.getMonth() &&
-               date1.getDate() === date2.getDate();
-    }
     function formatDate(date) {
         var d = new Date(date),
             month = '' + (d.getMonth() + 1),
@@ -715,12 +710,7 @@ $(document).ready(function () {
         } else {
             notOrderableColumns = [6, 7, 8, 9, 10, 11, 12, 13, 14];
         }
-        var hiddenColumns;
-        if (isAdmin) {
-            hiddenColumns = [3, 4, 5, 7, 9, 10, 11, 12];
-        } else {
-            hiddenColumns = [3, 4, 5, 7, 9, 10, 11, 12];
-        }
+        var hiddenColumns = [3, 4, 5, 7, 9, 10, 11, 12];
         table = $('#multi-filter-select').DataTable({
             pageLength: 10,
             autoWidth: false,
@@ -1447,15 +1437,12 @@ $(document).ready(function () {
                     type: 'DELETE',
                     url: "{{ route('activities.index') }}" + '/' + activity_id,
                     success: function (response) {
-                        if (isTableReady && table) {
-                            dtRow.remove();
-                            table.draw(false);
-                        }
-                        $row.fadeOut(300);
+                        $row.fadeOut(300, function() {
+                            dtRow.remove().draw(false);
+                        });
                         activitiesData = activitiesData.filter(function(activity) {
                             return activity.id !== activity_id;
                         });
-                        var currentFilter = $('#filterUser').val();
                         Swal.fire({
                             icon: 'success',
                             title: 'Data Deleted Successfully!',

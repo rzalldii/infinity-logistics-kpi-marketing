@@ -103,7 +103,11 @@ Audit Logs | Key Perfomance Indicator Marketing
                                         </td>
                                         <td>
                                             @if($log['auditable_id'] != 0)
-                                            <button type="button" class="btn btn-sm btn-info viewAudit" data-type="{{ $log['auditable_type'] }}" data-action="{{ $log['action'] }}" data-old="{{ json_encode($log['old_values']) }}" data-new="{{ json_encode($log['new_values']) }}">
+                                            <button type="button" class="btn btn-sm btn-info viewAudit"
+                                                data-type="{{ class_basename($log['auditable_type']) }}"
+                                                data-action="{{ $log['action'] }}"
+                                                data-old="{{ json_encode($log['old_values']) }}"
+                                                data-new="{{ json_encode($log['new_values']) }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             @endif
@@ -176,19 +180,20 @@ $(document).ready(function () {
             $('#clearFilterRow').fadeOut();
         }
     }
+    var activeUserFilter = null;
     $('#filterUser').on('change', function() {
         var selectedUserId = $(this).val();
-        $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
-            return fn.name !== 'userFilter';
-        });
+        if (activeUserFilter) {
+            var idx = $.fn.dataTable.ext.search.indexOf(activeUserFilter);
+            if (idx > -1) $.fn.dataTable.ext.search.splice(idx, 1);
+            activeUserFilter = null;
+        }
         if (selectedUserId) {
-            var userFilter = function(settings, data, dataIndex) {
+            activeUserFilter = function(settings, data, dataIndex) {
                 var row = table.row(dataIndex).node();
-                var rowUserId = $(row).data('user-id');
-                return rowUserId == selectedUserId;
+                return $(row).data('user-id') == selectedUserId;
             };
-            userFilter.name = 'userFilter';
-            $.fn.dataTable.ext.search.push(userFilter);
+            $.fn.dataTable.ext.search.push(activeUserFilter);
         }
         table.draw();
         checkFilters();
@@ -206,10 +211,12 @@ $(document).ready(function () {
         }
     });
     $('#clearFilters').on('click', function() {
+        if (activeUserFilter) {
+            var idx = $.fn.dataTable.ext.search.indexOf(activeUserFilter);
+            if (idx > -1) $.fn.dataTable.ext.search.splice(idx, 1);
+            activeUserFilter = null;
+        }
         $('#filterUser, #filterType, #filterAction').val('');
-        $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
-            return fn.name !== 'userFilter';
-        });
         table.order([0, 'desc']);
         table.search('').columns().search('').draw();
         checkFilters();
@@ -242,12 +249,13 @@ $(document).ready(function () {
             ]
         };
         function formatLabel(key) {
-            return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            var label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return $('<div>').text(label).html();
         }
         function formatVal(val) {
             if (val === null || val === undefined || val === '') return '—';
             if (typeof val === 'object') return JSON.stringify(val);
-            return val;
+            return $('<div>').text(String(val)).html();
         }
         var columnsToShow = fieldOrder[type] ? fieldOrder[type] : Object.keys({...oldVal, ...newVal});
         $.each(columnsToShow, function(i, key) {
@@ -279,7 +287,8 @@ $(document).ready(function () {
                 </tr>
             `);
         });
-        var myModal = new bootstrap.Modal(document.getElementById('Viewaudit'));
+        var modalEl = document.getElementById('Viewaudit');
+        var myModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
         myModal.show();
     });
 });

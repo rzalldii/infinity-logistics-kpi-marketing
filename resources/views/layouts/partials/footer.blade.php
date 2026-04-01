@@ -3,7 +3,7 @@
                 <nav class="pull-left">
                     <ul class="nav">
                         <li class="nav-item">
-                            Copyright © 2025
+                            Copyright © {{ date('Y') }}
                         </li>
                     </ul>
                 </nav>

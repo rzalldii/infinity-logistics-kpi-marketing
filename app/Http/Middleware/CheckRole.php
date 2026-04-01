@@ -12,7 +12,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return redirect('login');
+            return redirect()->route('login');
         }
         $user = Auth::user();
         if ($user->isSuperAdmin()) {

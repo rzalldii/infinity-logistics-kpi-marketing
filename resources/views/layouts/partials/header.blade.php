@@ -10,7 +10,7 @@
     <link rel="manifest" href="{{ url('/') }}/manifest.json">
 
     <!-- Favicons -->
-    <link href="{{ url('/') }}/img/favicon.ico" rel="icon" alt="Icon Infinity">
+    <link href="{{ url('/') }}/img/favicon.ico" rel="icon">
 
     <!-- Fonts and icons -->
     <script src="{{ url('/') }}/js/plugin/webfont/webfont.min.js"></script>

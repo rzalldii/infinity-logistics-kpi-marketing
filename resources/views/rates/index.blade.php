@@ -120,7 +120,7 @@ Checking Rates | Key Perfomance Indicator Marketing
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
-                                        <h5 class="modal-title" id="modalTitle">
+                                        <h5 class="modal-title">
                                             <span class="fw-mediumbold">Detail</span>
                                             <span class="fw-light">Rate</span>
                                         </h5>
@@ -429,14 +429,7 @@ $(document).ready(function () {
         } else {
             notOrderableColumns = [0, 1, 5, 6, 8, 9];
         }
-        var hiddenColumns;
-        if (isAdmin) {
-            hiddenColumns = [2, 6, 8];
-        } else if (hasActionColumn) {
-            hiddenColumns = [2, 6, 8];
-        } else {
-            hiddenColumns = [2, 6, 8];
-        }
+        var hiddenColumns = [2, 6, 8];
         var table = $('#multi-filter-select').DataTable({
             pageLength: 10,
             autoWidth: false,
@@ -508,6 +501,7 @@ $(document).ready(function () {
             },
         });
         table.on('draw', function () {
+            $('[data-bs-toggle="tooltip"]').tooltip('dispose');
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
         function checkFilters() {
@@ -584,6 +578,7 @@ $(document).ready(function () {
     }
     $('#ToggleColumns').on('click', function (e) {
         e.preventDefault();
+        if (!table) return;
         var $btn = $(this);
         var isHidden = !table.column(2).visible();
         table.columns([2, 6]).visible(isHidden);
@@ -636,8 +631,8 @@ $(document).ready(function () {
             $('#view_pol').val(data.pol || '—');
             $('#view_pod').val(data.pod || '—');
             $('#view_container_type').val(data.container_type || '—');
-            $('#view_container_20').val(formatRupiah(data.container_20 || '—'));
-            $('#view_container_40').val(formatRupiah(data.container_40 || '—'));
+            $('#view_container_20').val(data.container_20 ? formatRupiah(data.container_20) : '—');
+            $('#view_container_40').val(data.container_40 ? formatRupiah(data.container_40) : '—');
             $('#view_liner').val(data.liner || '—');
             $('#view_free_time').val(data.free_time || '—');
             if (data.valid_date) {

@@ -15,7 +15,7 @@ class AuditController extends Controller
         if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
             $auditLogsQuery->where('user_id', Auth::id());
         }
-        $auditLogs = $auditLogsQuery->get();
+        $auditLogs = $auditLogsQuery->paginate(50);
         $logs = $auditLogs->map(function($log) {
             $type = match($log->auditable_type) {
                 'Rate' => 'Checking Rates',

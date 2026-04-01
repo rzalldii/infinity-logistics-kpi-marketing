@@ -20,7 +20,7 @@ Route::post('post-login', [AuthController::class, 'postLogin'])
     ->name('login.post');
 
 Route::middleware('auth')->group(function () {
-    Route::get('logout', [AuthController::class, 'logout'])
+    Route::post('logout', [AuthController::class, 'logout'])
         ->name('logout');
 
     Route::get('/', [DashboardController::class, 'index'])

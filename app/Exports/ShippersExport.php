@@ -127,7 +127,7 @@ class ShippersExport implements FromCollection, WithHeadings, WithMapping, WithS
                 $sheet->setAutoFilter('A1:' . $lastColumn . $highestRow);
                 $sheet->freezePane('A2');
                 $footerRow = $highestRow + 2;
-                $totalData = $highestRow - 1; 
+                $totalData = $this->shippers->count();
                 $sheet->setCellValue('A' . $footerRow, 'Total Data: ' . $totalData . ' Shippers');
                 $sheet->mergeCells('A' . $footerRow . ':F' . $footerRow);
                 $userName = Auth::check() ? Auth::user()->name : 'System';

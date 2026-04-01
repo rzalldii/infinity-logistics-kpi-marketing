@@ -16,11 +16,10 @@ class RateController extends Controller
 {
     public function index(Request $request)
     {
+        $rates = Rate::latest()->get();
         if ($request->ajax()) {
-            $rates = Rate::latest()->get();
             return response()->json($rates);
         }
-        $rates = Rate::latest()->get();
         $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('rates.index', compact('rates', 'users'));
     }
@@ -38,10 +37,8 @@ class RateController extends Controller
             'valid_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
-        $pols = array_map('trim', explode(',', $validated['pol']));
-        $pods = array_map('trim', explode(',', $validated['pod']));
-        $pols = array_filter($pols, fn($item) => !empty($item));
-        $pods = array_filter($pods, fn($item) => !empty($item));
+        $pols = array_values(array_filter(array_map('trim', explode(',', $validated['pol'])), fn($item) => !empty($item)));
+        $pods = array_values(array_filter(array_map('trim', explode(',', $validated['pod'])), fn($item) => !empty($item)));
         $createdRates = [];
         $duplicateCount = 0;
         foreach ($pols as $pol) {
@@ -88,6 +85,9 @@ class RateController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $rate = Rate::findOrFail($id);
+        if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
+            return response()->json(null, 403);
+        }
         $validated = $request->validate([
             'pol' => 'required|string',
             'pod' => 'required|string',
@@ -99,11 +99,6 @@ class RateController extends Controller
             'valid_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
-                return response()->json(null, 403);
-            }
-        }
         $exists = Rate::where('pol', $validated['pol'])
             ->where('pod', $validated['pod'])
             ->where('container_type', $validated['container_type'])
@@ -121,10 +116,8 @@ class RateController extends Controller
     public function destroy($id): JsonResponse
     {
         $rate = Rate::findOrFail($id);
-        if (!Auth::user()->isSuperAdmin() && !Auth::user()->isAdmin()) {
-            if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
-                return response()->json(null, 403);
-            }
+        if (Auth::user()->isMarketing() && $rate->user_id !== Auth::id()) {
+            return response()->json(null, 403);
         }
         $rate->delete();
         return response()->json(null, 204);
@@ -139,6 +132,9 @@ class RateController extends Controller
                 $query->where('user_id', Auth::id());
                 $filterInfo[] = "SCOPE : My Data";
             } elseif (is_numeric($request->data)) {
+                if (Auth::user()->isMarketing() && $request->data != Auth::id()) {
+                    abort(403);
+                }
                 $query->where('user_id', $request->data);
                 $user = User::find($request->data);
                 $userName = $user ? $user->name : $request->data;
