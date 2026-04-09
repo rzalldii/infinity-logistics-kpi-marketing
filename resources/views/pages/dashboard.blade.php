@@ -93,9 +93,9 @@ Dashboard | Key Perfomance Indicator Marketing
                     </div>
                     <div class="card-body">
                         <div>
-                            <p class="text-muted">Target : {{ $performance['activities']['performance']['target'] }}</p>
-                            <p class="text-muted">Actual : {{ $performance['activities']['performance']['actual'] }}</p>
-                            <p class="text-muted">Remaining : {{ $performance['activities']['performance']['remaining'] }}</p>
+                            <p class="text-muted">Target : {{ number_format((float)$performance['activities']['performance']['target'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Actual : {{ number_format((float)$performance['activities']['performance']['actual'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Remaining : {{ number_format((float)$performance['activities']['performance']['remaining'], 0, ',', '.') }}</p>
                         </div>
                         @php
                             $actPercent = $performance['activities']['performance']['percentage'];
@@ -124,9 +124,9 @@ Dashboard | Key Perfomance Indicator Marketing
                     </div>
                     <div class="card-body">
                         <div>
-                            <p class="text-muted">Target : {{ $performance['volume']['performance']['target'] }}</p>
-                            <p class="text-muted">Actual : {{ $performance['volume']['performance']['actual'] }}</p>
-                            <p class="text-muted">Remaining : {{ $performance['volume']['performance']['remaining'] }}</p>
+                            <p class="text-muted">Target : {{ number_format((float)$performance['volume']['performance']['target'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Actual : {{ number_format((float)$performance['volume']['performance']['actual'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Remaining : {{ number_format((float)$performance['volume']['performance']['remaining'], 0, ',', '.') }}</p>
                         </div>
                         @php
                             $volPercent = $performance['volume']['performance']['percentage'];

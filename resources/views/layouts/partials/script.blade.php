@@ -26,8 +26,7 @@
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true
+        timer: 3000
     });
     $(document).ready(function() {
         @if(session('toast_success'))

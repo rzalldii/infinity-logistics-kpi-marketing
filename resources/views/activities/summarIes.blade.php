@@ -59,19 +59,19 @@ Summary Activities | Key Perfomance Indicator Marketing
                                             {{ $data['name'] }}
                                         </td>
                                         <td class="text-center">
-                                            {{ $data['activities']['performance']['actual'] }}
+                                            {{ number_format((float)$data['activities']['performance']['actual'], 0, ',', '.') }}
                                         </td>
                                         <td class="text-center">
-                                            {{ $data['activities']['performance']['remaining'] }}
+                                            {{ number_format((float)$data['activities']['performance']['remaining'], 0, ',', '.') }}
                                         </td>
                                         <td class="text-center fw-bold">
                                             {{ min($data['activities']['performance']['percentage'], 100) }}%
                                         </td>
                                         <td class="text-center">
-                                            {{ $data['volume']['performance']['actual'] }}
+                                            {{ number_format((float)$data['volume']['performance']['actual'], 0, ',', '.') }}
                                         </td>
                                         <td class="text-center">
-                                            {{ $data['volume']['performance']['remaining'] }}
+                                            {{ number_format((float)$data['volume']['performance']['remaining'], 0, ',', '.') }}
                                         </td>
                                         <td class="text-center fw-bold">
                                             {{ min($data['volume']['performance']['percentage'], 100) }}%

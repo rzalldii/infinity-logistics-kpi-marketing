@@ -239,9 +239,8 @@ $(document).ready(function () {
                 'export', 'import', 'domestic', 'commodity', 'notes'
             ],
             'Activity': [
-                'created_at', 'shipper_id', 'parent_id', 'sequence', 'activity_type',
-                'visit_date', 'status_type', 'volume_20', 'volume_40', 'other_volume',
-                'profit', 'remarks'
+                'created_at', 'shipper_name', 'activity_type', 'visit_date', 'status_type', 
+                'volume_20', 'volume_40', 'other_volume', 'profit', 'remarks'
             ],
             'User': [
                 'name', 'email', 'password', 'role', 'target_activity',
