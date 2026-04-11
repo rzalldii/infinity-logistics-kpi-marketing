@@ -108,36 +108,6 @@
             <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" data-background-color="white">
                 <div class="container-fluid">
                     <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                        <!-- <li class="nav-item topbar-icon dropdown hidden-caret">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-expanded="false" aria-haspopup="true">
-                                <i class="fa fa-bell"></i>
-                                <span class="notification">1</span>
-                            </a>
-                            <ul class="dropdown-menu notif-box animated fadeIn">
-                                <li>
-                                    <div class="dropdown-title">
-                                        You have 1 new notification
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="notif-scroll scrollbar-outer">
-                                        <div class="notif-center">
-                                            <a href="#">
-                                                <div class="notif-content">
-                                                    <span class="block"> New user registered </span>
-                                                    <span class="time">5 minutes ago</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <a class="see-all" href="javascript:void(0);">
-                                        See all notifications<i class="fa fa-angle-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li> -->
                         <li class="nav-item topbar-user dropdown hidden-caret">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                                 <div class="profile-username text-dark">
