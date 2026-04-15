@@ -15,6 +15,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $selectedUserId = $request->input('user_id');
+        $selectedYear   = (int) $request->input('year', now()->year);
         $user = Auth::user();
         $queryUserId = $selectedUserId === 'mine' ? $user->id : $selectedUserId;
         $applyUserFilter = function ($query) use ($user, $queryUserId) {
@@ -44,12 +45,17 @@ class DashboardController extends Controller
             $applyUserFilter($q);
             $currentMonth[$key] = $q->count();
         }
-        $dailyReport   = $this->getReportData('today', $queryUserId);
-        $weeklyReport  = $this->getReportData('week', $queryUserId);
-        $monthlyReport = $this->getReportData('month', $queryUserId);
-        $targetUserId = ($user->isSuperAdmin() || $user->isAdmin()) ? $queryUserId : ($user->isMarketing() ? $user->id : null);
-        $performance  = $this->getPerformanceStats($targetUserId);
-        $auditLogsQuery = Audit::orderBy('created_at', 'desc')
+        $targetUserId   = ($user->isSuperAdmin() || $user->isAdmin()) ? $queryUserId : ($user->isMarketing() ? $user->id : null);
+        $performance    = $this->getPerformanceStats($targetUserId);
+        $line           = $this->getLineChart($user, $targetUserId, $selectedYear);
+        $availableYears = Activity::selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        $dailyReport    = $this->getReportData('today', $queryUserId, $user);
+        $weeklyReport   = $this->getReportData('week', $queryUserId, $user);
+        $monthlyReport  = $this->getReportData('month', $queryUserId, $user);
+        $auditLogs      = Audit::orderBy('created_at', 'desc')
             ->limit(10)
             ->where('auditable_type', '!=', 'User')
             ->where('event', '!=', 'exported')
@@ -57,11 +63,11 @@ class DashboardController extends Controller
                 $q->where('role', '!=', 'SUPER ADMIN');
             });
         if ($user->isSuperAdmin() || $user->isAdmin()) {
-            if ($queryUserId) $auditLogsQuery->where('user_id', $queryUserId);
+            if ($queryUserId) $auditLogs->where('user_id', $queryUserId);
         } elseif ($user->isMarketing()) {
-            $auditLogsQuery->where('user_id', $user->id);
+            $auditLogs->where('user_id', $user->id);
         }
-        $logs = $auditLogsQuery->get()->map(function ($log) {
+        $logs = $auditLogs->get()->map(function ($log) {
             return [
                 'id'             => $log->id,
                 'type'           => match ($log->auditable_type) {
@@ -78,23 +84,24 @@ class DashboardController extends Controller
             ];
         });
         $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
-        return view('pages.dashboard', array_merge(
-            [
-                'totalRates'          => $totals['rates'],
-                'totalShippers'       => $totals['shippers'],
-                'totalActivities'     => $totals['activities'],
-                'ratesThisMonth'      => $currentMonth['rates'],
-                'shippersThisMonth'   => $currentMonth['shippers'],
-                'activitiesThisMonth' => $currentMonth['activities'],
-                'dailyReport'         => $dailyReport,
-                'weeklyReport'        => $weeklyReport,
-                'monthlyReport'       => $monthlyReport,
-                'logs'                => $logs,
-                'users'               => $users,
-                'selectedUserId'      => $selectedUserId,
-                'performance'         => $performance
-            ]
-        ));
+        return view('pages.dashboard', [
+            'totalRates'          => $totals['rates'],
+            'totalShippers'       => $totals['shippers'],
+            'totalActivities'     => $totals['activities'],
+            'ratesThisMonth'      => $currentMonth['rates'],
+            'shippersThisMonth'   => $currentMonth['shippers'],
+            'activitiesThisMonth' => $currentMonth['activities'],
+            'selectedUserId'      => $selectedUserId,
+            'performance'         => $performance,
+            'line'                => $line,
+            'availableYears'      => $availableYears,
+            'selectedYear'        => $selectedYear,
+            'dailyReport'         => $dailyReport,
+            'weeklyReport'        => $weeklyReport,
+            'monthlyReport'       => $monthlyReport,
+            'logs'                => $logs,
+            'users'               => $users,
+        ]);
     }
 
     private function getPerformanceStats($userId)
@@ -131,7 +138,7 @@ class DashboardController extends Controller
                     SUM(CAST(COALESCE(volume_20, 0) AS DECIMAL(10,2))) as sum_20,
                     SUM(CAST(COALESCE(volume_40, 0) AS DECIMAL(10,2))) as sum_40,
                     SUM(CASE WHEN other_volume IN ('AIR FREIGHT', 'RAIL FREIGHT', 'ROAD FREIGHT', 'EMKL', 'LCL', 'OTHER BUSINESS') THEN 1 ELSE 0 END) as count_others,
-                    SUM(CAST(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9.-]', '') AS DECIMAL(15,2))) as total_profit
+                    SUM(CAST(REPLACE(REPLACE(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9,.]', ''),'.', ''),',', '.') AS DECIMAL(15,2))) as total_profit
                 ")
                 ->first();
             $userActivity = (int)$stats->count_quote + (int)$stats->count_call + (int)$stats->count_visit;
@@ -180,7 +187,55 @@ class DashboardController extends Controller
         ];
     }
 
-    private function getReportData($period, $selectedUserId = null)
+    private function getLineChart($user, $targetUserId, $year = null)
+    {
+        $year = $year ?? now()->year;
+        $labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        $colors = ['#1d7af3','#59d05d','#f3545d','#fdaf4b','#a855f7','#14b8a6','#f97316','#ec4899','#a16207'];
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
+            $users = $targetUserId
+                ? User::where('id', $targetUserId)->get()
+                : User::whereIn('role', ['MARKETING', 'ADMIN'])->orderBy('name')->get();
+        } else {
+            $users = User::where('id', $user->id)->get();
+        }
+        $datasets = [];
+        foreach ($users as $index => $u) {
+            $results = Activity::where('user_id', $u->id)
+                ->whereYear('created_at', $year)
+                ->selectRaw("
+                    MONTH(created_at) as month,
+                    SUM(CAST(REPLACE(REPLACE(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9,.]', ''),'.', ''),',', '.') AS DECIMAL(15,2))) as total_profit
+                ")
+                ->groupBy('month')
+                ->pluck('total_profit', 'month');
+            $data = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $data[] = round((float)($results[$m] ?? 0), 2);
+            }
+            $color = $colors[$index % count($colors)];
+            $datasets[] = [
+                'label'                => $u->name,
+                'borderColor'          => $color,
+                'pointBorderColor'     => '#FFF',
+                'pointBackgroundColor' => $color,
+                'pointBorderWidth'     => 2,
+                'pointHoverRadius'     => 4,
+                'pointHoverBorderWidth'=> 1,
+                'pointRadius'          => 4,
+                'backgroundColor'      => 'transparent',
+                'fill'                 => true,
+                'borderWidth'          => 2,
+                'data'                 => $data,
+            ];
+        }
+        return [
+            'labels'   => $labels,
+            'datasets' => $datasets,
+        ];
+    }
+
+    private function getReportData($period, $selectedUserId = null, $user = null)
     {
         $query = Activity::join('shippers', 'activities.shipper_id', '=', 'shippers.id');
         if ($period === 'today') {
@@ -191,7 +246,7 @@ class DashboardController extends Controller
             $query->whereMonth('activities.created_at', now()->month)
                   ->whereYear('activities.created_at', now()->year);
         }
-        $user = Auth::user();
+        $user = $user ?? Auth::user();
         if ($user->isSuperAdmin() || $user->isAdmin()) {
             if ($selectedUserId) {
                 $query->where('activities.user_id', $selectedUserId);

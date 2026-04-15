@@ -12,7 +12,8 @@ Summary Activities | Key Perfomance Indicator Marketing
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Summary Activities</h1>
                             <button class="btn btn-success btn-round ms-auto" id="ExportExcel">
-                                <i class="fas fa-file-excel"></i> Export Excel
+                                <i class="fas fa-file-excel"></i>
+                                <span class="d-none d-lg-inline"> Export Excel</span>
                             </button>
                         </div>
                     </div>
@@ -52,7 +53,7 @@ Summary Activities | Key Perfomance Indicator Marketing
                                         <th>%</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
+                                <tbody class="text-center text-nowrap">
                                     @forelse($performanceData as $data)
                                     <tr>
                                         <td class="fw-bold">
@@ -86,15 +87,17 @@ Summary Activities | Key Perfomance Indicator Marketing
                                             {{ min($data['profit']['performance']['percentage'], 100) }}%
                                         </td>
                                         <td>
-                                            @if($isCurrentMonth)
-                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $data['user_id'] }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            @else
-                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
-                                                <i class="fas fa-lock"></i>
-                                            </button>
-                                            @endif
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                @if($isCurrentMonth)
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $data['user_id'] }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                        <i class="fas fa-lock"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty
@@ -106,7 +109,7 @@ Summary Activities | Key Perfomance Indicator Marketing
                             </table>
                         </div>
                         <div class="modal fade" id="summaryModal" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title">

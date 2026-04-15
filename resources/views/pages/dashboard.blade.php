@@ -89,7 +89,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-12 col-sm-6 col-md-6 col-xl-4">
                 <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Activity</div>
+                        <div class="card-title">Activity Performance</div>
                     </div>
                     <div class="card-body">
                         <div>
@@ -120,7 +120,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-12 col-sm-6 col-md-6 col-xl-4">
                 <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Volume</div>
+                        <div class="card-title">Volume Performance</div>
                     </div>
                     <div class="card-body">
                         <div>
@@ -151,7 +151,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-12 col-sm-6 col-md-6 col-xl-4">
                 <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Profit</div>
+                        <div class="card-title">Profit Performance</div>
                     </div>
                     <div class="card-body">
                         <div>
@@ -180,11 +180,25 @@ Dashboard | Key Perfomance Indicator Marketing
                 </div>
             </div>
         </div>
-        <!-- <div class="row">
+        <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Line Chart</div>
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title">Annual Profit Overview</div>
+                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                        <form method="GET" action="{{ route('dashboard.index') }}" class="d-inline-flex align-items-center">
+                            @if($selectedUserId)
+                            <input type="hidden" name="user_id" value="{{ $selectedUserId }}">
+                            @endif
+                            <select name="year" class="form-select form-select-sm" style="width: 110px;" onchange="this.form.submit()">
+                                @foreach($availableYears as $year)
+                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
+                                    {{ $year }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </form>
+                        @endif
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
@@ -193,43 +207,43 @@ Dashboard | Key Perfomance Indicator Marketing
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
         <div class="row">
             <div class="col-md-4">
-                <div class="card card-info">
+                <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Daily Summary</div>
-                        <p class="text-white mb-0">
+                        <div class="card-title">Today's Summary</div>
+                        <p class="mb-0">
                             <small>{{ now()->format('d M Y') }}</small>
                         </p>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-6 mb-2">
-                                <small class="text-white">New Shipper</small>
+                                <small>New Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $dailyReport->new_shipper_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Existing Shipper</small>
+                                <small>Existing Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $dailyReport->existing_shipper_count ?? 0 }}</h5>
                             </div>
                         </div>
                         <hr>
                         <div class="row text-center">
                             <div class="col-6 mb-2">
-                                <small class="text-white">Direct Shipper</small>
+                                <small>Direct Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $dailyReport->direct_shipper_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Forwarding</small>
+                                <small>Forwarding</small>
                                 <h5 class="font-weight-bold mb-0">{{ $dailyReport->forwarding_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Vendoring</small>
+                                <small>Vendoring</small>
                                 <h5 class="font-weight-bold mb-0">{{ $dailyReport->vendoring_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Trading</small>
+                                <small>Trading</small>
                                 <h5 class="font-weight-bold mb-0">{{ $dailyReport->trading_count ?? 0 }}</h5>
                             </div>
                         </div>
@@ -243,40 +257,40 @@ Dashboard | Key Perfomance Indicator Marketing
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card card-primary">
+                <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Weekly Summary</div>
-                        <p class="text-white mb-0">
+                        <div class="card-title">This Week's Summary</div>
+                        <p class="mb-0">
                             <small>{{ now()->startOfWeek()->format('d M') }} - {{ now()->endOfWeek()->format('d M Y') }}</small>
                         </p>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-6 mb-2">
-                                <small class="text-white">New Shipper</small>
+                                <small>New Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $weeklyReport->new_shipper_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Existing Shipper</small>
+                                <small>Existing Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $weeklyReport->existing_shipper_count ?? 0 }}</h5>
                             </div>
                         </div>
                         <hr>
                         <div class="row text-center">
                             <div class="col-6 mb-2">
-                                <small class="text-white">Direct Shipper</small>
+                                <small>Direct Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $weeklyReport->direct_shipper_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Forwarding</small>
+                                <small>Forwarding</small>
                                 <h5 class="font-weight-bold mb-0">{{ $weeklyReport->forwarding_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Vendoring</small>
+                                <small>Vendoring</small>
                                 <h5 class="font-weight-bold mb-0">{{ $weeklyReport->vendoring_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Trading</small>
+                                <small>Trading</small>
                                 <h5 class="font-weight-bold mb-0">{{ $weeklyReport->trading_count ?? 0 }}</h5>
                             </div>
                         </div>
@@ -290,40 +304,40 @@ Dashboard | Key Perfomance Indicator Marketing
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card card-secondary">
+                <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Monthly Summary</div>
-                        <p class="text-white mb-0">
+                        <div class="card-title">This Month's Summary</div>
+                        <p class="mb-0">
                             <small>{{ now()->format('F Y') }}</small>
                         </p>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-6 mb-2">
-                                <small class="text-white">New Shipper</small>
+                                <small>New Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $monthlyReport->new_shipper_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Existing Shipper</small>
+                                <small>Existing Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $monthlyReport->existing_shipper_count ?? 0 }}</h5>
                             </div>
                         </div>
                         <hr>
                         <div class="row text-center">
                             <div class="col-6 mb-2">
-                                <small class="text-white">Direct Shipper</small>
+                                <small>Direct Shipper</small>
                                 <h5 class="font-weight-bold mb-0">{{ $monthlyReport->direct_shipper_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Forwarding</small>
+                                <small>Forwarding</small>
                                 <h5 class="font-weight-bold mb-0">{{ $monthlyReport->forwarding_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Vendoring</small>
+                                <small>Vendoring</small>
                                 <h5 class="font-weight-bold mb-0">{{ $monthlyReport->vendoring_count ?? 0 }}</h5>
                             </div>
                             <div class="col-6 mb-2">
-                                <small class="text-white">Trading</small>
+                                <small>Trading</small>
                                 <h5 class="font-weight-bold mb-0">{{ $monthlyReport->trading_count ?? 0 }}</h5>
                             </div>
                         </div>
@@ -341,7 +355,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-md-12">
                 <div class="card card-round">
                     <div class="card-header">
-                        <div class="card-title">Audit Logs</div>
+                        <div class="card-title">Recent Activity Logs</div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -357,7 +371,7 @@ Dashboard | Key Perfomance Indicator Marketing
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
+                                <tbody class="text-center text-nowrap">
                                     @forelse($logs as $log)
                                     <tr>
                                         <td data-order="{{ $log['created_at']->format('Y-m-d') }}">
@@ -436,88 +450,61 @@ Dashboard | Key Perfomance Indicator Marketing
 @endsection('content')
 @section('script')
 <script>
-var multipleLineChart = document .getElementById("multipleLineChart") .getContext("2d");
-var myMultipleLineChart = new Chart(multipleLineChart, {
-    type: "line",
-    data: {
-        labels: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-        ],
-        datasets: [
-        {
-            label: "Python",
-            borderColor: "#1d7af3",
-            pointBorderColor: "#FFF",
-            pointBackgroundColor: "#1d7af3",
-            pointBorderWidth: 2,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 1,
-            pointRadius: 4,
-            backgroundColor: "transparent",
-            fill: true,
-            borderWidth: 2,
-            data: [30, 45, 45, 68, 69, 90, 100, 158, 177, 200, 245, 256],
+var chartCanvas = document.getElementById("multipleLineChart");
+if (chartCanvas) {
+    var lineChartDatasets = @json($line['datasets']);
+    var lineChartLabels   = @json($line['labels']);
+    var isMultiLine       = lineChartDatasets.length > 1;
+    var multipleLineChart = chartCanvas.getContext("2d");
+    var myMultipleLineChart = new Chart(multipleLineChart, {
+        type: "line",
+        data: {
+            labels: lineChartLabels,
+            datasets: lineChartDatasets,
         },
-        {
-            label: "PHP",
-            borderColor: "#59d05d",
-            pointBorderColor: "#FFF",
-            pointBackgroundColor: "#59d05d",
-            pointBorderWidth: 2,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 1,
-            pointRadius: 4,
-            backgroundColor: "transparent",
-            fill: true,
-            borderWidth: 2,
-            data: [10, 20, 55, 75, 80, 48, 59, 55, 23, 107, 60, 87],
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                display: isMultiLine,
+                position: "top",
+                onClick: isMultiLine
+                    ? Chart.defaults.global.legend.onClick
+                    : function(e) { return false; }
+            },
+            tooltips: {
+                bodySpacing: 4,
+                mode: "nearest",
+                intersect: 0,
+                position: "nearest",
+                xPadding: 10,
+                yPadding: 10,
+                caretPadding: 10,
+                callbacks: {
+                    title: function(tooltipItems) {
+                        return tooltipItems[0].xLabel + " {{ $selectedYear }}";
+                    },
+                    label: function(tooltipItem, data) {
+                        var label = data.datasets[tooltipItem.datasetIndex].label;
+                        var value = tooltipItem.yLabel;
+                        return " " + label + ": Rp " + value.toLocaleString("id-ID");
+                    }
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        callback: function(value) {
+                            return "Rp " + value.toLocaleString("id-ID");
+                        }
+                    }
+                }]
+            },
+            layout: {
+                padding: { left: 15, right: 15, top: 15, bottom: 15 },
+            },
         },
-        {
-            label: "Ruby",
-            borderColor: "#f3545d",
-            pointBorderColor: "#FFF",
-            pointBackgroundColor: "#f3545d",
-            pointBorderWidth: 2,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 1,
-            pointRadius: 4,
-            backgroundColor: "transparent",
-            fill: true,
-            borderWidth: 2,
-            data: [10, 30, 58, 79, 90, 105, 117, 160, 185, 210, 185, 194],
-        },
-        ],
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-            position: "top",
-        },
-        tooltips: {
-            bodySpacing: 4,
-            mode: "nearest",
-            intersect: 0,
-            position: "nearest",
-            xPadding: 10,
-            yPadding: 10,
-            caretPadding: 10,
-        },
-        layout: {
-            padding: { left: 15, right: 15, top: 15, bottom: 15 },
-        },
-    },
-});
+    });
+}
 </script>
 @endsection('script')

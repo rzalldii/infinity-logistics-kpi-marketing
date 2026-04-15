@@ -12,21 +12,24 @@ Touch Shippers | Key Perfomance Indicator Marketing
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Touch Shippers</h1>
                             <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
-                                <i class="fas fa-toggle-on"></i> Toggle Columns
+                                <i class="fas fa-toggle-on"></i>
+                                <span class="d-none d-lg-inline"> Toggle Columns</span>
                             </button>
                             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                             <button class="btn btn-success btn-round ms-2" id="ExportExcel">
-                                <i class="fas fa-file-excel"></i> Export Excel
+                                <i class="fas fa-file-excel"></i>
+                                <span class="d-none d-lg-inline"> Export Excel</span>
                             </button>
                             <button class="btn btn-primary btn-round ms-2" id="createNewShipper">
-                                <i class="fas fa-plus"></i> Add Data
+                                <i class="fas fa-plus"></i>
+                                <span class="d-none d-lg-inline"> New Data</span>
                             </button>
                             @endif
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="modal fade" id="shipperModal" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -155,7 +158,7 @@ Touch Shippers | Key Perfomance Indicator Marketing
                             </div>
                         </div>
                         <div class="modal fade" id="Viewshipper" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title">
@@ -335,7 +338,7 @@ Touch Shippers | Key Perfomance Indicator Marketing
                                         @endif
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
+                                <tbody class="text-center text-nowrap">
                                     @foreach($shippers as $shipper)
                                     <tr id="row-{{ $shipper->id }}" data-user-id="{{ $shipper->user_id }}">
                                         <td>{{ $shipper->shipper_name }}</td>
@@ -390,27 +393,31 @@ Touch Shippers | Key Perfomance Indicator Marketing
                                             {{ $shipper->created_at->format('d M Y') }}
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-info viewShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-sm btn-info viewShipper" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <td>{{ Str::upper($shipper->user->name) }}</td>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                                         <td>
-                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $shipper->user_id == Auth::id()))
-                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            @else
-                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
-                                                <i class="fas fa-lock"></i>
-                                            </button>
-                                            @endif
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $shipper->user_id == Auth::id()))
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $shipper->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    @else
+                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                        <i class="fas fa-lock"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                         @endif
                                     </tr>
@@ -636,9 +643,9 @@ $(document).ready(function () {
         var isHidden = !table.column(5).visible();
         table.columns([5, 8, 9, 10]).visible(isHidden);
         if (isHidden) {
-            $btn.html('<i class="fas fa-toggle-off"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-off"></i><span class="d-none d-lg-inline"> Toggle Columns</span>');
         } else {
-            $btn.html('<i class="fas fa-toggle-on"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-on"></i><span class="d-none d-lg-inline"> Toggle Columns</span>');
         }
         table.columns.adjust().draw();
     });

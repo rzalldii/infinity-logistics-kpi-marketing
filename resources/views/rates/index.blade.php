@@ -12,21 +12,24 @@ Checking Rates | Key Perfomance Indicator Marketing
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Checking Rates</h1>
                             <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
-                                <i class="fas fa-toggle-on"></i> Toggle Columns
+                                <i class="fas fa-toggle-on"></i>
+                                <span class="d-none d-lg-inline"> Toggle Columns</span>
                             </button>
                             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                             <button class="btn btn-success btn-round ms-2" id="ExportExcel">
-                                <i class="fas fa-file-excel"></i> Export Excel
+                                <i class="fas fa-file-excel"></i>
+                                <span class="d-none d-lg-inline"> Export Excel</span>
                             </button>
                             <button class="btn btn-primary btn-round ms-2" id="createNewRate">
-                                <i class="fas fa-plus"></i> Add Data
+                                <i class="fas fa-plus"></i>
+                                <span class="d-none d-lg-inline"> New Data</span>
                             </button>
                             @endif
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="modal fade" id="rateModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -117,7 +120,7 @@ Checking Rates | Key Perfomance Indicator Marketing
                             </div>
                         </div>
                         <div class="modal fade" id="Viewrate" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title">
@@ -274,7 +277,7 @@ Checking Rates | Key Perfomance Indicator Marketing
                                         @endif
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
+                                <tbody class="text-center text-nowrap">
                                     @foreach($rates as $rate)
                                     <tr id="row-{{ $rate->id }}" data-user-id="{{ $rate->user_id }}">
                                         <td>{{ $rate->pol }}</td>
@@ -309,27 +312,31 @@ Checking Rates | Key Perfomance Indicator Marketing
                                             {{ $rate->created_at->format('d M Y') }}
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-info viewRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-sm btn-info viewRate" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <td>{{ Str::upper($rate->user->name) }}</td>
                                         @endif
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
                                         <td>
-                                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $rate->user_id == Auth::id()))
-                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            @else
-                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
-                                                <i class="fas fa-lock"></i>
-                                            </button>
-                                            @endif
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || (Auth::user()->isMarketing() && $rate->user_id == Auth::id()))
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $rate->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                        <i class="fas fa-lock"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                         @endif
                                     </tr>
@@ -583,9 +590,9 @@ $(document).ready(function () {
         var isHidden = !table.column(2).visible();
         table.columns([2, 6]).visible(isHidden);
         if (isHidden) {
-            $btn.html('<i class="fas fa-toggle-off"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-off"></i><span class="d-none d-lg-inline"> Toggle Columns</span>');
         } else {
-            $btn.html('<i class="fas fa-toggle-on"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-on"></i><span class="d-none d-lg-inline"> Toggle Columns</span>');
         }
         table.columns.adjust().draw();
     });

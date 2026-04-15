@@ -12,13 +12,14 @@ User Management | Key Perfomance Indicator Marketing
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">User Management</h1>
                             <button class="btn btn-primary btn-round ms-auto" id="createNewUser">
-                                <i class="fas fa-plus"></i> Add Data
+                                <i class="fas fa-plus"></i>
+                                <span class="d-none d-lg-inline"> New Data</span>
                             </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -94,33 +95,35 @@ User Management | Key Perfomance Indicator Marketing
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
+                                <tbody class="text-center text-nowrap">
                                     @foreach($users as $user)
                                     <tr>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->role }}</td>
                                         <td>
-                                            @if($user->id !== Auth::id())
-                                            @if(!$user->is_primary)
-                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            @endif
-                                            @if(!$user->is_primary)
-                                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            @else
-                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Protected">
-                                                <i class="fas fa-shield-alt"></i>
-                                            </button>
-                                            @endif
-                                            @else
-                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            @endif
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                @if($user->id !== Auth::id())
+                                                    @if(!$user->is_primary)
+                                                        <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    @endif
+                                                    @if(!$user->is_primary)
+                                                        <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    @else
+                                                        <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Protected">
+                                                            <i class="fas fa-shield-alt"></i>
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                     @endforeach

@@ -71,7 +71,7 @@ Audit Logs | Key Perfomance Indicator Marketing
                                         <th>DETAIL</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
+                                <tbody class="text-center text-nowrap">
                                     @forelse($logs as $log)
                                     <tr data-user-id="{{ optional($log['user'])->id }}" data-type="{{ $log['type'] }}" data-action="{{ $log['action'] }}">
                                         <td data-order="{{ $log['created_at']->format('Y-m-d') }}">
@@ -102,15 +102,17 @@ Audit Logs | Key Perfomance Indicator Marketing
                                             @endif
                                         </td>
                                         <td>
-                                            @if($log['auditable_id'] != 0)
-                                            <button type="button" class="btn btn-sm btn-info viewAudit"
-                                                data-type="{{ class_basename($log['auditable_type']) }}"
-                                                data-action="{{ $log['action'] }}"
-                                                data-old="{{ json_encode($log['old_values']) }}"
-                                                data-new="{{ json_encode($log['new_values']) }}">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            @endif
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                @if($log['auditable_id'] != 0)
+                                                    <button type="button" class="btn btn-sm btn-info viewAudit"
+                                                        data-type="{{ class_basename($log['auditable_type']) }}"
+                                                        data-action="{{ $log['action'] }}"
+                                                        data-old="{{ json_encode($log['old_values']) }}"
+                                                        data-new="{{ json_encode($log['new_values']) }}">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty
@@ -122,7 +124,7 @@ Audit Logs | Key Perfomance Indicator Marketing
                             </table>
                         </div>
                         <div class="modal fade" id="Viewaudit" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title">

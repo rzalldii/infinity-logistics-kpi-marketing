@@ -12,19 +12,22 @@ Report Activities | Key Perfomance Indicator Marketing
                         <div class="d-flex align-items-center">
                             <h1 class="card-title">Report Activities</h1>
                             <button class="btn btn-info btn-round ms-auto" id="ToggleColumns">
-                                <i class="fas fa-toggle-on"></i> Toggle Columns
+                                <i class="fas fa-toggle-on"></i>
+                                <span class="d-none d-lg-inline"> Toggle Columns</span>
                             </button>
                             <button class="btn btn-success btn-round ms-2" id="ExportExcel">
-                                <i class="fas fa-file-excel"></i> Export Excel
+                                <i class="fas fa-file-excel"></i>
+                                <span class="d-none d-lg-inline"> Export Excel</span>
                             </button>
                             <button class="btn btn-primary btn-round ms-2" id="createNewActivity">
-                                <i class="fas fa-plus"></i> Add Data
+                                <i class="fas fa-plus"></i>
+                                <span class="d-none d-lg-inline"> New Data</span>
                             </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title">
@@ -89,7 +92,7 @@ Report Activities | Key Perfomance Indicator Marketing
                             </div>
                         </div>
                         <div class="modal fade" id="activityModal" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modalTitle">
@@ -227,7 +230,7 @@ Report Activities | Key Perfomance Indicator Marketing
                             </div>
                         </div>
                         <div class="modal fade" id="Viewactivity" tabindex="-1" aria-hidden="true" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title">
@@ -410,7 +413,7 @@ Report Activities | Key Perfomance Indicator Marketing
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center">
+                                <tbody class="text-center text-nowrap">
                                     @foreach($activities as $activity)
                                     <tr data-user-id="{{ $activity->user_id }}">
                                         <td data-order="{{ $activity->created_at->format('Y-m-d') }}">
@@ -471,9 +474,11 @@ Report Activities | Key Perfomance Indicator Marketing
                                             @endif
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-info viewActivity" data-id="{{ $activity->id }}" data-bs-toggle="tooltip" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-sm btn-info viewActivity" data-id="{{ $activity->id }}" data-bs-toggle="tooltip" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <td>{{ Str::upper($activity->user->name) }}</td>
@@ -503,43 +508,45 @@ Report Activities | Key Perfomance Indicator Marketing
                                                 $isAdmin = Auth::user()->isAdmin();
                                                 $isValidSequence = ($activity->sequence != 0);
                                             @endphp
-                                            @if($isSuperAdmin || ($isValidSequence && !$isActivitiesFinished && $isLatestSequence))
-                                                <button type="button" class="btn btn-sm btn-primary followUp" data-id="{{ $activity->id }}" data-bs-toggle="tooltip" title="Follow Up">
-                                                    <i class="fas fa-reply"></i>
-                                                </button>
-                                            @endif
-                                            @if($isSuperAdmin || $isAdmin)
-                                                <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            @else
-                                                @if($canEdit)
-                                                    @if($isValidSequence)
-                                                        <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Edit">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                    @endif
-                                                @else
-                                                    <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
-                                                        <i class="fas fa-lock"></i>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                @if($isSuperAdmin || ($isValidSequence && !$isActivitiesFinished && $isLatestSequence))
+                                                    <button type="button" class="btn btn-sm btn-primary followUp" data-id="{{ $activity->id }}" data-bs-toggle="tooltip" title="Follow Up">
+                                                        <i class="fas fa-reply"></i>
                                                     </button>
                                                 @endif
-                                                @if($canDelete)
+                                                @if($isSuperAdmin || $isAdmin)
+                                                    <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
                                                     <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Delete">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 @else
-                                                    @if(!$canEdit)
+                                                    @if($canEdit)
+                                                        @if($isValidSequence)
+                                                            <button type="button" class="btn btn-sm btn-warning text-white editBtn" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Edit">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                        @endif
                                                     @else
                                                         <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
                                                             <i class="fas fa-lock"></i>
                                                         </button>
                                                     @endif
+                                                    @if($canDelete)
+                                                        <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="{{ $activity->id }}" data-report-date="{{ $activity->created_at }}" data-bs-toggle="tooltip" title="Delete">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    @else
+                                                        @if(!$canEdit)
+                                                        @else
+                                                            <button type="button" class="btn btn-sm btn-success" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Locked">
+                                                                <i class="fas fa-lock"></i>
+                                                            </button>
+                                                        @endif
+                                                    @endif
                                                 @endif
-                                            @endif
+                                            </div>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -868,9 +875,9 @@ $(document).ready(function () {
         var isHidden = !table.column(3).visible();
         table.columns([3, 4, 5, 7, 9, 10, 11, 12]).visible(isHidden);
         if (isHidden) {
-            $btn.html('<i class="fas fa-toggle-off"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-off"></i><span class="d-none d-lg-inline"> Toggle Columns</span>');
         } else {
-            $btn.html('<i class="fas fa-toggle-on"></i> Toggle Columns');
+            $btn.html('<i class="fas fa-toggle-on"></i><span class="d-none d-lg-inline"> Toggle Columns</span>');
         }
         table.columns.adjust().draw();
     });

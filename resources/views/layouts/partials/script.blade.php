@@ -51,4 +51,10 @@
             });
         });
     });
+    $(document).on('hidden.bs.modal', function () {
+        $('body').css('padding-right', '');
+    });
+    $(document).on('hidden.bs.offcanvas', function () {
+        $('body').css('padding-right', '');
+    });
     </script>

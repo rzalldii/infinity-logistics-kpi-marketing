@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
-@include('layouts.partials.header')
-
+<head>
+    @include('layouts.partials.head')
+</head>
 <body>
     @include('layouts.partials.navbar')
+
+    @include('layouts.partials.header')
 
     @yield('content')
 

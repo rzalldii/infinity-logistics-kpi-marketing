@@ -1,10 +1,10 @@
 <div class="wrapper">
-    <div class="sidebar" data-background-color="white">
+    <div class="sidebar sidebar-style-2" data-background-color="white">
         <div class="sidebar-logo">
             <div class="logo-header" data-background-color="white">
-                <div class="logo d-flex justify-content-center w-100">
+                <a class="logo d-flex justify-content-center w-100" href="{{ route('dashboard.index') }}">
                     <img src="{{ url('/') }}/img/logo_light.png" class="navbar-brand" height="40" alt="PT. Infinity Logistics Indonesia"/>
-                </div>
+                </a>
                 <div class="nav-toggle">
                     <button class="btn btn-toggle toggle-sidebar">
                         <i class="gg-menu-right"></i>
@@ -76,8 +76,8 @@
                     </li>
                     <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <a href="{{ route('users.index') }}">
-                            <i class="fas fa-user"></i>
-                            <p>User Management</p>
+                            <i class="fas fa-users"></i>
+                            <p>Management Users</p>
                         </a>
                     </li>
                     @endif
@@ -85,57 +85,3 @@
             </div>
         </div>
     </div>
-    <div class="main-panel">
-        <div class="main-header">
-            <div class="main-header-logo">
-                <div class="logo-header" data-background-color="white">
-                    <div class="logo">
-                        <img src="{{ url('/') }}/img/logo_light.png" class="navbar-brand" height="40" alt=""/>
-                    </div>
-                    <div class="nav-toggle">
-                        <button class="btn btn-toggle toggle-sidebar">
-                            <i class="gg-menu-right"></i>
-                        </button>
-                        <button class="btn btn-toggle sidenav-toggler">
-                            <i class="gg-menu-left"></i>
-                        </button>
-                    </div>
-                    <button class="topbar-toggler more">
-                        <i class="gg-more-vertical-alt"></i>
-                    </button>
-                </div>
-            </div>
-            <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" data-background-color="white">
-                <div class="container-fluid">
-                    <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                        <li class="nav-item topbar-user dropdown hidden-caret">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" aria-expanded="false">
-                                <div class="profile-username text-dark">
-                                    <span class="op-7">Hi,</span>
-                                    <span class="fw-bold">{{ Auth::user()->name }}</span>
-                                </div>
-                            </a>
-                            <ul class="dropdown-menu dropdown-user animated fadeIn">
-                                <div class="dropdown-user-scroll scrollbar-outer">
-                                    <li>
-                                        <div class="user-box">
-                                            <div class="u-text text-dark">
-                                                <h4>{{ Auth::user()->role }}</h4>
-                                                <p>{{ Auth::user()->email }}</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                        <form action="{{ route('logout') }}" method="POST" id="logoutForm">
-                                            @csrf
-                                        </form>
-                                        <a class="dropdown-item" href="#" id="logoutBtn">Logout</a>
-                                    </li>
-                                </div>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
