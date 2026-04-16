@@ -4,9 +4,9 @@
     @include('layouts.partials.head')
 </head>
 <body>
-    @include('layouts.partials.navbar')
+    @include('layouts.partials.sidebar')
 
-    @include('layouts.partials.header')
+    @include('layouts.partials.navbar')
 
     @yield('content')
 

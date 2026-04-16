@@ -14,10 +14,9 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedUserId = $request->input('user_id');
-        $selectedYear   = (int) $request->input('year', now()->year);
-        $user = Auth::user();
-        $queryUserId = $selectedUserId === 'mine' ? $user->id : $selectedUserId;
+        $selectedUserId  = $request->input('user_id');
+        $user            = Auth::user();
+        $queryUserId     = $selectedUserId === 'mine' ? $user->id : $selectedUserId;
         $applyUserFilter = function ($query) use ($user, $queryUserId) {
             if ($user->isSuperAdmin() || $user->isAdmin()) {
                 if ($queryUserId) {
@@ -47,11 +46,7 @@ class DashboardController extends Controller
         }
         $targetUserId   = ($user->isSuperAdmin() || $user->isAdmin()) ? $queryUserId : ($user->isMarketing() ? $user->id : null);
         $performance    = $this->getPerformanceStats($targetUserId);
-        $line           = $this->getLineChart($user, $targetUserId, $selectedYear);
-        $availableYears = Activity::selectRaw('YEAR(created_at) as year')
-            ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year');
+        $line           = $this->getLineChart($user, $targetUserId);
         $dailyReport    = $this->getReportData('today', $queryUserId, $user);
         $weeklyReport   = $this->getReportData('week', $queryUserId, $user);
         $monthlyReport  = $this->getReportData('month', $queryUserId, $user);
@@ -94,8 +89,6 @@ class DashboardController extends Controller
             'selectedUserId'      => $selectedUserId,
             'performance'         => $performance,
             'line'                => $line,
-            'availableYears'      => $availableYears,
-            'selectedYear'        => $selectedYear,
             'dailyReport'         => $dailyReport,
             'weeklyReport'        => $weeklyReport,
             'monthlyReport'       => $monthlyReport,
@@ -114,17 +107,17 @@ class DashboardController extends Controller
         }
         $users = $targetUsers->get();
         $totalActualActivity = 0;
-        $totalActualVolume = 0;
-        $totalActualProfit = 0;
+        $totalActualVolume   = 0;
+        $totalActualProfit   = 0;
         $totalTargetActivity = 0;
-        $totalTargetVolume = 0;
-        $totalTargetProfit = 0;
-        $breakdownQuote = 0;
-        $breakdownCall = 0;
-        $breakdownVisit = 0;
-        $breakdown20 = 0;
-        $breakdown40 = 0;
-        $breakdownOthers = 0;
+        $totalTargetVolume   = 0;
+        $totalTargetProfit   = 0;
+        $breakdownQuote      = 0;
+        $breakdownCall       = 0;
+        $breakdownVisit      = 0;
+        $breakdown20         = 0;
+        $breakdown40         = 0;
+        $breakdownOthers     = 0;
         foreach ($users as $user) {
             $totalTargetActivity += (int) $user->target_activity;
             $totalTargetVolume   += (int) $user->target_volume;
@@ -141,18 +134,18 @@ class DashboardController extends Controller
                     SUM(CAST(REPLACE(REPLACE(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9,.]', ''),'.', ''),',', '.') AS DECIMAL(15,2))) as total_profit
                 ")
                 ->first();
-            $userActivity = (int)$stats->count_quote + (int)$stats->count_call + (int)$stats->count_visit;
-            $userVolume   = (float)$stats->sum_20 + (float)$stats->sum_40 + (int)$stats->count_others;
-            $userProfit   = (float)$stats->total_profit;
+            $userActivity        = (int)$stats->count_quote + (int)$stats->count_call + (int)$stats->count_visit;
+            $userVolume          = (float)$stats->sum_20 + (float)$stats->sum_40 + (int)$stats->count_others;
+            $userProfit          = (float)$stats->total_profit;
             $totalActualActivity += $userActivity;
             $totalActualVolume   += $userVolume;
             $totalActualProfit   += $userProfit;
-            $breakdownQuote += (int)$stats->count_quote;
-            $breakdownCall  += (int)$stats->count_call;
-            $breakdownVisit += (int)$stats->count_visit;
-            $breakdown20    += (float)$stats->sum_20;
-            $breakdown40    += (float)$stats->sum_40;
-            $breakdownOthers += (int)$stats->count_others;
+            $breakdownQuote      += (int)$stats->count_quote;
+            $breakdownCall       += (int)$stats->count_call;
+            $breakdownVisit      += (int)$stats->count_visit;
+            $breakdown20         += (float)$stats->sum_20;
+            $breakdown40         += (float)$stats->sum_40;
+            $breakdownOthers     += (int)$stats->count_others;
         }
         $calcPerformance = function($actual, $target) {
             return [
@@ -187,9 +180,8 @@ class DashboardController extends Controller
         ];
     }
 
-    private function getLineChart($user, $targetUserId, $year = null)
+    private function getLineChart($user, $targetUserId)
     {
-        $year = $year ?? now()->year;
         $labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         $colors = ['#1d7af3','#59d05d','#f3545d','#fdaf4b','#a855f7','#14b8a6','#f97316','#ec4899','#a16207'];
         if ($user->isSuperAdmin() || $user->isAdmin()) {
@@ -202,7 +194,7 @@ class DashboardController extends Controller
         $datasets = [];
         foreach ($users as $index => $u) {
             $results = Activity::where('user_id', $u->id)
-                ->whereYear('created_at', $year)
+                ->whereYear('created_at', now()->year)
                 ->selectRaw("
                     MONTH(created_at) as month,
                     SUM(CAST(REPLACE(REPLACE(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9,.]', ''),'.', ''),',', '.') AS DECIMAL(15,2))) as total_profit

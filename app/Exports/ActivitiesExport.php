@@ -177,58 +177,6 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
                 $highestRow = $sheet->getHighestRow();
                 $highestCol = $sheet->getHighestColumn();
                 $sheet->setAutoFilter('A1:' . $highestCol . '1');
-                $colors = ['0D6EFD', '0DCAF0', '031633', '032830'];
-                $shipperCount = [];
-                for ($i = 2; $i <= $highestRow; $i++) {
-                    $shipperName = $sheet->getCell('C' . $i)->getValue();
-                    if (!isset($shipperCount[$shipperName])) {
-                        $shipperCount[$shipperName] = 0;
-                    }
-                    $shipperCount[$shipperName]++;
-                }
-                $shipperColorMap = [];
-                $colorIndex = 0;
-                foreach ($shipperCount as $shipperName => $count) {
-                    if ($count > 1) {
-                        $shipperColorMap[$shipperName] = $colors[$colorIndex % count($colors)];
-                        $colorIndex++;
-                    }
-                }
-                for ($i = 2; $i <= $highestRow; $i++) {
-                    $currentShipper = $sheet->getCell('C' . $i)->getValue();
-                    if (isset($shipperColorMap[$currentShipper])) {
-                        $shipperColor = $shipperColorMap[$currentShipper];
-                        $sheet->getStyle('C' . $i)->applyFromArray([
-                            'fill' => [
-                                'fillType' => Fill::FILL_SOLID,
-                                'startColor' => ['rgb' => $shipperColor],
-                            ],
-                            'font' => ['color' => ['rgb' => 'FFFFFF']],
-                        ]);
-                    }
-                    $statusCell = 'I' . $i; 
-                    $status = strtolower(trim($sheet->getCell($statusCell)->getValue()));
-                    $statusColor = null;
-                    if ($status == 'pending') {
-                        $statusColor = 'FFC107';
-                    } elseif ($status == 'closing') {
-                        $statusColor = '198754';
-                    } elseif ($status == 'failed') {
-                        $statusColor = 'DC3545';
-                    }
-                    if ($statusColor) {
-                        $sheet->getStyle($statusCell)->applyFromArray([
-                            'fill' => [
-                                'fillType' => Fill::FILL_SOLID,
-                                'startColor' => ['rgb' => $statusColor],
-                            ],
-                            'font' => [
-                                'bold' => true,
-                                'color' => ['rgb' => 'FFFFFF'],
-                            ],
-                        ]);
-                    }
-                }
                 $footerRow = $highestRow + 2;
                 if ($this->dateFrom && $this->dateTo) {
                     $dateRange = 'Period: ' . Carbon::parse($this->dateFrom)->format('d M Y') 
@@ -251,6 +199,22 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithStyles, With
                     ],
                 ]);
                 $sheet->freezePane('A2');
+                $prevShipper = null;
+                $groupToggle = false;
+                for ($i = 2; $i <= $highestRow; $i++) {
+                    $currentShipper = $sheet->getCell('C' . $i)->getValue();
+                    if ($currentShipper !== $prevShipper) {
+                        $groupToggle = !$groupToggle;
+                        $prevShipper = $currentShipper;
+                    }
+                    $bgColor = $groupToggle ? 'EAF4FF' : 'FFFFFF';
+                    $sheet->getStyle('A' . $i . ':' . $highestCol . $i)->applyFromArray([
+                        'fill' => [
+                            'fillType'   => Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => $bgColor],
+                        ],
+                    ]);
+                }
             },
         ];
     }

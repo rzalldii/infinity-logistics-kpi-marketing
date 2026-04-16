@@ -44,6 +44,9 @@ class SummaryController extends Controller
             $filterOptions[$yearVal] = $yearLabel;
         }
         $period = $request->get('period', $currentMonthVal);
+        $chartYear = strlen($period) === 4
+            ? (int) $period
+            : (int) substr($period, 0, 4);
         $performanceData = $this->getPerformance($period);
         if (strlen($period) === 4) {
             $selectedMonth = 'Year ' . $period;
@@ -59,7 +62,16 @@ class SummaryController extends Controller
                 'is_current_month' => $isCurrentMonth
             ]);
         }
-        return view('activities.summaries', compact('performanceData', 'selectedMonth', 'isCurrentMonth', 'filterOptions', 'period'));
+        $line = $this->getLineChart($chartYear);
+        return view('activities.summaries', compact(
+            'performanceData',
+            'selectedMonth',
+            'isCurrentMonth',
+            'filterOptions',
+            'period',
+            'chartYear',
+            'line'
+        ));
     }
 
     public function edit($id): JsonResponse
@@ -166,6 +178,50 @@ class SummaryController extends Controller
             ];
         }
         return $performanceData;
+    }
+
+    private function getLineChart($year = null)
+    {
+        $year  = $year ?? now()->year;
+        $labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        $colors = ['#1d7af3','#59d05d','#f3545d','#fdaf4b','#a855f7','#14b8a6','#f97316','#ec4899','#a16207'];
+        $users = User::whereIn('role', ['MARKETING', 'ADMIN'])
+            ->orderBy('name')
+            ->get();
+        $datasets = [];
+        foreach ($users as $index => $u) {
+            $results = Activity::where('user_id', $u->id)
+                ->whereYear('created_at', $year)
+                ->selectRaw("
+                    MONTH(created_at) as month,
+                    SUM(CAST(REPLACE(REPLACE(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9,.]', ''),'.', ''),',', '.') AS DECIMAL(15,2))) as total_profit
+                ")
+                ->groupBy('month')
+                ->pluck('total_profit', 'month');
+            $data = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $data[] = round((float)($results[$m] ?? 0), 2);
+            }
+            $color      = $colors[$index % count($colors)];
+            $datasets[] = [
+                'label'                => $u->name,
+                'borderColor'          => $color,
+                'pointBorderColor'     => '#FFF',
+                'pointBackgroundColor' => $color,
+                'pointBorderWidth'     => 2,
+                'pointHoverRadius'     => 4,
+                'pointHoverBorderWidth'=> 1,
+                'pointRadius'          => 4,
+                'backgroundColor'      => 'transparent',
+                'fill'                 => true,
+                'borderWidth'          => 2,
+                'data'                 => $data,
+            ];
+        }
+        return [
+            'labels'   => $labels,
+            'datasets' => $datasets,
+        ];
     }
 
     public function export(Request $request)

@@ -162,6 +162,21 @@ Summary Activities | Key Perfomance Indicator Marketing
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title">Chart Summary</div>
+                        <small class="text-muted">{{ $chartYear }}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="multipleLineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection('content')
@@ -267,7 +282,12 @@ $(document).ready(function () {
                         errorList += '<li>' + value[0] + '</li>';
                     });
                     errorList += '</ul>';
-                    showErrorAlert(errorList);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        html: errorList,
+                        confirmButtonColor: '#d33'
+                    });
                 } else if (response.status === 403) {
                     Swal.fire({
                         icon: 'error',
@@ -338,6 +358,63 @@ $(document).ready(function () {
             });
         });
     });
+    var chartCanvas = document.getElementById("multipleLineChart");
+    if (chartCanvas) {
+        var lineChartDatasets = @json($line['datasets']);
+        var lineChartLabels   = @json($line['labels']);
+        var isMultiLine       = lineChartDatasets.length > 1;
+        var multipleLineChart = chartCanvas.getContext("2d");
+        var myMultipleLineChart = new Chart(multipleLineChart, {
+            type: "line",
+            data: {
+                labels: lineChartLabels,
+                datasets: lineChartDatasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    display: isMultiLine,
+                    position: "top",
+                    onClick: isMultiLine
+                        ? Chart.defaults.global.legend.onClick
+                        : function(e) { return false; }
+                },
+                tooltips: {
+                    bodySpacing: 4,
+                    mode: "nearest",
+                    intersect: 0,
+                    position: "nearest",
+                    xPadding: 10,
+                    yPadding: 10,
+                    caretPadding: 10,
+                    displayColors: true,
+                    callbacks: {
+                        title: function() {
+                            return '';
+                        },
+                        label: function(tooltipItem, data) {
+                            var label = data.datasets[tooltipItem.datasetIndex].label;
+                            var value = Math.round(tooltipItem.yLabel);
+                            return " " + label + " : " + formatRupiah(value);
+                        }
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: function(value) {
+                                return formatRupiah(Math.round(value));
+                            }
+                        }
+                    }]
+                },
+                layout: {
+                    padding: { left: 15, right: 15, top: 15, bottom: 15 },
+                },
+            },
+        });
+    }
 });
 </script>
 @endsection('script')

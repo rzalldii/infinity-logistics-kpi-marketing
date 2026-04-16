@@ -184,21 +184,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                        <div class="card-title">Annual Profit Overview</div>
-                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                        <form method="GET" action="{{ route('dashboard.index') }}" class="d-inline-flex align-items-center">
-                            @if($selectedUserId)
-                            <input type="hidden" name="user_id" value="{{ $selectedUserId }}">
-                            @endif
-                            <select name="year" class="form-select form-select-sm" style="width: 110px;" onchange="this.form.submit()">
-                                @foreach($availableYears as $year)
-                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
-                                    {{ $year }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </form>
-                        @endif
+                        <div class="card-title">Profit Overview</div>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
@@ -450,61 +436,78 @@ Dashboard | Key Perfomance Indicator Marketing
 @endsection('content')
 @section('script')
 <script>
-var chartCanvas = document.getElementById("multipleLineChart");
-if (chartCanvas) {
-    var lineChartDatasets = @json($line['datasets']);
-    var lineChartLabels   = @json($line['labels']);
-    var isMultiLine       = lineChartDatasets.length > 1;
-    var multipleLineChart = chartCanvas.getContext("2d");
-    var myMultipleLineChart = new Chart(multipleLineChart, {
-        type: "line",
-        data: {
-            labels: lineChartLabels,
-            datasets: lineChartDatasets,
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            legend: {
-                display: isMultiLine,
-                position: "top",
-                onClick: isMultiLine
-                    ? Chart.defaults.global.legend.onClick
-                    : function(e) { return false; }
+$(document).ready(function () {
+    function formatRupiah(angka) {
+        if (angka === null || angka === undefined || angka === '') return '';
+        var number_string = angka.toString().replace(/[^,\d]/g, ''),
+            split   = number_string.split(','),
+            sisa    = split[0].length % 3,
+            rupiah  = split[0].substr(0, sisa),
+            ribuan  = split[0].substr(sisa).match(/\d{3}/gi);
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return rupiah;
+    }
+    var chartCanvas = document.getElementById("multipleLineChart");
+    if (chartCanvas) {
+        var lineChartDatasets = @json($line['datasets']);
+        var lineChartLabels   = @json($line['labels']);
+        var isMultiLine       = lineChartDatasets.length > 1;
+        var multipleLineChart = chartCanvas.getContext("2d");
+        var myMultipleLineChart = new Chart(multipleLineChart, {
+            type: "line",
+            data: {
+                labels: lineChartLabels,
+                datasets: lineChartDatasets,
             },
-            tooltips: {
-                bodySpacing: 4,
-                mode: "nearest",
-                intersect: 0,
-                position: "nearest",
-                xPadding: 10,
-                yPadding: 10,
-                caretPadding: 10,
-                callbacks: {
-                    title: function(tooltipItems) {
-                        return tooltipItems[0].xLabel + " {{ $selectedYear }}";
-                    },
-                    label: function(tooltipItem, data) {
-                        var label = data.datasets[tooltipItem.datasetIndex].label;
-                        var value = tooltipItem.yLabel;
-                        return " " + label + ": Rp " + value.toLocaleString("id-ID");
-                    }
-                }
-            },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        callback: function(value) {
-                            return "Rp " + value.toLocaleString("id-ID");
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    display: isMultiLine,
+                    position: "top",
+                    onClick: isMultiLine
+                        ? Chart.defaults.global.legend.onClick
+                        : function(e) { return false; }
+                },
+                tooltips: {
+                    bodySpacing: 4,
+                    mode: "nearest",
+                    intersect: 0,
+                    position: "nearest",
+                    xPadding: 10,
+                    yPadding: 10,
+                    caretPadding: 10,
+                    displayColors: true,
+                    callbacks: {
+                        title: function() {
+                            return '';
+                        },
+                        label: function(tooltipItem, data) {
+                            var label = data.datasets[tooltipItem.datasetIndex].label;
+                            var value = Math.round(tooltipItem.yLabel);
+                            return " " + label + " : Rp " + formatRupiah(value);
                         }
                     }
-                }]
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: function(value) {
+                                return "Rp " + formatRupiah(Math.round(value));
+                            }
+                        }
+                    }]
+                },
+                layout: {
+                    padding: { left: 15, right: 15, top: 15, bottom: 15 },
+                },
             },
-            layout: {
-                padding: { left: 15, right: 15, top: 15, bottom: 15 },
-            },
-        },
-    });
-}
+        });
+    }
+});
 </script>
 @endsection('script')
