@@ -2,9 +2,9 @@
     <div class="sidebar sidebar-style-2" data-background-color="white">
         <div class="sidebar-logo">
             <div class="logo-header" data-background-color="white">
-                <a class="logo d-flex justify-content-center w-100" href="{{ route('dashboard.index') }}">
+                <div class="logo d-flex justify-content-center w-100" href="{{ route('dashboard.index') }}">
                     <img src="{{ url('/') }}/img/logo_light.png" class="navbar-brand" height="40" alt="PT. Infinity Logistics Indonesia"/>
-                </a>
+                </div>
                 <div class="nav-toggle">
                     <button class="btn btn-toggle toggle-sidebar">
                         <i class="gg-menu-right"></i>

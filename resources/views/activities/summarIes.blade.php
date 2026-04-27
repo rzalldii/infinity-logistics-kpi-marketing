@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title')
-Summary Activities | Key Perfomance Indicator Marketing
-@endsection('title')
+Summary Activities | Key Performance Indicator Marketing
+@endsection
 @section('content')
 <div class="container">
     <div class="page-inner">
@@ -114,7 +114,7 @@ Summary Activities | Key Perfomance Indicator Marketing
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title">
                                             <span class="fw-mediumbold">Edit</span>
-                                            <span class="fw-light">Target : <span id="modalTargetName"></span></span>
+                                            <span class="fw-light">Target: <span id="modalTargetName"></span></span>
                                         </h5>
                                     </div>
                                     <div class="modal-body">
@@ -179,7 +179,7 @@ Summary Activities | Key Perfomance Indicator Marketing
         </div>
     </div>
 </div>
-@endsection('content')
+@endsection
 @section('script')
 <script>
 $(document).ready(function () {
@@ -417,4 +417,4 @@ $(document).ready(function () {
     }
 });
 </script>
-@endsection('script')
+@endsection

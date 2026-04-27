@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title')
-Checking Rates | Key Perfomance Indicator Marketing
-@endsection('title')
+Checking Rates | Key Performance Indicator Marketing
+@endsection
 @section('content')
 <div class="container">
     <div class="page-inner">
@@ -350,7 +350,7 @@ Checking Rates | Key Perfomance Indicator Marketing
         </div>
     </div>
 </div>
-@endsection('content')
+@endsection
 @section('script')
 <script>
 $(document).ready(function () {
@@ -372,15 +372,15 @@ $(document).ready(function () {
         var activeFilters = [];
         if (filterData && filterData !== '') {
             var dataText = $('#filterData option:selected').text();
-            activeFilters.push('SCOPE : <b>' + dataText + '</b>');
+            activeFilters.push('SCOPE: <b>' + dataText + '</b>');
         }
-        if (filterPOL) activeFilters.push('POL : <b>' + filterPOL + '</b>');
-        if (filterPOD) activeFilters.push('POD : <b>' + filterPOD + '</b>');
-        if (filterLINER) activeFilters.push('LINER : <b>' + filterLINER + '</b>');
-        if (filterVALID) activeFilters.push('VALID : <b>' + filterVALID + '</b>');
+        if (filterPOL) activeFilters.push('POL: <b>' + filterPOL + '</b>');
+        if (filterPOD) activeFilters.push('POD: <b>' + filterPOD + '</b>');
+        if (filterLINER) activeFilters.push('LINER: <b>' + filterLINER + '</b>');
+        if (filterVALID) activeFilters.push('VALID: <b>' + filterVALID + '</b>');
         var messageHTML = '';
         if (activeFilters.length > 0) {
-            messageHTML = 'Filters : <br>' + activeFilters.join('<br>');
+            messageHTML = 'Filters: <br>' + activeFilters.join('<br>');
         } else {
             messageHTML = 'All Data';
         }
@@ -871,4 +871,4 @@ $(document).ready(function () {
     }
 });
 </script>
-@endsection('script')
+@endsection

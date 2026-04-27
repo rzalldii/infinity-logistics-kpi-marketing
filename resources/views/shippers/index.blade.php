@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title')
-Touch Shippers | Key Perfomance Indicator Marketing
-@endsection('title')
+Touch Shippers | Key Performance Indicator Marketing
+@endsection
 @section('content')
 <div class="container">
     <div class="page-inner">
@@ -431,7 +431,7 @@ Touch Shippers | Key Perfomance Indicator Marketing
         </div>
     </div>
 </div>
-@endsection('content')
+@endsection
 @section('script')
 <script>
 $(document).ready(function () {
@@ -452,14 +452,14 @@ $(document).ready(function () {
         var activeFilters = [];
         if (filterData && filterData !== '') {
             var dataText = $('#filterData option:selected').text();
-            activeFilters.push('SCOPE : <b>' + dataText + '</b>');
+            activeFilters.push('SCOPE: <b>' + dataText + '</b>');
         }
-        if (filterCONCEPT) activeFilters.push('CONCEPT : <b>' + filterCONCEPT + '</b>');
-        if (filterTYPE) activeFilters.push('TYPE : <b>' + filterTYPE + '</b>');
-        if (filterCITY) activeFilters.push('CITY : <b>' + filterCITY + '</b>');
+        if (filterCONCEPT) activeFilters.push('CONCEPT: <b>' + filterCONCEPT + '</b>');
+        if (filterTYPE) activeFilters.push('TYPE: <b>' + filterTYPE + '</b>');
+        if (filterCITY) activeFilters.push('CITY: <b>' + filterCITY + '</b>');
         var messageHTML = '';
         if (activeFilters.length > 0) {
-            messageHTML = 'Filters : <br>' + activeFilters.join('<br>');
+            messageHTML = 'Filters: <br>' + activeFilters.join('<br>');
         } else {
             messageHTML = 'All Data';
         }
@@ -904,4 +904,4 @@ $(document).ready(function () {
     }
 });
 </script>
-@endsection('script')
+@endsection

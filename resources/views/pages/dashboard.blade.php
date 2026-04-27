@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title')
-Dashboard | Key Perfomance Indicator Marketing
-@endsection('title')
+Dashboard | Key Performance Indicator Marketing
+@endsection
 @section('content')
 <div class="container">
     <div class="page-inner">
@@ -13,7 +13,7 @@ Dashboard | Key Perfomance Indicator Marketing
             @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
             <div class="ms-md-auto py-2 py-md-0">
                 <form method="GET" action="{{ route('dashboard.index') }}" class="d-inline-flex align-items-center me-2">
-                    <label for="user_id" class="form-label me-2 mb-0">Filter :</label>
+                    <label for="user_id" class="form-label me-2 mb-0">Filter by User:</label>
                     <select name="user_id" id="user_id" class="form-select form-select-sm" style="width: 200px;" onchange="this.form.submit()">
                         <option value="">All Users</option>
                         @if(Auth::user()->isAdmin())
@@ -33,53 +33,65 @@ Dashboard | Key Perfomance Indicator Marketing
         </div>
         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
         <div class="row">
-            <div class="col-sm-6 col-lg-4">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center">
-                        <a href="{{ route('rates.index') }}">
-                            <span class="stamp stamp-md bg-info me-3">
-                                <i class="fas fa-dollar-sign"></i>
-                            </span>
-                        </a>
-                        <div>
-                            <h5 class="mb-1">
-                                <b>{{ $totalRates }} <small>Submission Checking Rates</small></b>
-                            </h5>
-                            <small class="text-muted">{{ $ratesThisMonth }} Submitted this Month</small>
+            <div class="col-sm-6 col-md-4">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-info bubble-shadow-small">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <h4 class="mb-1">
+                                        <b>{{ $totalRates }} <small>Rates Checked</small></b>
+                                    </h4>
+                                    <small class="card-category">{{ $ratesThisMonth }} This Month</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center">
-                        <a href="{{ route('shippers.index') }}">
-                            <span class="stamp stamp-md bg-primary me-3">
-                                <i class="fas fa-ship"></i>
-                            </span>
-                        </a>
-                        <div>
-                            <h5 class="mb-1">
-                                <b>{{ $totalShippers }} <small>Submission Touch Shippers</small></b>
-                            </h5>
-                            <small class="text-muted">{{ $shippersThisMonth }} Submitted this Month</small>
+            <div class="col-sm-6 col-md-4">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                    <i class="fas fa-ship"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <h4 class="mb-1">
+                                        <b>{{ $totalShippers }} <small>Shippers Touched</small></b>
+                                    </h4>
+                                    <small class="card-category">{{ $shippersThisMonth }} This Month</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-4">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center">
-                        <a href="{{ route('activities.index') }}">
-                            <span class="stamp stamp-md bg-secondary me-3">
-                                <i class="fas fa-book-open"></i>
-                            </span>
-                        </a>
-                        <div>
-                            <h5 class="mb-1">
-                                <b>{{ $totalActivities }} <small>Submission Report Activities</small></b>
-                            </h5>
-                            <small class="text-muted">{{ $activitiesThisMonth }} Submitted this Month</small>
+            <div class="col-sm-6 col-md-4">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <h4 class="mb-1">
+                                        <b>{{ $totalActivities }} <small>Activities Reported</small></b>
+                                    </h4>
+                                    <small class="card-category">{{ $activitiesThisMonth }} This Month</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -89,13 +101,13 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-12 col-sm-6 col-md-6 col-xl-4">
                 <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Activity Performance</div>
+                        <div class="card-title mb-0">This Month's Activity</div>
                     </div>
                     <div class="card-body">
                         <div>
-                            <p class="text-muted">Target : {{ number_format((float)$performance['activities']['performance']['target'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Actual : {{ number_format((float)$performance['activities']['performance']['actual'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Remaining : {{ number_format((float)$performance['activities']['performance']['remaining'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Target: {{ number_format((float)$performance['activities']['performance']['target'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Actual: {{ number_format((float)$performance['activities']['performance']['actual'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Remaining: {{ number_format((float)$performance['activities']['performance']['remaining'], 0, ',', '.') }}</p>
                         </div>
                         @php
                             $actPercent = $performance['activities']['performance']['percentage'];
@@ -120,13 +132,13 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-12 col-sm-6 col-md-6 col-xl-4">
                 <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Volume Performance</div>
+                        <div class="card-title mb-0">This Month's Volume</div>
                     </div>
                     <div class="card-body">
                         <div>
-                            <p class="text-muted">Target : {{ number_format((float)$performance['volume']['performance']['target'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Actual : {{ number_format((float)$performance['volume']['performance']['actual'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Remaining : {{ number_format((float)$performance['volume']['performance']['remaining'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Target: {{ number_format((float)$performance['volume']['performance']['target'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Actual: {{ number_format((float)$performance['volume']['performance']['actual'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Remaining: {{ number_format((float)$performance['volume']['performance']['remaining'], 0, ',', '.') }}</p>
                         </div>
                         @php
                             $volPercent = $performance['volume']['performance']['percentage'];
@@ -151,13 +163,13 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-12 col-sm-6 col-md-6 col-xl-4">
                 <div class="card">
                     <div class="card-header text-center">
-                        <div class="card-title">Profit Performance</div>
+                        <div class="card-title mb-0">This Month's Profit</div>
                     </div>
                     <div class="card-body">
                         <div>
-                            <p class="text-muted">Target : Rp {{ number_format((float)$performance['profit']['performance']['target'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Actual : Rp {{ number_format((float)$performance['profit']['performance']['actual'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Remaining : Rp {{ number_format((float)$performance['profit']['performance']['remaining'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Target: Rp {{ number_format((float)$performance['profit']['performance']['target'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Actual: Rp {{ number_format((float)$performance['profit']['performance']['actual'], 0, ',', '.') }}</p>
+                            <p class="text-muted">Remaining: Rp {{ number_format((float)$performance['profit']['performance']['remaining'], 0, ',', '.') }}</p>
                         </div>
                         @php
                             $profPercent = $performance['profit']['performance']['percentage'];
@@ -184,7 +196,8 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                        <div class="card-title">Profit Overview</div>
+                        <div class="card-title">Profit Trend</div>
+                        <small class="text-muted">{{ now()->format('Y') }}</small>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
@@ -235,9 +248,9 @@ Dashboard | Key Perfomance Indicator Marketing
                         </div>
                         <hr>
                         <p class="mb-2 text-center">
-                            <span class="badge badge-success">CLOSING : {{ $dailyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING : {{ $dailyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED : {{ $dailyReport->failed_count ?? 0 }}</span>
+                            <span class="badge badge-success">CLOSING: {{ $dailyReport->closing_count ?? 0 }}</span>
+                            <span class="badge badge-warning">PENDING: {{ $dailyReport->pending_count ?? 0 }}</span>
+                            <span class="badge badge-danger">FAILED: {{ $dailyReport->failed_count ?? 0 }}</span>
                         </p>
                     </div>
                 </div>
@@ -282,9 +295,9 @@ Dashboard | Key Perfomance Indicator Marketing
                         </div>
                         <hr>
                         <p class="mb-2 text-center">
-                            <span class="badge badge-success">CLOSING : {{ $weeklyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING : {{ $weeklyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED : {{ $weeklyReport->failed_count ?? 0 }}</span>
+                            <span class="badge badge-success">CLOSING: {{ $weeklyReport->closing_count ?? 0 }}</span>
+                            <span class="badge badge-warning">PENDING: {{ $weeklyReport->pending_count ?? 0 }}</span>
+                            <span class="badge badge-danger">FAILED: {{ $weeklyReport->failed_count ?? 0 }}</span>
                         </p>
                     </div>
                 </div>
@@ -329,9 +342,9 @@ Dashboard | Key Perfomance Indicator Marketing
                         </div>
                         <hr>
                         <p class="mb-2 text-center">
-                            <span class="badge badge-success">CLOSING : {{ $monthlyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING : {{ $monthlyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED : {{ $monthlyReport->failed_count ?? 0 }}</span>
+                            <span class="badge badge-success">CLOSING: {{ $monthlyReport->closing_count ?? 0 }}</span>
+                            <span class="badge badge-warning">PENDING: {{ $monthlyReport->pending_count ?? 0 }}</span>
+                            <span class="badge badge-danger">FAILED: {{ $monthlyReport->failed_count ?? 0 }}</span>
                         </p>
                     </div>
                 </div>
@@ -341,7 +354,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-md-12">
                 <div class="card card-round">
                     <div class="card-header">
-                        <div class="card-title">Recent Activity Logs</div>
+                        <div class="card-title">Recent Actions</div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -394,11 +407,11 @@ Dashboard | Key Perfomance Indicator Marketing
                                     <tr>
                                         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                         <td colspan="5" class="text-center text-muted">
-                                            No Activity Logs Available.
+                                            No activity logs available.
                                         </td>
                                         @else
                                         <td colspan="4" class="text-center text-muted">
-                                            No Activity Logs Available.
+                                            No activity logs available.
                                         </td>
                                         @endif
                                     </tr>
@@ -416,7 +429,7 @@ Dashboard | Key Perfomance Indicator Marketing
             <div class="col-md-12">
                 <div class="card card-round">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center" style="min-height: 50vh;">
-                        <h3 class="mb-3">Welcome to Key Perfomance Indicator Marketing</h3>
+                        <h3 class="mb-3">Welcome to Key Performance Indicator Marketing</h3>
                         <p class="text-muted">You have view-only access to rates and shippers data.</p>
                         <div class="mt-4">
                             <a href="{{ route('rates.index') }}" class="btn btn-primary me-2">
@@ -433,7 +446,7 @@ Dashboard | Key Perfomance Indicator Marketing
         @endif
     </div>
 </div>
-@endsection('content')
+@endsection
 @section('script')
 <script>
 $(document).ready(function () {
@@ -489,7 +502,7 @@ $(document).ready(function () {
                         label: function(tooltipItem, data) {
                             var label = data.datasets[tooltipItem.datasetIndex].label;
                             var value = Math.round(tooltipItem.yLabel);
-                            return " " + label + " : Rp " + formatRupiah(value);
+                            return " " + label + ": Rp " + formatRupiah(value);
                         }
                     }
                 },
@@ -510,4 +523,4 @@ $(document).ready(function () {
     }
 });
 </script>
-@endsection('script')
+@endsection

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title')
-Report Activities | Key Perfomance Indicator Marketing
-@endsection('title')
+Report Activities | Key Performance Indicator Marketing
+@endsection
 @section('content')
 <div class="container">
     <div class="page-inner">
@@ -559,7 +559,7 @@ Report Activities | Key Perfomance Indicator Marketing
         </div>
     </div>
 </div>
-@endsection('content')
+@endsection
 @section('script')
 <script>
 $(document).ready(function () {
@@ -657,14 +657,14 @@ $(document).ready(function () {
         var filterACTIVITY = $('#filterACTIVITY').val();
         var filterSTATUS = $('#filterSTATUS').val();
         var activeFilters = [];
-        activeFilters.push('DATE : <b>' + dateFrom + '</b> To <b>' + dateTo + '</b>');
+        activeFilters.push('DATE: <b>' + dateFrom + '</b> To <b>' + dateTo + '</b>');
         if (filterUser && filterUser !== '') {
             var userText = $('#filterUser option:selected').text();
-            activeFilters.push('SCOPE : <b>' + userText + '</b>');
+            activeFilters.push('SCOPE: <b>' + userText + '</b>');
         }
-        if (filterACTIVITY) activeFilters.push('ACTIVITY : <b>' + filterACTIVITY + '</b>');
-        if (filterSTATUS) activeFilters.push('STATUS : <b>' + filterSTATUS + '</b>');
-        var messageHTML = 'Filters : <br>' + activeFilters.join('<br>');
+        if (filterACTIVITY) activeFilters.push('ACTIVITY: <b>' + filterACTIVITY + '</b>');
+        if (filterSTATUS) activeFilters.push('STATUS: <b>' + filterSTATUS + '</b>');
+        var messageHTML = 'Filters: <br>' + activeFilters.join('<br>');
         $('#exportModal').modal('hide');
         Swal.fire({
             title: 'Export Data?',
@@ -1479,4 +1479,4 @@ $(document).ready(function () {
     });
 });
 </script>
-@endsection('script')
+@endsection

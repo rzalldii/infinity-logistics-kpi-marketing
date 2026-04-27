@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title')
-User Management | Key Perfomance Indicator Marketing
-@endsection('title')
+User Management | Key Performance Indicator Marketing
+@endsection
 @section('content')
 <div class="container">
     <div class="page-inner">
@@ -136,7 +136,7 @@ User Management | Key Perfomance Indicator Marketing
         </div>
     </div>
 </div>
-@endsection('content')
+@endsection
 @section('script')
 <script>
 $(document).ready(function () {
@@ -347,4 +347,4 @@ $(document).ready(function () {
     });
 });
 </script>
-@endsection('script')
+@endsection
