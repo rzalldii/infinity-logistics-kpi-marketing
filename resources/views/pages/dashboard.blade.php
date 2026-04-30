@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Dashboard | Key Performance Indicator Marketing
+Dashboard | KPI - Marketing
 @endsection
 @section('content')
 <div class="container">
@@ -429,7 +429,7 @@ Dashboard | Key Performance Indicator Marketing
             <div class="col-md-12">
                 <div class="card card-round">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center" style="min-height: 50vh;">
-                        <h3 class="mb-3">Welcome to Key Performance Indicator Marketing</h3>
+                        <h3 class="mb-3">Welcome to KPI - Marketing</h3>
                         <p class="text-muted">You have view-only access to rates and shippers data.</p>
                         <div class="mt-4">
                             <a href="{{ route('rates.index') }}" class="btn btn-primary me-2">

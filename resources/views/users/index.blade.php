@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-User Management | Key Performance Indicator Marketing
+User Management | KPI - Marketing
 @endsection
 @section('content')
 <div class="container">

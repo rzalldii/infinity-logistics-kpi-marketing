@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Checking Rates | Key Performance Indicator Marketing
+Checking Rates | KPI - Marketing
 @endsection
 @section('content')
 <div class="container">

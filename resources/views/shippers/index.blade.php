@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Touch Shippers | Key Performance Indicator Marketing
+Touch Shippers | KPI - Marketing
 @endsection
 @section('content')
 <div class="container">

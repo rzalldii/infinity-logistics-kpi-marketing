@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-Report Activities | Key Performance Indicator Marketing
+Report Activities | KPI - Marketing
 @endsection
 @section('content')
 <div class="container">
