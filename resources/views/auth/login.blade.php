@@ -6,14 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Sign In | KPI - Marketing</title>
-
     <meta name="theme-color" content="#6777ef">
     <link rel="apple-touch-icon" href="{{ url('/') }}/img/favicon.ico">
     <link rel="manifest" href="{{ url('/') }}/manifest.json">
-
     <!-- Favicons -->
     <link href="{{ url('/') }}/img/favicon.ico" rel="icon">
-
     <!-- Fonts and icons -->
     <script src="{{ url('/') }}/js/plugin/webfont/webfont.min.js"></script>
     <script>
@@ -33,12 +30,10 @@
             },
         });
     </script>
-
     <!-- Preload CSS Files -->
     <link href="{{ url('/') }}/css/bootstrap.min.css" rel="preload" as="style">
     <link href="{{ url('/') }}/css/plugins.min.css" rel="preload" as="style">
     <link href="{{ url('/') }}/css/kaiadmin.min.css" rel="preload" as="style">
-
     <!-- Stylesheet CSS Files -->
     <link href="{{ url('/') }}/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ url('/') }}/css/plugins.min.css" rel="stylesheet">
@@ -85,7 +80,6 @@
             </div>
         </div>
     </div>
-
     <!--   Core JS Files   -->
     <script src="{{ url('/') }}/js/core/jquery.min.js"></script>
     <script src="{{ url('/') }}/js/core/popper.min.js"></script>

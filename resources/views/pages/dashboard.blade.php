@@ -447,7 +447,7 @@ Dashboard | KPI - Marketing
     </div>
 </div>
 @endsection
-@section('script')
+@push('script')
 <script>
 $(document).ready(function () {
     function formatRupiah(angka) {
@@ -523,4 +523,4 @@ $(document).ready(function () {
     }
 });
 </script>
-@endsection
+@endpush

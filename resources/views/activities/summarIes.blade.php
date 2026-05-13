@@ -180,7 +180,7 @@ Summary Activities | KPI - Marketing
     </div>
 </div>
 @endsection
-@section('script')
+@push('script')
 <script>
 $(document).ready(function () {
     $('#ExportExcel').on('click', function() {
@@ -417,4 +417,4 @@ $(document).ready(function () {
     }
 });
 </script>
-@endsection
+@endpush

@@ -158,7 +158,7 @@ Audit Logs | KPI - Marketing
     </div>
 </div>
 @endsection
-@section('script')
+@push('script')
 <script>
 $(document).ready(function () {
     var table = $('#audit-table').DataTable({
@@ -294,4 +294,4 @@ $(document).ready(function () {
     });
 });
 </script>
-@endsection
+@endpush
