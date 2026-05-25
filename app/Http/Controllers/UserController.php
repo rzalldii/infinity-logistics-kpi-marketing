@@ -43,7 +43,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$id,
+            'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|min:5',
             'role' => 'required|in:SUPER ADMIN,ADMIN,MARKETING,GUEST',
         ]);

@@ -59,9 +59,15 @@ class SummariesExport implements FromCollection, WithHeadings, WithStyles, WithC
     {
         return [
             'A' => 22,
-            'B' => 12, 'C' => 12, 'D' => 12,
-            'E' => 12, 'F' => 12, 'G' => 12,
-            'H' => 15, 'I' => 15, 'J' => 12,
+            'B' => 12,
+            'C' => 12,
+            'D' => 12,
+            'E' => 12,
+            'F' => 12,
+            'G' => 12,
+            'H' => 15,
+            'I' => 15,
+            'J' => 12,
         ];
     }
 
@@ -106,10 +112,10 @@ class SummariesExport implements FromCollection, WithHeadings, WithStyles, WithC
             $sheet->getStyle('A3:A' . $highestRow)->applyFromArray([
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             ]);
-            foreach(['B','C', 'E','F', 'H','I'] as $col) {
+            foreach (['B', 'C', 'E', 'F', 'H', 'I'] as $col) {
                 $sheet->getStyle($col . '3:' . $col . $highestRow)
-                      ->getNumberFormat()
-                      ->setFormatCode('#,##0');
+                    ->getNumberFormat()
+                    ->setFormatCode('#,##0');
             }
             $sheet->getStyle('H3:I' . $highestRow)->applyFromArray([
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
@@ -121,7 +127,7 @@ class SummariesExport implements FromCollection, WithHeadings, WithStyles, WithC
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $highestRow = $sheet->getHighestRow();
                 $numericCols = ['B', 'C', 'E', 'F', 'H', 'I'];
@@ -131,8 +137,8 @@ class SummariesExport implements FromCollection, WithHeadings, WithStyles, WithC
                         $val = $cell->getValue();
                         if ($val === null || $val === '' || $val === 0 || $val === '0') {
                             $sheet->setCellValueExplicit(
-                                $col . $row, 
-                                0, 
+                                $col . $row,
+                                0,
                                 DataType::TYPE_NUMERIC
                             );
                         }

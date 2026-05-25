@@ -33,7 +33,7 @@ class ActivityController extends Controller
             ->map(fn($item) => $item->parent_id ?? $item->id)
             ->unique()->toArray();
         $allUserActivities = Activity::select('id', 'parent_id', 'sequence')
-            ->when(Auth::user()->isMarketing(), function($q) {
+            ->when(Auth::user()->isMarketing(), function ($q) {
                 $q->where('user_id', Auth::id());
             })
             ->get();
@@ -51,7 +51,7 @@ class ActivityController extends Controller
             return response()->json($activities);
         }
         $shippers = Shipper::orderBy('shipper_name')->get();
-        $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['MARKETING', 'ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('activities.index', compact('activities', 'shippers', 'users', 'closedActivitiesIds', 'latestActivityIds'));
     }
 
@@ -72,14 +72,14 @@ class ActivityController extends Controller
         $validated['user_id'] = Auth::id();
         if (empty($request->parent_id)) {
             $validated['parent_id'] = null;
-            $validated['sequence']  = 1;
+            $validated['sequence'] = 1;
         } else {
             $refActivity = Activity::findOrFail($request->parent_id);
             $rootId = $refActivity->parent_id ?? $refActivity->id;
             $lastChildSequence = Activity::where('parent_id', $rootId)->max('sequence');
             $nextSequence = ($lastChildSequence ?? 1) + 1;
             $validated['parent_id'] = $rootId;
-            $validated['sequence']  = $nextSequence;
+            $validated['sequence'] = $nextSequence;
         }
         $activity = Activity::create($validated);
         if ((Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) && $request->filled('created_date')) {
@@ -120,7 +120,7 @@ class ActivityController extends Controller
             if (Auth::user()->isMarketing() && $activity->user_id !== Auth::id()) {
                 return response()->json(null, 403);
             }
-            $createdDate = Carbon::parse($activity->created_at)->startOfDay(); 
+            $createdDate = Carbon::parse($activity->created_at)->startOfDay();
             $today = Carbon::now()->startOfDay();
             $currentMonthFormat = $today->format('Y-m');
             $previousMonthFormat = clone $today;
@@ -137,7 +137,7 @@ class ActivityController extends Controller
             }
             if ($isClosingCase) {
                 if ($createdMonthFormat !== $currentMonthFormat && $createdMonthFormat !== $previousMonthFormat) {
-                     return response()->json(null, 403);
+                    return response()->json(null, 403);
                 }
             } else {
                 if (!$createdDate->equalTo($today)) {
@@ -149,7 +149,7 @@ class ActivityController extends Controller
         $oldShipperId = $activity->shipper_id;
         $activity->fill(collect($validated)->except(['created_date'])->toArray());
         if ((Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()) && $request->filled('created_date')) {
-            $originalTimestamp = $activity->getOriginal('created_at'); 
+            $originalTimestamp = $activity->getOriginal('created_at');
             $originalTime = Carbon::parse($originalTimestamp)->format('H:i:s');
             $newTimestamp = $request->created_date . ' ' . $originalTime;
             $activity->created_at = $newTimestamp;
@@ -161,7 +161,7 @@ class ActivityController extends Controller
         }
         if ($oldStatus === 'CLOSING' && $activity->status_type !== 'CLOSING') {
             $hasOtherClosings = Activity::where('shipper_id', $currentShipper->id)
-                ->where('id', '!=', $id) 
+                ->where('id', '!=', $id)
                 ->where('status_type', 'CLOSING')
                 ->exists();
             if (!$hasOtherClosings) {
@@ -204,7 +204,7 @@ class ActivityController extends Controller
                 ->exists();
             if (!$hasOtherClosings) {
                 Shipper::where('id', $shipperId)
-                       ->update(['shipper_concept' => 'NEW SHIPPER']);
+                    ->update(['shipper_concept' => 'NEW SHIPPER']);
             }
         }
         return response()->json(null, 204);

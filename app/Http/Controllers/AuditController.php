@@ -32,8 +32,8 @@ class AuditController extends Controller
         $shippers = !empty($shipperIds)
             ? Shipper::whereIn('id', $shipperIds)->pluck('shipper_name', 'id')
             : collect();
-        $logs = $auditLogs->map(function($log) use ($shippers) {
-            $type = match($log->auditable_type) {
+        $logs = $auditLogs->map(function ($log) use ($shippers) {
+            $type = match ($log->auditable_type) {
                 'Rate' => 'Checking Rates',
                 'Shipper' => 'Touch Shippers',
                 'Activity' => 'Report Activities',
@@ -61,7 +61,7 @@ class AuditController extends Controller
                 'description' => $log->description,
                 'action' => ucfirst($log->event),
                 'created_at' => $log->created_at,
-                'old_values' => $oldValues, 
+                'old_values' => $oldValues,
                 'new_values' => $newValues,
             ];
         });

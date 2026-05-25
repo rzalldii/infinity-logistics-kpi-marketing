@@ -3,7 +3,8 @@
         <div class="sidebar-logo">
             <div class="logo-header" data-background-color="white">
                 <div class="logo d-flex justify-content-center w-100" href="{{ route('dashboard.index') }}">
-                    <img src="{{ url('/') }}/img/logo_light.png" class="navbar-brand" height="40" alt="PT. Infinity Logistics Indonesia"/>
+                    <img src="{{ url('/') }}/img/logo_light.png" class="navbar-brand" height="40"
+                        alt="PT. Infinity Logistics Indonesia" />
                 </div>
                 <div class="nav-toggle">
                     <button class="btn btn-toggle toggle-sidebar">
@@ -46,40 +47,41 @@
                         </a>
                     </li>
                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-                    <li class="nav-item {{ request()->routeIs('activities.index', 'activities.edit') ? 'active' : '' }}">
-                        <a href="{{ route('activities.index') }}">
-                            <i class="fas fa-book-open"></i>
-                            <p>Report Activities</p>
-                        </a>
-                    </li>
+                        <li
+                            class="nav-item {{ request()->routeIs('activities.index', 'activities.edit') ? 'active' : '' }}">
+                            <a href="{{ route('activities.index') }}">
+                                <i class="fas fa-book-open"></i>
+                                <p>Report Activities</p>
+                            </a>
+                        </li>
                     @endif
                     @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                    <li class="nav-item {{ request()->routeIs('activities.summaries*') ? 'active' : '' }}">
-                        <a href="{{ route('activities.summaries') }}">
-                            <i class="fas fa-chart-pie"></i>
-                            <p>Summary Activities</p>
-                        </a>
-                    </li>
+                        <li class="nav-item {{ request()->routeIs('activities.summaries*') ? 'active' : '' }}">
+                            <a href="{{ route('activities.summaries') }}">
+                                <i class="fas fa-chart-pie"></i>
+                                <p>Summary Activities</p>
+                            </a>
+                        </li>
                     @endif
                     @if(Auth::user()->isSuperAdmin())
-                    <li class="nav-section">
-                        <span class="sidebar-mini-icon">
-                            <i class="fa fa-ellipsis-h"></i>
-                        </span>
-                        <h4 class="text-section">Admin</h4>
-                    </li>
-                    <li class="nav-item {{ request()->routeIs('audit.index') ? 'active' : '' }}">
-                        <a href="{{ route('audit.index') }}">
-                            <i class="fas fa-history"></i>
-                            <p>Audit Logs</p>
-                        </a>
-                    </li>
-                    <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                        <a href="{{ route('users.index') }}">
-                            <i class="fas fa-users"></i>
-                            <p>Management Users</p>
-                        </a>
-                    </li>
+                        <li class="nav-section">
+                            <span class="sidebar-mini-icon">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </span>
+                            <h4 class="text-section">Admin</h4>
+                        </li>
+                        <li class="nav-item {{ request()->routeIs('audit.index') ? 'active' : '' }}">
+                            <a href="{{ route('audit.index') }}">
+                                <i class="fas fa-history"></i>
+                                <p>Audit Logs</p>
+                            </a>
+                        </li>
+                        <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                            <a href="{{ route('users.index') }}">
+                                <i class="fas fa-users"></i>
+                                <p>Management Users</p>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

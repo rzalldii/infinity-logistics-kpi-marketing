@@ -12,7 +12,7 @@ class Activity extends Model
 
     protected $fillable = [
         'parent_id',
-        'sequence',    
+        'sequence',
         'user_id',
         'shipper_id',
         'activity_type',
@@ -26,7 +26,7 @@ class Activity extends Model
     ];
 
     protected $casts = [
-        'visit_date'  => 'date',
+        'visit_date' => 'date',
     ];
 
     public function user()

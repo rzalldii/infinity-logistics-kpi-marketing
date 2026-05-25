@@ -120,7 +120,7 @@ class ShippersExport implements FromCollection, WithHeadings, WithMapping, WithS
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $highestRow = $sheet->getHighestRow();
                 $lastColumn = 'M';

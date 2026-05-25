@@ -19,7 +19,7 @@ class ShipperController extends Controller
         if ($request->ajax()) {
             return response()->json($shippers);
         }
-        $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['MARKETING', 'ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('shippers.index', compact('shippers', 'users'));
     }
 

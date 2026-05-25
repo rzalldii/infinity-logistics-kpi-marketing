@@ -29,8 +29,8 @@ class SummaryController extends Controller
                 $label = Carbon::create()->month($d->month)->format('F');
                 $currentYearMonths[$val] = $label;
             } else {
-                if (!isset($pastYears[(string)$d->year])) {
-                    $pastYears[(string)$d->year] = "Summary " . $d->year;
+                if (!isset($pastYears[(string) $d->year])) {
+                    $pastYears[(string) $d->year] = "Summary " . $d->year;
                 }
             }
         }
@@ -39,7 +39,7 @@ class SummaryController extends Controller
             $currentYearMonths = [$currentMonthVal => now()->format('F')] + $currentYearMonths;
         }
         $filterOptions = $currentYearMonths;
-        $filterOptions[(string)$currentYear] = "Summary " . $currentYear;
+        $filterOptions[(string) $currentYear] = "Summary " . $currentYear;
         foreach ($pastYears as $yearVal => $yearLabel) {
             $filterOptions[$yearVal] = $yearLabel;
         }
@@ -90,8 +90,8 @@ class SummaryController extends Controller
         $user = User::findOrFail($id);
         $validated = $request->validate([
             'target_activity' => 'nullable|string',
-            'target_volume'   => 'nullable|string',
-            'target_profit'   => 'nullable|string',
+            'target_volume' => 'nullable|string',
+            'target_profit' => 'nullable|string',
         ]);
         $user->update($validated);
         return response()->json($user, 200);
@@ -114,9 +114,9 @@ class SummaryController extends Controller
         $performanceData = [];
         foreach ($marketingUsers as $user) {
             $targets = [
-                'activity_total' => ((float)$user->target_activity) * $multiplier,
-                'volume_total'   => ((float)$user->target_volume) * $multiplier,
-                'profit_total'   => ((float)$user->target_profit) * $multiplier,
+                'activity_total' => ((float) $user->target_activity) * $multiplier,
+                'volume_total' => ((float) $user->target_volume) * $multiplier,
+                'profit_total' => ((float) $user->target_profit) * $multiplier,
             ];
             $stats = Activity::where('user_id', $user->id)
                 ->whereBetween('created_at', [$startOfPeriod, $endOfPeriod])
@@ -135,40 +135,40 @@ class SummaryController extends Controller
                     SUM(CAST(REGEXP_REPLACE(COALESCE(profit, '0'), '[^0-9.-]', '') AS DECIMAL(15,2))) as total_profit
                 ")
                 ->first();
-            $actualActivity = (int)$stats->count_quote + (int)$stats->count_call + (int)$stats->count_visit;
-            $actualVolumeContainer = (float)$stats->sum_20 + (float)$stats->sum_40;
-            $actualVolumeOthers = (int)$stats->count_air + (int)$stats->count_rail + 
-                                  (int)$stats->count_road + (int)$stats->count_emkl + 
-                                  (int)$stats->count_lcl + (int)$stats->count_other_biz;
+            $actualActivity = (int) $stats->count_quote + (int) $stats->count_call + (int) $stats->count_visit;
+            $actualVolumeContainer = (float) $stats->sum_20 + (float) $stats->sum_40;
+            $actualVolumeOthers = (int) $stats->count_air + (int) $stats->count_rail +
+                (int) $stats->count_road + (int) $stats->count_emkl +
+                (int) $stats->count_lcl + (int) $stats->count_other_biz;
             $actualVolumeTotal = $actualVolumeContainer + $actualVolumeOthers;
-            $actualProfit = (float)$stats->total_profit;
-            $calc = function($actual, $target) {
+            $actualProfit = (float) $stats->total_profit;
+            $calc = function ($actual, $target) {
                 $percentage = $target > 0 ? round(($actual / $target) * 100) : 0;
                 $remaining = max(0, $target - $actual);
                 return [
-                    'actual'     => $actual,
-                    'target'     => $target,
-                    'remaining'  => $remaining,
+                    'actual' => $actual,
+                    'target' => $target,
+                    'remaining' => $remaining,
                     'percentage' => $percentage
                 ];
             };
             $performanceData[] = [
                 'user_id' => $user->id,
-                'name'    => $user->name,
-                'role'    => $user->role,
+                'name' => $user->name,
+                'role' => $user->role,
                 'activities' => [
                     'performance' => $calc($actualActivity, $targets['activity_total']),
-                    'breakdown'   => [
-                        'quote' => (int)$stats->count_quote,
-                        'call'  => (int)$stats->count_call,
-                        'visit' => (int)$stats->count_visit
+                    'breakdown' => [
+                        'quote' => (int) $stats->count_quote,
+                        'call' => (int) $stats->count_call,
+                        'visit' => (int) $stats->count_visit
                     ]
                 ],
                 'volume' => [
                     'performance' => $calc($actualVolumeTotal, $targets['volume_total']),
-                    'breakdown'   => [
-                        '20ft' => (float)$stats->sum_20,
-                        '40ft' => (float)$stats->sum_40,
+                    'breakdown' => [
+                        '20ft' => (float) $stats->sum_20,
+                        '40ft' => (float) $stats->sum_40,
                         'others' => $actualVolumeOthers
                     ]
                 ],
@@ -182,9 +182,9 @@ class SummaryController extends Controller
 
     private function getLineChart($year = null)
     {
-        $year  = $year ?? now()->year;
-        $labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        $colors = ['#1d7af3','#59d05d','#f3545d','#fdaf4b','#a855f7','#14b8a6','#f97316','#ec4899','#a16207'];
+        $year = $year ?? now()->year;
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $colors = ['#1d7af3', '#59d05d', '#f3545d', '#fdaf4b', '#a855f7', '#14b8a6', '#f97316', '#ec4899', '#a16207'];
         $users = User::whereIn('role', ['MARKETING', 'ADMIN'])
             ->orderBy('name')
             ->get();
@@ -200,26 +200,26 @@ class SummaryController extends Controller
                 ->pluck('total_profit', 'month');
             $data = [];
             for ($m = 1; $m <= 12; $m++) {
-                $data[] = round((float)($results[$m] ?? 0), 2);
+                $data[] = round((float) ($results[$m] ?? 0), 2);
             }
-            $color      = $colors[$index % count($colors)];
+            $color = $colors[$index % count($colors)];
             $datasets[] = [
-                'label'                => $u->name,
-                'borderColor'          => $color,
-                'pointBorderColor'     => '#FFF',
+                'label' => $u->name,
+                'borderColor' => $color,
+                'pointBorderColor' => '#FFF',
                 'pointBackgroundColor' => $color,
-                'pointBorderWidth'     => 2,
-                'pointHoverRadius'     => 4,
-                'pointHoverBorderWidth'=> 1,
-                'pointRadius'          => 4,
-                'backgroundColor'      => 'transparent',
-                'fill'                 => true,
-                'borderWidth'          => 2,
-                'data'                 => $data,
+                'pointBorderWidth' => 2,
+                'pointHoverRadius' => 4,
+                'pointHoverBorderWidth' => 1,
+                'pointRadius' => 4,
+                'backgroundColor' => 'transparent',
+                'fill' => true,
+                'borderWidth' => 2,
+                'data' => $data,
             ];
         }
         return [
-            'labels'   => $labels,
+            'labels' => $labels,
             'datasets' => $datasets,
         ];
     }

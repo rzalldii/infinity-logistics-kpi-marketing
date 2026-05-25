@@ -19,7 +19,7 @@ use Carbon\Carbon;
 
 class MarketingExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithColumnFormatting, WithTitle, WithEvents
 {
-    protected $activities; 
+    protected $activities;
     protected $dateFrom;
     protected $dateTo;
 
@@ -36,8 +36,8 @@ class MarketingExport implements FromCollection, WithHeadings, WithStyles, WithC
             $rootId = $activity->parent_id ?? $activity->id;
             $suffix = match ($activity->status_type) {
                 'CLOSING' => 'CLS',
-                'FAILED'  => 'FLD',
-                default   => $activity->sequence ?? 1,
+                'FAILED' => 'FLD',
+                default => $activity->sequence ?? 1,
             };
             $ref = 'ACT#' . $rootId . '-' . $suffix;
             return [
@@ -169,15 +169,15 @@ class MarketingExport implements FromCollection, WithHeadings, WithStyles, WithC
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $highestRow = $sheet->getHighestRow();
                 $highestCol = $sheet->getHighestColumn();
                 $sheet->setAutoFilter('A1:' . $highestCol . '1');
                 $footerRow = $highestRow + 2;
                 if ($this->dateFrom && $this->dateTo) {
-                    $dateRange = 'Period: ' . Carbon::parse($this->dateFrom)->format('d M Y') 
-                               . ' - ' . Carbon::parse($this->dateTo)->format('d M Y');
+                    $dateRange = 'Period: ' . Carbon::parse($this->dateFrom)->format('d M Y')
+                        . ' - ' . Carbon::parse($this->dateTo)->format('d M Y');
                     $sheet->setCellValue('A' . $footerRow, $dateRange);
                     $sheet->mergeCells('A' . $footerRow . ':F' . $footerRow);
                 }
@@ -207,7 +207,7 @@ class MarketingExport implements FromCollection, WithHeadings, WithStyles, WithC
                     $bgColor = $groupToggle ? 'EAF4FF' : 'FFFFFF';
                     $sheet->getStyle('A' . $i . ':' . $highestCol . $i)->applyFromArray([
                         'fill' => [
-                            'fillType'   => Fill::FILL_SOLID,
+                            'fillType' => Fill::FILL_SOLID,
                             'startColor' => ['rgb' => $bgColor],
                         ],
                     ]);

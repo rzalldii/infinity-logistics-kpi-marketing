@@ -1,526 +1,539 @@
 @extends('layouts.app')
 @section('title')
-Dashboard | KPI - Marketing
+    Dashboard | KPI - Marketing
 @endsection
 @section('content')
-<div class="container">
-    <div class="page-inner">
-        <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-            <div>
-                <h3 class="fw-bold mb-3">Dashboard</h3>
-                <h6 class="op-7 mb-2">Welcome, {{ Auth::user()->name }}!</h6>
+    <div class="container">
+        <div class="page-inner">
+            <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+                <div>
+                    <h3 class="fw-bold mb-3">Dashboard</h3>
+                    <h6 class="op-7 mb-2">Welcome, {{ Auth::user()->name }}!</h6>
+                </div>
+                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                    <div class="ms-md-auto py-2 py-md-0">
+                        <form method="GET" action="{{ route('dashboard.index') }}"
+                            class="d-inline-flex align-items-center me-2">
+                            <label for="user_id" class="form-label me-2 mb-0">Filter by User:</label>
+                            <select name="user_id" id="user_id" class="form-select form-select-sm" style="width: 200px;"
+                                onchange="this.form.submit()">
+                                <option value="">All Users</option>
+                                @if(Auth::user()->isAdmin())
+                                    <option value="mine" {{ $selectedUserId === 'mine' ? 'selected' : '' }}>
+                                        My Data
+                                    </option>
+                                @endif
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" {{ $selectedUserId == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+                @endif
             </div>
-            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-            <div class="ms-md-auto py-2 py-md-0">
-                <form method="GET" action="{{ route('dashboard.index') }}" class="d-inline-flex align-items-center me-2">
-                    <label for="user_id" class="form-label me-2 mb-0">Filter by User:</label>
-                    <select name="user_id" id="user_id" class="form-select form-select-sm" style="width: 200px;" onchange="this.form.submit()">
-                        <option value="">All Users</option>
-                        @if(Auth::user()->isAdmin())
-                        <option value="mine" {{ $selectedUserId === 'mine' ? 'selected' : '' }}>
-                            My Data
-                        </option>
-                        @endif
-                        @foreach($users as $user)
-                        <option value="{{ $user->id }}" {{ $selectedUserId == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </form>
-            </div>
+            @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <div class="card card-stats card-round">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-icon">
+                                        <div class="icon-big text-center icon-info bubble-shadow-small">
+                                            <i class="fas fa-dollar-sign"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col col-stats ms-3 ms-sm-0">
+                                        <div class="numbers">
+                                            <h4 class="mb-1">
+                                                <b>{{ $totalRates }} <small>Rates Checked</small></b>
+                                            </h4>
+                                            <small class="card-category">{{ $ratesThisMonth }} This Month</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="card card-stats card-round">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-icon">
+                                        <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                            <i class="fas fa-ship"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col col-stats ms-3 ms-sm-0">
+                                        <div class="numbers">
+                                            <h4 class="mb-1">
+                                                <b>{{ $totalShippers }} <small>Shippers Touched</small></b>
+                                            </h4>
+                                            <small class="card-category">{{ $shippersThisMonth }} This Month</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="card card-stats card-round">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-icon">
+                                        <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                            <i class="fas fa-book-open"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col col-stats ms-3 ms-sm-0">
+                                        <div class="numbers">
+                                            <h4 class="mb-1">
+                                                <b>{{ $totalActivities }} <small>Activities Reported</small></b>
+                                            </h4>
+                                            <small class="card-category">{{ $activitiesThisMonth }} This Month</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-card-no-pd">
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-4">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <div class="card-title mb-0">This Month's Activity</div>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <p class="text-muted">Target:
+                                        {{ number_format((float) $performance['activities']['performance']['target'], 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-muted">Actual:
+                                        {{ number_format((float) $performance['activities']['performance']['actual'], 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-muted">Remaining:
+                                        {{ number_format((float) $performance['activities']['performance']['remaining'], 0, ',', '.') }}
+                                    </p>
+                                </div>
+                                @php
+                                    $actPercent = $performance['activities']['performance']['percentage'];
+                                    $actPercentDisplay = $actPercent > 100 ? 100 : $actPercent;
+                                @endphp
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar {{ $actPercent <= 33 ? 'bg-danger' : ($actPercent <= 66 ? 'bg-warning' : 'bg-success') }}"
+                                        role="progressbar" style="width: {{ $actPercentDisplay }}%"
+                                        aria-valuenow="{{ $actPercentDisplay }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <p class="text-muted mb-0">Achievement</p>
+                                    <p class="text-muted mb-0">{{ $actPercentDisplay }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-4">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <div class="card-title mb-0">This Month's Volume</div>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <p class="text-muted">Target:
+                                        {{ number_format((float) $performance['volume']['performance']['target'], 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-muted">Actual:
+                                        {{ number_format((float) $performance['volume']['performance']['actual'], 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-muted">Remaining:
+                                        {{ number_format((float) $performance['volume']['performance']['remaining'], 0, ',', '.') }}
+                                    </p>
+                                </div>
+                                @php
+                                    $volPercent = $performance['volume']['performance']['percentage'];
+                                    $volPercentDisplay = $volPercent > 100 ? 100 : $volPercent;
+                                @endphp
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar {{ $volPercent <= 33 ? 'bg-danger' : ($volPercent <= 66 ? 'bg-warning' : 'bg-success') }}"
+                                        role="progressbar" style="width: {{ $volPercentDisplay }}%"
+                                        aria-valuenow="{{ $volPercentDisplay }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <p class="text-muted mb-0">Achievement</p>
+                                    <p class="text-muted mb-0">{{ $volPercentDisplay }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-4">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <div class="card-title mb-0">This Month's Profit</div>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <p class="text-muted">Target: Rp
+                                        {{ number_format((float) $performance['profit']['performance']['target'], 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-muted">Actual: Rp
+                                        {{ number_format((float) $performance['profit']['performance']['actual'], 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-muted">Remaining: Rp
+                                        {{ number_format((float) $performance['profit']['performance']['remaining'], 0, ',', '.') }}
+                                    </p>
+                                </div>
+                                @php
+                                    $profPercent = $performance['profit']['performance']['percentage'];
+                                    $profPercentDisplay = $profPercent > 100 ? 100 : $profPercent;
+                                @endphp
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar {{ $profPercent <= 33 ? 'bg-danger' : ($profPercent <= 66 ? 'bg-warning' : 'bg-success') }}"
+                                        role="progressbar" style="width: {{ $profPercentDisplay }}%"
+                                        aria-valuenow="{{ $profPercentDisplay }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <p class="text-muted mb-0">Achievement</p>
+                                    <p class="text-muted mb-0">{{ $profPercentDisplay }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <div class="card-title">Profit Trend</div>
+                                <small class="text-muted">{{ now()->format('Y') }}</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="multipleLineChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <div class="card-title">Today's Summary</div>
+                                <p class="mb-0">
+                                    <small>{{ now()->format('d M Y') }}</small>
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-6 mb-2">
+                                        <small>New Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $dailyReport->new_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Existing Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $dailyReport->existing_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row text-center">
+                                    <div class="col-6 mb-2">
+                                        <small>Direct Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $dailyReport->direct_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Forwarding</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $dailyReport->forwarding_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Vendoring</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $dailyReport->vendoring_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Trading</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $dailyReport->trading_count ?? 0 }}</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="mb-2 text-center">
+                                    <span class="badge badge-success">CLOSING: {{ $dailyReport->closing_count ?? 0 }}</span>
+                                    <span class="badge badge-warning">PENDING: {{ $dailyReport->pending_count ?? 0 }}</span>
+                                    <span class="badge badge-danger">FAILED: {{ $dailyReport->failed_count ?? 0 }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <div class="card-title">This Week's Summary</div>
+                                <p class="mb-0">
+                                    <small>{{ now()->startOfWeek()->format('d M') }} -
+                                        {{ now()->endOfWeek()->format('d M Y') }}</small>
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-6 mb-2">
+                                        <small>New Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $weeklyReport->new_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Existing Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $weeklyReport->existing_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row text-center">
+                                    <div class="col-6 mb-2">
+                                        <small>Direct Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $weeklyReport->direct_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Forwarding</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $weeklyReport->forwarding_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Vendoring</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $weeklyReport->vendoring_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Trading</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $weeklyReport->trading_count ?? 0 }}</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="mb-2 text-center">
+                                    <span class="badge badge-success">CLOSING: {{ $weeklyReport->closing_count ?? 0 }}</span>
+                                    <span class="badge badge-warning">PENDING: {{ $weeklyReport->pending_count ?? 0 }}</span>
+                                    <span class="badge badge-danger">FAILED: {{ $weeklyReport->failed_count ?? 0 }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <div class="card-title">This Month's Summary</div>
+                                <p class="mb-0">
+                                    <small>{{ now()->format('F Y') }}</small>
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-6 mb-2">
+                                        <small>New Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $monthlyReport->new_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Existing Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $monthlyReport->existing_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row text-center">
+                                    <div class="col-6 mb-2">
+                                        <small>Direct Shipper</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $monthlyReport->direct_shipper_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Forwarding</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $monthlyReport->forwarding_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Vendoring</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $monthlyReport->vendoring_count ?? 0 }}</h5>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <small>Trading</small>
+                                        <h5 class="font-weight-bold mb-0">{{ $monthlyReport->trading_count ?? 0 }}</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="mb-2 text-center">
+                                    <span class="badge badge-success">CLOSING: {{ $monthlyReport->closing_count ?? 0 }}</span>
+                                    <span class="badge badge-warning">PENDING: {{ $monthlyReport->pending_count ?? 0 }}</span>
+                                    <span class="badge badge-danger">FAILED: {{ $monthlyReport->failed_count ?? 0 }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-round">
+                            <div class="card-header">
+                                <div class="card-title">Recent Actions</div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0">
+                                        <thead class="thead-light text-center">
+                                            <tr>
+                                                <th>DATE & TIME</th>
+                                                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                                    <th>USER</th>
+                                                @endif
+                                                <th>TYPE</th>
+                                                <th>DESCRIPTION</th>
+                                                <th>ACTION</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center text-nowrap">
+                                            @forelse($logs as $log)
+                                                <tr>
+                                                    <td data-order="{{ $log['created_at']->format('Y-m-d') }}">
+                                                        {{ $log['created_at'] ? $log['created_at']->format('d M Y H:i') : '—' }}
+                                                    </td>
+                                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                                        <td>{{ optional($log['user'])->name ?? 'System' }}</td>
+                                                    @endif
+                                                    <td>
+                                                        @if($log['type'] == 'Checking Rates')
+                                                            <span class="badge bg-info">Checking Rates</span>
+                                                        @elseif($log['type'] == 'Touch Shippers')
+                                                            <span class="badge bg-primary">Touch Shippers</span>
+                                                        @elseif($log['type'] == 'Report Activities')
+                                                            <span class="badge bg-secondary">Report Activities</span>
+                                                        @else
+                                                            <span class="badge bg-dark">User Management</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $log['description'] }}</td>
+                                                    <td>
+                                                        @if($log['action'] == 'Created')
+                                                            <span class="badge bg-success">Created</span>
+                                                        @elseif($log['action'] == 'Updated')
+                                                            <span class="badge bg-warning">Updated</span>
+                                                        @elseif($log['action'] == 'Deleted')
+                                                            <span class="badge bg-danger">Deleted</span>
+                                                        @else
+                                                            <span class="badge bg-light text-dark">Exported</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                                                        <td colspan="5" class="text-center text-muted">
+                                                            No activity logs available.
+                                                        </td>
+                                                    @else
+                                                        <td colspan="4" class="text-center text-muted">
+                                                            No activity logs available.
+                                                        </td>
+                                                    @endif
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            @if(Auth::user()->isGuest())
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-round">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center"
+                                style="min-height: 50vh;">
+                                <h3 class="mb-3">Welcome to KPI - Marketing</h3>
+                                <p class="text-muted">You have view-only access to rates and shippers data.</p>
+                                <div class="mt-4">
+                                    <a href="{{ route('rates.index') }}" class="btn btn-primary me-2">
+                                        <i class="fas fa-dollar-sign"></i> View Checking Rates
+                                    </a>
+                                    <a href="{{ route('shippers.index') }}" class="btn btn-secondary">
+                                        <i class="fas fa-ship"></i> View Touch Shippers
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
-        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isMarketing())
-        <div class="row">
-            <div class="col-sm-6 col-md-4">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-icon">
-                                <div class="icon-big text-center icon-info bubble-shadow-small">
-                                    <i class="fas fa-dollar-sign"></i>
-                                </div>
-                            </div>
-                            <div class="col col-stats ms-3 ms-sm-0">
-                                <div class="numbers">
-                                    <h4 class="mb-1">
-                                        <b>{{ $totalRates }} <small>Rates Checked</small></b>
-                                    </h4>
-                                    <small class="card-category">{{ $ratesThisMonth }} This Month</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-4">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-icon">
-                                <div class="icon-big text-center icon-primary bubble-shadow-small">
-                                    <i class="fas fa-ship"></i>
-                                </div>
-                            </div>
-                            <div class="col col-stats ms-3 ms-sm-0">
-                                <div class="numbers">
-                                    <h4 class="mb-1">
-                                        <b>{{ $totalShippers }} <small>Shippers Touched</small></b>
-                                    </h4>
-                                    <small class="card-category">{{ $shippersThisMonth }} This Month</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-4">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-icon">
-                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
-                                    <i class="fas fa-book-open"></i>
-                                </div>
-                            </div>
-                            <div class="col col-stats ms-3 ms-sm-0">
-                                <div class="numbers">
-                                    <h4 class="mb-1">
-                                        <b>{{ $totalActivities }} <small>Activities Reported</small></b>
-                                    </h4>
-                                    <small class="card-category">{{ $activitiesThisMonth }} This Month</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row row-card-no-pd">
-            <div class="col-12 col-sm-6 col-md-6 col-xl-4">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <div class="card-title mb-0">This Month's Activity</div>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <p class="text-muted">Target: {{ number_format((float)$performance['activities']['performance']['target'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Actual: {{ number_format((float)$performance['activities']['performance']['actual'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Remaining: {{ number_format((float)$performance['activities']['performance']['remaining'], 0, ',', '.') }}</p>
-                        </div>
-                        @php
-                            $actPercent = $performance['activities']['performance']['percentage'];
-                            $actPercentDisplay = $actPercent > 100 ? 100 : $actPercent;
-                        @endphp
-                        <div class="progress progress-sm">
-                            <div class="progress-bar {{ $actPercent <= 33 ? 'bg-danger' : ($actPercent <= 66 ? 'bg-warning' : 'bg-success') }}"
-                                role="progressbar"
-                                style="width: {{ $actPercentDisplay }}%"
-                                aria-valuenow="{{ $actPercentDisplay }}"
-                                aria-valuemin="0"
-                                aria-valuemax="100">
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between mt-2">
-                            <p class="text-muted mb-0">Achievement</p>
-                            <p class="text-muted mb-0">{{ $actPercentDisplay }}%</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-6 col-xl-4">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <div class="card-title mb-0">This Month's Volume</div>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <p class="text-muted">Target: {{ number_format((float)$performance['volume']['performance']['target'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Actual: {{ number_format((float)$performance['volume']['performance']['actual'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Remaining: {{ number_format((float)$performance['volume']['performance']['remaining'], 0, ',', '.') }}</p>
-                        </div>
-                        @php
-                            $volPercent = $performance['volume']['performance']['percentage'];
-                            $volPercentDisplay = $volPercent > 100 ? 100 : $volPercent;
-                        @endphp
-                        <div class="progress progress-sm">
-                            <div class="progress-bar {{ $volPercent <= 33 ? 'bg-danger' : ($volPercent <= 66 ? 'bg-warning' : 'bg-success') }}"
-                                role="progressbar"
-                                style="width: {{ $volPercentDisplay }}%"
-                                aria-valuenow="{{ $volPercentDisplay }}"
-                                aria-valuemin="0"
-                                aria-valuemax="100">
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between mt-2">
-                            <p class="text-muted mb-0">Achievement</p>
-                            <p class="text-muted mb-0">{{ $volPercentDisplay }}%</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-6 col-xl-4">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <div class="card-title mb-0">This Month's Profit</div>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <p class="text-muted">Target: Rp {{ number_format((float)$performance['profit']['performance']['target'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Actual: Rp {{ number_format((float)$performance['profit']['performance']['actual'], 0, ',', '.') }}</p>
-                            <p class="text-muted">Remaining: Rp {{ number_format((float)$performance['profit']['performance']['remaining'], 0, ',', '.') }}</p>
-                        </div>
-                        @php
-                            $profPercent = $performance['profit']['performance']['percentage'];
-                            $profPercentDisplay = $profPercent > 100 ? 100 : $profPercent;
-                        @endphp
-                        <div class="progress progress-sm">
-                            <div class="progress-bar {{ $profPercent <= 33 ? 'bg-danger' : ($profPercent <= 66 ? 'bg-warning' : 'bg-success') }}"
-                                role="progressbar"
-                                style="width: {{ $profPercentDisplay }}%"
-                                aria-valuenow="{{ $profPercentDisplay }}"
-                                aria-valuemin="0"
-                                aria-valuemax="100">
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between mt-2">
-                            <p class="text-muted mb-0">Achievement</p>
-                            <p class="text-muted mb-0">{{ $profPercentDisplay }}%</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header d-flex align-items-center justify-content-between">
-                        <div class="card-title">Profit Trend</div>
-                        <small class="text-muted">{{ now()->format('Y') }}</small>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="multipleLineChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <div class="card-title">Today's Summary</div>
-                        <p class="mb-0">
-                            <small>{{ now()->format('d M Y') }}</small>
-                        </p>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-6 mb-2">
-                                <small>New Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $dailyReport->new_shipper_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Existing Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $dailyReport->existing_shipper_count ?? 0 }}</h5>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row text-center">
-                            <div class="col-6 mb-2">
-                                <small>Direct Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $dailyReport->direct_shipper_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Forwarding</small>
-                                <h5 class="font-weight-bold mb-0">{{ $dailyReport->forwarding_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Vendoring</small>
-                                <h5 class="font-weight-bold mb-0">{{ $dailyReport->vendoring_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Trading</small>
-                                <h5 class="font-weight-bold mb-0">{{ $dailyReport->trading_count ?? 0 }}</h5>
-                            </div>
-                        </div>
-                        <hr>
-                        <p class="mb-2 text-center">
-                            <span class="badge badge-success">CLOSING: {{ $dailyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING: {{ $dailyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED: {{ $dailyReport->failed_count ?? 0 }}</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <div class="card-title">This Week's Summary</div>
-                        <p class="mb-0">
-                            <small>{{ now()->startOfWeek()->format('d M') }} - {{ now()->endOfWeek()->format('d M Y') }}</small>
-                        </p>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-6 mb-2">
-                                <small>New Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $weeklyReport->new_shipper_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Existing Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $weeklyReport->existing_shipper_count ?? 0 }}</h5>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row text-center">
-                            <div class="col-6 mb-2">
-                                <small>Direct Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $weeklyReport->direct_shipper_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Forwarding</small>
-                                <h5 class="font-weight-bold mb-0">{{ $weeklyReport->forwarding_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Vendoring</small>
-                                <h5 class="font-weight-bold mb-0">{{ $weeklyReport->vendoring_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Trading</small>
-                                <h5 class="font-weight-bold mb-0">{{ $weeklyReport->trading_count ?? 0 }}</h5>
-                            </div>
-                        </div>
-                        <hr>
-                        <p class="mb-2 text-center">
-                            <span class="badge badge-success">CLOSING: {{ $weeklyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING: {{ $weeklyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED: {{ $weeklyReport->failed_count ?? 0 }}</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <div class="card-title">This Month's Summary</div>
-                        <p class="mb-0">
-                            <small>{{ now()->format('F Y') }}</small>
-                        </p>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-6 mb-2">
-                                <small>New Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $monthlyReport->new_shipper_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Existing Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $monthlyReport->existing_shipper_count ?? 0 }}</h5>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row text-center">
-                            <div class="col-6 mb-2">
-                                <small>Direct Shipper</small>
-                                <h5 class="font-weight-bold mb-0">{{ $monthlyReport->direct_shipper_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Forwarding</small>
-                                <h5 class="font-weight-bold mb-0">{{ $monthlyReport->forwarding_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Vendoring</small>
-                                <h5 class="font-weight-bold mb-0">{{ $monthlyReport->vendoring_count ?? 0 }}</h5>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <small>Trading</small>
-                                <h5 class="font-weight-bold mb-0">{{ $monthlyReport->trading_count ?? 0 }}</h5>
-                            </div>
-                        </div>
-                        <hr>
-                        <p class="mb-2 text-center">
-                            <span class="badge badge-success">CLOSING: {{ $monthlyReport->closing_count ?? 0 }}</span>
-                            <span class="badge badge-warning">PENDING: {{ $monthlyReport->pending_count ?? 0 }}</span>
-                            <span class="badge badge-danger">FAILED: {{ $monthlyReport->failed_count ?? 0 }}</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-round">
-                    <div class="card-header">
-                        <div class="card-title">Recent Actions</div>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table align-items-center mb-0">
-                                <thead class="thead-light text-center">
-                                    <tr>
-                                        <th>DATE & TIME</th>
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <th>USER</th>
-                                        @endif
-                                        <th>TYPE</th>
-                                        <th>DESCRIPTION</th>
-                                        <th>ACTION</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-center text-nowrap">
-                                    @forelse($logs as $log)
-                                    <tr>
-                                        <td data-order="{{ $log['created_at']->format('Y-m-d') }}">
-                                            {{ $log['created_at'] ? $log['created_at']->format('d M Y H:i') : '—' }}
-                                        </td>
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <td>{{ optional($log['user'])->name ?? 'System' }}</td>
-                                        @endif
-                                        <td>
-                                            @if($log['type'] == 'Checking Rates')
-                                                <span class="badge bg-info">Checking Rates</span>
-                                            @elseif($log['type'] == 'Touch Shippers')
-                                                <span class="badge bg-primary">Touch Shippers</span>
-                                            @elseif($log['type'] == 'Report Activities')
-                                                <span class="badge bg-secondary">Report Activities</span>
-                                            @else
-                                                <span class="badge bg-dark">User Management</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $log['description'] }}</td>
-                                        <td>
-                                            @if($log['action'] == 'Created')
-                                                <span class="badge bg-success">Created</span>
-                                            @elseif($log['action'] == 'Updated')
-                                                <span class="badge bg-warning">Updated</span>
-                                            @elseif($log['action'] == 'Deleted')
-                                                <span class="badge bg-danger">Deleted</span>
-                                            @else
-                                                <span class="badge bg-light text-dark">Exported</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                                        <td colspan="5" class="text-center text-muted">
-                                            No activity logs available.
-                                        </td>
-                                        @else
-                                        <td colspan="4" class="text-center text-muted">
-                                            No activity logs available.
-                                        </td>
-                                        @endif
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
-        @if(Auth::user()->isGuest())
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-round">
-                    <div class="card-body d-flex flex-column justify-content-center align-items-center" style="min-height: 50vh;">
-                        <h3 class="mb-3">Welcome to KPI - Marketing</h3>
-                        <p class="text-muted">You have view-only access to rates and shippers data.</p>
-                        <div class="mt-4">
-                            <a href="{{ route('rates.index') }}" class="btn btn-primary me-2">
-                                <i class="fas fa-dollar-sign"></i> View Checking Rates
-                            </a>
-                            <a href="{{ route('shippers.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-ship"></i> View Touch Shippers
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
     </div>
-</div>
 @endsection
 @push('script')
-<script>
-$(document).ready(function () {
-    function formatRupiah(angka) {
-        if (angka === null || angka === undefined || angka === '') return '';
-        var number_string = angka.toString().replace(/[^,\d]/g, ''),
-            split   = number_string.split(','),
-            sisa    = split[0].length % 3,
-            rupiah  = split[0].substr(0, sisa),
-            ribuan  = split[0].substr(sisa).match(/\d{3}/gi);
-        if (ribuan) {
-            separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
-        }
-        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-        return rupiah;
-    }
-    var chartCanvas = document.getElementById("multipleLineChart");
-    if (chartCanvas) {
-        var lineChartDatasets = @json($line['datasets']);
-        var lineChartLabels   = @json($line['labels']);
-        var isMultiLine       = lineChartDatasets.length > 1;
-        var multipleLineChart = chartCanvas.getContext("2d");
-        var myMultipleLineChart = new Chart(multipleLineChart, {
-            type: "line",
-            data: {
-                labels: lineChartLabels,
-                datasets: lineChartDatasets,
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: {
-                    display: isMultiLine,
-                    position: "top",
-                    onClick: isMultiLine
-                        ? Chart.defaults.global.legend.onClick
-                        : function(e) { return false; }
-                },
-                tooltips: {
-                    bodySpacing: 4,
-                    mode: "nearest",
-                    intersect: 0,
-                    position: "nearest",
-                    xPadding: 10,
-                    yPadding: 10,
-                    caretPadding: 10,
-                    displayColors: true,
-                    callbacks: {
-                        title: function() {
-                            return '';
+    <script>
+        $(document).ready(function () {
+            function formatRupiah(angka) {
+                if (angka === null || angka === undefined || angka === '') return '';
+                var number_string = angka.toString().replace(/[^,\d]/g, ''),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return rupiah;
+            }
+            var chartCanvas = document.getElementById("multipleLineChart");
+            if (chartCanvas) {
+                var lineChartDatasets = @json($line['datasets']);
+                var lineChartLabels = @json($line['labels']);
+                var isMultiLine = lineChartDatasets.length > 1;
+                var multipleLineChart = chartCanvas.getContext("2d");
+                var myMultipleLineChart = new Chart(multipleLineChart, {
+                    type: "line",
+                    data: {
+                        labels: lineChartLabels,
+                        datasets: lineChartDatasets,
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: isMultiLine,
+                            position: "top",
+                            onClick: isMultiLine
+                                ? Chart.defaults.global.legend.onClick
+                                : function (e) { return false; }
                         },
-                        label: function(tooltipItem, data) {
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            var value = Math.round(tooltipItem.yLabel);
-                            return " " + label + ": Rp " + formatRupiah(value);
-                        }
-                    }
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            callback: function(value) {
-                                return "Rp " + formatRupiah(Math.round(value));
+                        tooltips: {
+                            bodySpacing: 4,
+                            mode: "nearest",
+                            intersect: 0,
+                            position: "nearest",
+                            xPadding: 10,
+                            yPadding: 10,
+                            caretPadding: 10,
+                            displayColors: true,
+                            callbacks: {
+                                title: function () {
+                                    return '';
+                                },
+                                label: function (tooltipItem, data) {
+                                    var label = data.datasets[tooltipItem.datasetIndex].label;
+                                    var value = Math.round(tooltipItem.yLabel);
+                                    return " " + label + ": Rp " + formatRupiah(value);
+                                }
                             }
-                        }
-                    }]
-                },
-                layout: {
-                    padding: { left: 15, right: 15, top: 15, bottom: 15 },
-                },
-            },
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    callback: function (value) {
+                                        return "Rp " + formatRupiah(Math.round(value));
+                                    }
+                                }
+                            }]
+                        },
+                        layout: {
+                            padding: { left: 15, right: 15, top: 15, bottom: 15 },
+                        },
+                    },
+                });
+            }
         });
-    }
-});
-</script>
+    </script>
 @endpush

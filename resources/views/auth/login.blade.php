@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Sign In | KPI - Marketing</title>
     <meta name="theme-color" content="#6777ef">
@@ -15,18 +16,18 @@
     <script src="{{ url('/') }}/js/plugin/webfont/webfont.min.js"></script>
     <script>
         WebFont.load({
-        google: { families: ["Public Sans:300,400,500,600,700"] },
-        custom: {
-        families: [
-            "Font Awesome 5 Solid",
-            "Font Awesome 5 Regular",
-            "Font Awesome 5 Brands",
-            "simple-line-icons",
-            ],
-            urls: ["{{ url('/') }}/css/fonts.min.css"],
+            google: { families: ["Public Sans:300,400,500,600,700"] },
+            custom: {
+                families: [
+                    "Font Awesome 5 Solid",
+                    "Font Awesome 5 Regular",
+                    "Font Awesome 5 Brands",
+                    "simple-line-icons",
+                ],
+                urls: ["{{ url('/') }}/css/fonts.min.css"],
             },
             active: function () {
-            sessionStorage.fonts = true;
+                sessionStorage.fonts = true;
             },
         });
     </script>
@@ -39,6 +40,7 @@
     <link href="{{ url('/') }}/css/plugins.min.css" rel="stylesheet">
     <link href="{{ url('/') }}/css/kaiadmin.min.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container d-flex flex-column">
         <div class="row align-items-center justify-content-center g-0 min-vh-100">
@@ -46,22 +48,24 @@
                 <div class="card smooth-shadow-md">
                     <div class="card-body p-6">
                         <div class="mb-4">
-                            <img src="{{ url('/') }}/img/logo.png" width="250" class="d-block mx-auto" alt=""/>
+                            <img src="{{ url('/') }}/img/logo.png" width="250" class="d-block mx-auto" alt="" />
                         </div>
                         <form id="loginForm" method="POST" action="{{ route('login.post') }}">
                             @csrf
                             @if(session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
+                                <div class="alert alert-danger">{{ session('error') }}</div>
                             @endif
                             <div class="mb-3">
                                 <label for="login" class="form-label">Name or Email</label>
-                                <input type="text" id="login" name="login" class="form-control" value="{{ old('login') }}" required>
+                                <input type="text" id="login" name="login" class="form-control"
+                                    value="{{ old('login') }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <div style="position: relative;">
                                     <input type="password" id="password" name="password" class="form-control" required>
-                                    <i class="fa fa-eye" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+                                    <i class="fa fa-eye" id="togglePassword"
+                                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
                                 </div>
                             </div>
                             <div>
@@ -74,7 +78,8 @@
                         </form>
                     </div>
                     <div class="card-footer bg-transparent text-center text-muted border-0">
-                        <small>Copyright © {{ date('Y') }} <strong>PT. INFINITY LOGISTICS INDONESIA</strong> All Rights Reserved.</small>
+                        <small>Copyright © {{ date('Y') }} <strong>PT. INFINITY LOGISTICS INDONESIA</strong> All Rights
+                            Reserved.</small>
                     </div>
                 </div>
             </div>
@@ -97,46 +102,47 @@
     <script src="{{ url('/') }}/js/kaiadmin.min.js"></script>
     <script src="{{ url('/') }}/sw.js"></script>
     <script>
-    if (!navigator.serviceWorker.controller) {
-        navigator.serviceWorker.register("/sw.js").then(function(reg) {
-            console.log("Service Worker Registered:", reg.scope);
-        });
-    }
+        if (!navigator.serviceWorker.controller) {
+            navigator.serviceWorker.register("/sw.js").then(function (reg) {
+                console.log("Service Worker Registered:", reg.scope);
+            });
+        }
     </script>
     <script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-    });
-    $(document).ready(function() {
-        @if(session('toast_success'))
-            Toast.fire({ icon: 'success', title: '{{ session('toast_success') }}' });
-        @endif
-        @if(session('login_failed'))
-            Swal.fire({
-                title: 'Invalid Credentials!',
-                text: 'Name/email or password is incorrect.',
-                icon: 'error',
-                confirmButtonColor: '#d33'
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+        $(document).ready(function () {
+            @if(session('toast_success'))
+                Toast.fire({ icon: 'success', title: '{{ session('toast_success') }}' });
+            @endif
+            @if(session('login_failed'))
+                Swal.fire({
+                    title: 'Invalid Credentials!',
+                    text: 'Name/email or password is incorrect.',
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            @endif
+            $('#togglePassword').on('click', function () {
+                const passwordField = $('input[name="password"]');
+                const eyeIcon = $(this);
+                const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+                passwordField.attr('type', type);
+                if (type === 'password') {
+                    eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+                } else {
+                    eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+                }
             });
-        @endif
-        $('#togglePassword').on('click', function() {
-            const passwordField = $('input[name="password"]');
-            const eyeIcon = $(this);
-            const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
-            passwordField.attr('type', type);
-            if (type === 'password') {
-                eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
-            } else {
-                eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
-            }
+            $('#loginForm').on('submit', function () {
+                $('#loginBtn').html('<i class="fas fa-spinner fa-spin"></i> Signing in...').prop('disabled', true);
+            });
         });
-        $('#loginForm').on('submit', function() {
-            $('#loginBtn').html('<i class="fas fa-spinner fa-spin"></i> Signing in...').prop('disabled', true);
-        });
-    });
     </script>
 </body>
+
 </html>

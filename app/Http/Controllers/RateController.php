@@ -20,7 +20,7 @@ class RateController extends Controller
         if ($request->ajax()) {
             return response()->json($rates);
         }
-        $users = User::whereIn('role', ['MARKETING','ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
+        $users = User::whereIn('role', ['MARKETING', 'ADMIN'])->where('id', '!=', Auth::id())->orderBy('name')->get();
         return view('rates.index', compact('rates', 'users'));
     }
 
